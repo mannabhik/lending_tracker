@@ -3592,8 +3592,8 @@ function applyFilters() {
   const filtered = localData.filter(r => {
     // View filter (3-way toggle)
     if (activeView === "archived") return !!r.archived;
-    if (r.archived) return false;
-    if (activeView === "active" && r.status === "RETURNED") return false;
+    if (activeView !== "all" && r.archived) return false;
+    if (activeView === "active" && (r.status === "RETURNED" || r.archived)) return false;
     // Status sub-filter
     if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
     if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
