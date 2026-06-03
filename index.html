@@ -2521,6 +2521,25 @@ async function savePassword(newPw) {
 
 function requirePassword(callback) {
   if (_pwSession) { callback(); return; }
+  // If password not yet loaded, wait for it
+  if (_PW === null) {
+    setSyncStatus("syncing");
+    loadPassword().then(() => {
+      setSyncStatus("ok");
+      if (_PW !== null) {
+        _pwCallback = callback;
+        document.getElementById("pwInput").value = "";
+        document.getElementById("pwError").textContent = "";
+        document.getElementById("pwInput").classList.remove("shake");
+        document.getElementById("pwOverlay").classList.add("open");
+        setTimeout(() => document.getElementById("pwInput").focus(), 80);
+      } else {
+        // Still null — show setup
+        document.getElementById("setupOverlay").classList.add("open");
+      }
+    });
+    return;
+  }
   _pwCallback = callback;
   document.getElementById("pwInput").value = "";
   document.getElementById("pwError").textContent = "";
