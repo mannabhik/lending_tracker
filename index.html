@@ -2671,6 +2671,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 let localData = [];
+let isDarkTheme = true;    // theme state — declared early for loadTheme()
 let pieChart, barChart;
 let isSyncing = false;
 
@@ -3328,7 +3329,6 @@ function exportPDF() {
 
 
 // ── Theme Toggle ─────────────────────────────────────────────────────────
-let isDarkTheme = true;
 
 function loadTheme() {
   const saved = localStorage.getItem("lendlog_theme") || "dark";
