@@ -776,6 +776,7 @@
     /* Table — hidden, cards shown */
     .table-card table { display: none; }
     .mobile-cards { display: flex !important; }
+    #mobileTableHeader { display: flex !important; }
 
     /* Mobile cards */
     .entry-card { padding: 12px 14px; }
@@ -1256,6 +1257,14 @@
   }
 
 
+
+  .mobile-table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0;
+    border-bottom: none;
+  }
+
   /* ── Mobile swipe cards ─────────────────────────────────────────── */
   .mobile-cards { display: none; flex-direction: column; gap: 0; }
   .swipe-card { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
@@ -1268,7 +1277,7 @@
   .swipe-action-btn.topup { background: #9A6200; }
   .swipe-action-btn.docs  { background: #0369a1; }
   .swipe-action-btn.del   { background: #D63050; }
-  .swipe-front { position: relative; z-index: 2; background: var(--surface); padding: 13px 16px 13px 20px; transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); will-change: transform; }
+  .swipe-front { position: relative; z-index: 2; background: var(--surface); padding: 13px 16px 13px 22px; transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); will-change: transform; }
   .swipe-card.swiped .swipe-front { transform: translateX(-320px); }
   .swipe-row1 { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
   .swipe-name { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -1553,6 +1562,27 @@
       <tbody id="tbody"></tbody>
     </table>
     </div><!-- end table-scroll -->
+    <!-- Mobile header: select all + sort -->
+    <div class="mobile-table-header" id="mobileTableHeader" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="checkbox" class="row-check" id="selectAllMobile" onclick="event.stopPropagation();toggleSelectAll()" title="Select all" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+        <span style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Select all</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Sort:</span>
+        <select id="mobileSortSelect" onchange="mobileSortChange()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:5px 8px;font-size:11px;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-appearance:none">
+          <option value="date_desc">Date (newest)</option>
+          <option value="date_asc">Date (oldest)</option>
+          <option value="name_asc">Name (A-Z)</option>
+          <option value="name_desc">Name (Z-A)</option>
+          <option value="pending_desc">Pending (high)</option>
+          <option value="pending_asc">Pending (low)</option>
+          <option value="lent_desc">Lent (high)</option>
+          <option value="lent_asc">Lent (low)</option>
+          <option value="status_asc">Status</option>
+        </select>
+      </div>
+    </div>
     <div class="mobile-cards" id="mobileCards"></div>
   </div>
 
@@ -3196,11 +3226,14 @@ function renderTable(data) {
       <!-- Front face -->
       <div class="swipe-front" ontouchstart="swipeTouchStart(event,${r.id})" ontouchmove="swipeTouchMove(event,${r.id})" ontouchend="swipeTouchEnd(event,${r.id})" onclick="swipeClick(${r.id})">
         <div class="swipe-row1">
-          <div>
-            <div class="swipe-name">${r.name}</div>
-            <div class="swipe-date">${fmtDate(r.date)}</div>
-            ${r.notes ? `<div class="swipe-note">${r.notes}</div>` : ""}
-            ${ds ? `<div style="font-size:10px;margin-top:2px"><span class="due-badge ${ds.cls}">${ds.label}</span></div>` : ""}
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <input type="checkbox" class="row-check" data-id="${r.id}" onclick="event.stopPropagation();toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""} style="margin-top:3px;flex-shrink:0;width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+            <div>
+              <div class="swipe-name">${r.name}</div>
+              <div class="swipe-date">${fmtDate(r.date)}</div>
+              ${r.notes ? `<div class="swipe-note">${r.notes}</div>` : ""}
+              ${ds ? `<div style="font-size:10px;margin-top:2px"><span class="due-badge ${ds.cls}">${ds.label}</span></div>` : ""}
+            </div>
           </div>
           <span class="badge badge-${statusCls}">${r.status}</span>
         </div>
@@ -4223,14 +4256,20 @@ function toggleRowSelect(id) {
 }
 
 function toggleSelectAll() {
-  const all = document.getElementById("selectAll");
+  // Support both desktop (#selectAll) and mobile (#selectAllMobile)
+  const allDesktop = document.getElementById("selectAll");
+  const allMobile  = document.getElementById("selectAllMobile");
+  const checked = allDesktop?.checked || allMobile?.checked || false;
   const boxes = document.querySelectorAll(".row-check[data-id]");
   boxes.forEach(cb => {
     const id = parseInt(cb.dataset.id);
-    if (all.checked) selectedIds.add(id);
+    if (checked) selectedIds.add(id);
     else selectedIds.delete(id);
-    cb.checked = all.checked;
+    cb.checked = checked;
   });
+  // Sync both checkboxes
+  if (allDesktop) allDesktop.checked = checked;
+  if (allMobile)  allMobile.checked  = checked;
   updateBulkBar();
 }
 
@@ -4303,6 +4342,22 @@ function bulkDelete() {
   });
 }
 
+
+// ── Mobile sort ───────────────────────────────────────────────────────────
+function mobileSortChange() {
+  const val = document.getElementById("mobileSortSelect")?.value || "date_desc";
+  const [col, dir] = val.split("_");
+  sortCol = col;
+  sortDir = dir;
+  applyFilters();
+}
+
+// Sync mobile sort select with current sort state
+function syncMobileSortSelect() {
+  const sel = document.getElementById("mobileSortSelect");
+  if (sel) sel.value = sortCol + "_" + sortDir;
+}
+
 // ── Sort ─────────────────────────────────────────────────────────────────
 function sortBy(col) {
   if (sortCol === col) {
@@ -4325,6 +4380,7 @@ function sortBy(col) {
       ths[sortIdx].classList.add("sort-" + sortDir);
     }
   }
+  syncMobileSortSelect();
   applyFilters();
 }
 
