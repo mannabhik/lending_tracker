@@ -7,6 +7,7 @@
 <title>Money Lending Index Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -178,6 +179,13 @@
   }
   .backup-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
 
+
+
+  /* Share & Statement buttons */
+  .share-btn     { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
+  .share-btn:hover { background: rgba(108,99,255,0.15); color: var(--accent); transform: scale(1.1); }
+  .stmt-btn      { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
+  .stmt-btn:hover  { background: rgba(0,212,170,0.12); color: var(--green); transform: scale(1.1); }
 
   /* Google Sheets sync */
   .sheets-sync-btn {
@@ -726,15 +734,30 @@
 
   /* ── Mobile (≤640px) ─────────────────────────────────────────────── */
   @media (max-width: 640px) {
-    /* Header */
-    header { padding: 12px 16px; flex-wrap: nowrap; gap: 8px; }
-    .logo-text { font-size: 13px; letter-spacing: -0.01em; }
+    /* Header — compact on mobile */
+    header { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow: hidden; }
+    .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
-    .logo-icon { width: 28px; height: 28px; font-size: 14px; }
+    .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; }
     .header-date { display: none; }
-    #syncStatus { font-size: 10px; }
-    .add-btn { padding: 8px 12px; font-size: 12px; }
-    .add-btn svg { width: 13px; height: 13px; }
+    #headerTime { display: none; }
+    #syncStatus { display: none; }
+
+    /* Header right — scrollable row of compact icon buttons */
+    .header-right { gap: 4px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 1; min-width: 0; }
+    .header-right::-webkit-scrollbar { display: none; }
+
+    /* All header utility buttons → icon only, compact */
+    .sheets-sync-btn { padding: 7px 8px; font-size: 12px; min-width: 34px; justify-content: center; }
+    .sheets-sync-btn .sync-label { display: none; }
+    .currency-select { padding: 6px 5px; font-size: 11px; width: 62px; min-width: 62px; }
+    .theme-toggle-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
+    .backup-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
+    .chpw-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
+
+    /* Add entry button — keep text but smaller */
+    .add-btn { padding: 7px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
+    .add-btn svg { width: 12px; height: 12px; }
 
     /* Main layout */
     .main { padding: 14px 12px 80px; }
@@ -867,12 +890,7 @@
     .toast { font-size: 12px; padding: 10px 18px; bottom: 16px; }
   }
 
-  /* Mobile card layout for entries */
-  .mobile-cards {
-    display: none;
-    flex-direction: column;
-    gap: 0;
-  }
+  /* Mobile cards — see swipe cards CSS */
 
   .entry-card {
     padding: 14px 16px;
@@ -1235,6 +1253,35 @@
     transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
 
+
+  /* ── Mobile swipe cards ─────────────────────────────────────────── */
+  .mobile-cards { display: none; flex-direction: column; gap: 0; }
+  .swipe-card { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; z-index: 1; }
+  .swipe-action-btn { width: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; color: #fff; transition: opacity 0.15s; }
+  .swipe-action-btn:active { opacity: 0.8; }
+  .swipe-action-btn .icon { font-size: 18px; line-height: 1; }
+  .swipe-action-btn.edit  { background: #5B52E8; }
+  .swipe-action-btn.pay   { background: #2D8A5E; }
+  .swipe-action-btn.topup { background: #9A6200; }
+  .swipe-action-btn.docs  { background: #0369a1; }
+  .swipe-action-btn.del   { background: #D63050; }
+  .swipe-front { position: relative; z-index: 2; background: var(--surface); padding: 13px 16px 13px 20px; transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); will-change: transform; }
+  .swipe-card.swiped .swipe-front { transform: translateX(-320px); }
+  .swipe-row1 { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+  .swipe-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .swipe-date { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+  .swipe-note { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .swipe-amounts { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 8px; }
+  .swipe-amt { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
+  .swipe-amt-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .swipe-amt-val { font-size: 12px; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .swipe-row3 { display: flex; align-items: center; justify-content: space-between; }
+  .swipe-meta { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .swipe-hint { font-size: 10px; color: var(--text3); display: flex; align-items: center; gap: 3px; opacity: 0.6; }
+  .swipe-card.status-pending  .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--amber); }
+  .swipe-card.status-returned .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--green); }
+  .swipe-card.status-overdue  .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--purple); }
 </style>
 </head>
 <body>
@@ -1757,6 +1804,19 @@
         💡 In Google Drive: right-click file → Share → Anyone with the link → Copy link
       </div>
       <button class="modal-save" style="margin-top:0" onclick="addDocument()">Add Document</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Card Modal -->
+<div class="overlay" id="shareCardOverlay" onclick="shareCardBgClick(event)">
+  <div class="modal" style="max-width:420px;background:transparent;border:none;box-shadow:none;padding:0">
+    <div id="shareCardInner" style="background:linear-gradient(135deg,#13162B 0%,#1A1D27 60%,#1A0F2E 100%);border-radius:20px;padding:28px;border:1px solid rgba(108,99,255,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+      <!-- Card content rendered by JS -->
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px;justify-content:center">
+      <button class="modal-save" style="max-width:180px" onclick="downloadShareCard()">💾 Download PNG</button>
+      <button class="filter-btn" style="background:var(--surface);color:var(--text2)" onclick="closeShareCard()">Close</button>
     </div>
   </div>
 </div>
@@ -2880,6 +2940,8 @@ function renderTable(data) {
       <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
       <td><span class="date-pill updated" style="min-width:unset">${r.updatedAt ? fmtDate(r.updatedAt, true) : "—"}</span></td>
       <td><div class="row-actions">
+        <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
+        <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
         <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
         <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History">💳${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
         <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up">＋</button>
@@ -2891,47 +2953,69 @@ function renderTable(data) {
     </tr>`;
   }).join("");
   document.getElementById("mobileCards").innerHTML = sorted.map(r => {
-    const pending = r.lent - r.returned;
-    return `<div class="entry-card">
-      <div class="entry-card-top">
-        <div>
-          <div class="entry-card-name">${r.name}</div>
-          <div class="entry-card-date">${fmtDate(r.date)}</div>
-          ${r.notes ? `<div class="entry-card-note">${r.notes}</div>` : ""}
-        </div>
-        <span class="badge badge-${r.status.toLowerCase()}">${r.status}</span>
+    const pending  = Math.max(0, r.lent - r.returned);
+    const overdue  = r.returned > r.lent ? r.returned - r.lent : 0;
+    const interest = calcInterest(r);
+    const ds       = getDueStatus(r);
+    const statusCls = r.status.toLowerCase();
+    return `<div class="swipe-card status-${statusCls}" id="swipe-${r.id}">
+      <!-- Hidden action buttons -->
+      <div class="swipe-actions">
+        <button class="swipe-action-btn edit"  onclick="closeSwipe(${r.id});editRow(${r.id})">
+          <span class="icon">✎</span>Edit
+        </button>
+        <button class="swipe-action-btn pay"   onclick="closeSwipe(${r.id});openPayments(${r.id})">
+          <span class="icon">💳</span>Pay
+        </button>
+        <button class="swipe-action-btn topup" onclick="closeSwipe(${r.id});quickTopup(${r.id})">
+          <span class="icon">＋</span>Top-up
+        </button>
+        <button class="swipe-action-btn docs"  onclick="closeSwipe(${r.id});openDocs(${r.id})">
+          <span class="icon">📎</span>Docs
+        </button>
+        <button class="swipe-action-btn del"   onclick="closeSwipe(${r.id});askDelete(${r.id})">
+          <span class="icon">✕</span>Delete
+        </button>
       </div>
-      <div class="entry-card-amounts">
-        <div class="entry-amt">
-          <div class="entry-amt-label">Lent</div>
-          <div class="entry-amt-val">${fmt(r.lent)}</div>
+      <!-- Front face -->
+      <div class="swipe-front" ontouchstart="swipeTouchStart(event,${r.id})" ontouchmove="swipeTouchMove(event,${r.id})" ontouchend="swipeTouchEnd(event,${r.id})" onclick="swipeClick(${r.id})">
+        <div class="swipe-row1">
+          <div>
+            <div class="swipe-name">${r.name}</div>
+            <div class="swipe-date">${fmtDate(r.date)}</div>
+            ${r.notes ? `<div class="swipe-note">${r.notes}</div>` : ""}
+            ${ds ? `<div style="font-size:10px;margin-top:2px"><span class="due-badge ${ds.cls}">${ds.label}</span></div>` : ""}
+          </div>
+          <span class="badge badge-${statusCls}">${r.status}</span>
         </div>
-        <div class="entry-amt">
-          <div class="entry-amt-label">Returned</div>
-          <div class="entry-amt-val green">${fmt(r.returned)}</div>
+        <div class="swipe-amounts">
+          <div class="swipe-amt">
+            <div class="swipe-amt-lbl">Lent</div>
+            <div class="swipe-amt-val" style="color:var(--text)">${fmt(r.lent)}</div>
+          </div>
+          <div class="swipe-amt">
+            <div class="swipe-amt-lbl">Returned</div>
+            <div class="swipe-amt-val" style="color:var(--green)">${fmt(r.returned)}</div>
+          </div>
+          <div class="swipe-amt">
+            <div class="swipe-amt-lbl">${overdue > 0 ? "Overdue" : "Pending"}</div>
+            <div class="swipe-amt-val" style="color:${overdue>0?"var(--purple)":pending>0?"var(--red)":"var(--text3)"}">${fmt(overdue>0?overdue:pending)}</div>
+          </div>
         </div>
-        <div class="entry-amt">
-          <div class="entry-amt-label">${r.returned > r.lent ? "Overdue" : "Pending"}</div>
-          <div class="entry-amt-val ${r.returned > r.lent ? "" : pending > 0 ? "red" : ""}" style="${r.returned > r.lent ? "color:#6B21A8" : ""}">${fmt(r.returned > r.lent ? r.returned - r.lent : pending)}</div>
-        </div>
-      </div>
-      <div class="entry-card-footer">
-        <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">
-          <div>Updated: ${r.updatedAt ? fmtDate(r.updatedAt) : "—"}</div>
-          ${r.interestOn ? `<div style="color:#0369a1;font-weight:600">Interest: ${fmt(calcInterest(r))} ${r.interestType==="fixed" ? "(fixed)" : `(${parseFloat(r.interestRate)||9}%/mo)`}</div>` : ""}
-        </div>
-        <div style="display:flex;gap:6px">
-          <button class="edit-btn" onclick="editRow(${r.id})" style="font-size:18px;padding:6px 10px">✎ Edit</button>
-          <button class="payment-btn" onclick="openPayments(${r.id})" style="font-size:18px;padding:6px 10px;background:var(--green-light);color:var(--green)">💳 Payments</button>
-          <button class="topup-btn" onclick="quickTopup(${r.id})" style="font-size:18px;padding:6px 10px;background:var(--amber-light);color:var(--amber)">＋ Top-up</button>
-          ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" style="font-size:18px;padding:6px 10px;background:var(--green-light);color:var(--green)">↩ Prepay</button>` : ""}
-          ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" style="font-size:18px;padding:6px 10px;background:#E0F0FF;color:#0369a1">⇄ Renegotiate</button>` : ""}
-          <button class="doc-btn" onclick="openDocs(${r.id})" style="font-size:18px;padding:6px 10px;background:#E0F0FF;color:#0369a1">📎 Docs${r.docs&&r.docs.length?` (${r.docs.length})`:""}</button>
-          <button class="del-btn" onclick="askDelete(${r.id})" style="font-size:18px;padding:6px 10px">✕ Delete</button>
+        <div class="swipe-row3">
+          <div class="swipe-meta">
+            ${r.updatedAt ? "Updated " + fmtDate(r.updatedAt) : ""}
+            ${interest>0 ? ` · Interest: ${fmt(interest)}` : ""}
+          </div>
+          <div class="swipe-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            swipe
+          </div>
         </div>
       </div>
     </div>`;
   }).join("");
+  initSwipeCards();
 }
 
 function renderCharts(data) {
@@ -3428,6 +3512,228 @@ function checkAutoSync() {
   }
 }
 
+
+// ── Share Card ────────────────────────────────────────────────────────────
+let shareCardRecordId = null;
+
+function openShareCard(id) {
+  shareCardRecordId = id;
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  renderShareCard(r);
+  document.getElementById("shareCardOverlay").classList.add("open");
+}
+
+function closeShareCard() {
+  document.getElementById("shareCardOverlay").classList.remove("open");
+}
+
+function shareCardBgClick(e) {
+  if (e.target === document.getElementById("shareCardOverlay")) closeShareCard();
+}
+
+function renderShareCard(r) {
+  const pending   = Math.max(0, r.lent - r.returned);
+  const overdue   = r.returned > r.lent ? r.returned - r.lent : 0;
+  const interest  = calcInterest(r);
+  const totalDue  = pending + interest;
+  const ds        = getDueStatus(r);
+  const statusColor = r.status==="RETURNED" ? "#00D4AA" : r.status==="OVERDUE" ? "#B97FFF" : "#FFB547";
+  const payments  = r.payments || [];
+  const totalPaid = payments.reduce((s,p)=>s+p.amount,0);
+
+  document.getElementById("shareCardInner").innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+      <div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Money Lending Index Tracker</div>
+        <div style="font-size:22px;font-weight:700;color:#F0F2FF;letter-spacing:-0.02em">${r.name}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">Lent on ${fmtDate(r.date)}</div>
+      </div>
+      <div style="background:${statusColor}22;border:1px solid ${statusColor}55;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:${statusColor}">${r.status}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Amount Lent</div>
+        <div style="font-size:20px;font-weight:700;color:#F0F2FF;font-family:'DM Mono',monospace">${fmt(r.lent)}</div>
+      </div>
+      <div style="background:rgba(0,212,170,0.08);border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Returned</div>
+        <div style="font-size:20px;font-weight:700;color:#00D4AA;font-family:'DM Mono',monospace">${fmt(r.returned)}</div>
+      </div>
+      <div style="background:rgba(255,92,125,0.08);border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Pending</div>
+        <div style="font-size:20px;font-weight:700;color:#FF5C7D;font-family:'DM Mono',monospace">${fmt(pending)}</div>
+      </div>
+      ${interest > 0 ? `
+      <div style="background:rgba(96,180,255,0.08);border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Interest</div>
+        <div style="font-size:20px;font-weight:700;color:#60B4FF;font-family:'DM Mono',monospace">${fmt(interest)}</div>
+      </div>` : `
+      <div style="background:rgba(255,181,71,0.08);border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Payments</div>
+        <div style="font-size:20px;font-weight:700;color:#FFB547;font-family:'DM Mono',monospace">${payments.length}</div>
+      </div>`}
+    </div>
+
+    ${totalDue > 0 ? `
+    <div style="background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(255,107,157,0.15));border:1px solid rgba(108,99,255,0.3);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:rgba(255,255,255,0.5)">Total Due (incl. interest)</div>
+      <div style="font-size:20px;font-weight:700;color:#F0F2FF;font-family:'DM Mono',monospace">${fmt(totalDue)}</div>
+    </div>` : ""}
+
+    ${ds ? `<div style="background:rgba(255,181,71,0.1);border:1px solid rgba(255,181,71,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#FFB547;margin-bottom:14px">⏰ ${ds.label}</div>` : ""}
+
+    ${r.notes ? `<div style="font-size:12px;color:rgba(255,255,255,0.4);padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)">📝 ${r.notes}</div>` : ""}
+
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:10px;color:rgba(255,255,255,0.25)">Generated ${new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</div>
+      <div style="font-size:10px;color:rgba(108,99,255,0.6);font-weight:600">mannabhik.github.io/lending_tracker</div>
+    </div>
+  `;
+}
+
+function downloadShareCard() {
+  const el = document.getElementById("shareCardInner");
+  // Use html2canvas if available, otherwise open print
+  if (typeof html2canvas !== "undefined") {
+    html2canvas(el, { backgroundColor: null, scale: 2 }).then(canvas => {
+      const a = document.createElement("a");
+      a.download = "lendlog-" + (localData.find(x=>x.id===shareCardRecordId)?.name||"card").replace(/\s+/g,"-") + ".png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+    });
+  } else {
+    // Fallback: open card in new tab for screenshot
+    const win = window.open("","_blank");
+    win.document.write(`<!DOCTYPE html><html><head><style>body{margin:0;background:#0F1117;display:flex;justify-content:center;padding:30px;font-family:'DM Sans',sans-serif}*{box-sizing:border-box}</style><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></head><body>${el.outerHTML}</body></html>`);
+    win.document.close();
+    showToast("Screenshot the card to save it!");
+  }
+}
+
+
+// ── Loan Statement PDF ───────────────────────────────────────────────────
+function openStatement(id) {
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  const payments  = r.payments || [];
+  const pending   = Math.max(0, r.lent - r.returned);
+  const interest  = calcInterest(r);
+  const totalDue  = pending + interest;
+  const schedule  = (r.interestOn && r.loanSetup) ? buildSchedule(r) : [];
+  const schedRows = schedule.filter(s => !s.event);
+  const events    = schedule.filter(s => s.event);
+  const ds        = getDueStatus(r);
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Loan Statement — ${r.name}</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 32px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 2px; color: #1a1a1a; }
+  .sub { color: #888; margin-bottom: 24px; font-size: 11px; }
+  .header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #1A1D27; }
+  .borrower-name { font-size: 20px; font-weight: bold; }
+  .status-badge { padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+  .PENDING  { background: #FFF8E1; color: #9A6200; }
+  .RETURNED { background: #E8F5E9; color: #2D8A5E; }
+  .OVERDUE  { background: #EDE0F5; color: #7B4FCC; }
+  .grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-box { background: #f8f8f8; border-radius: 8px; padding: 12px 14px; }
+  .stat-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+  .stat-val { font-size: 16px; font-weight: bold; }
+  .section-title { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.07em; color: #555; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+  th { background: #1A1D27; color: #fff; padding: 8px 10px; text-align: left; }
+  td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+  tr:nth-child(even) td { background: #fafafa; }
+  tr.event-row td { background: #f0eaff; color: #7B4FCC; font-style: italic; }
+  .total-row td { font-weight: bold; background: #f0f0f0; }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
+  .due-alert { background: #FFF8E1; border: 1px solid #FFB547; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #9A6200; margin-bottom: 16px; }
+  @media print { body { padding: 16px; } }
+</style></head><body>
+
+<div class="header-bar">
+  <div>
+    <h1>💰 Money Lending Index Tracker</h1>
+    <div class="sub">Loan Statement · Generated on ${new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
+  </div>
+  <div style="text-align:right">
+    <div class="borrower-name">${r.name}</div>
+    <div style="margin-top:6px"><span class="status-badge ${r.status}">${r.status}</span></div>
+  </div>
+</div>
+
+${ds ? `<div class="due-alert">⏰ ${ds.label}</div>` : ""}
+
+<div class="grid">
+  <div class="stat-box"><div class="stat-label">Lent On</div><div class="stat-val">${fmtDate(r.date)}</div></div>
+  <div class="stat-box"><div class="stat-label">Amount Lent</div><div class="stat-val">${fmt(r.lent)}</div></div>
+  <div class="stat-box"><div class="stat-label">Total Returned</div><div class="stat-val" style="color:#2D8A5E">${fmt(r.returned)}</div></div>
+  <div class="stat-box"><div class="stat-label">Pending</div><div class="stat-val" style="color:#D63050">${fmt(pending)}</div></div>
+  ${interest > 0 ? `<div class="stat-box"><div class="stat-label">Interest</div><div class="stat-val" style="color:#0369a1">${fmt(interest)}</div></div>` : ""}
+  ${totalDue > 0 ? `<div class="stat-box"><div class="stat-label">Total Due</div><div class="stat-val" style="color:#D63050;font-size:18px">${fmt(totalDue)}</div></div>` : ""}
+  ${r.dueDate ? `<div class="stat-box"><div class="stat-label">Due Date</div><div class="stat-val">${fmtDate(r.dueDate)}</div></div>` : ""}
+  ${r.notes ? `<div class="stat-box" style="grid-column:span 2"><div class="stat-label">Notes</div><div class="stat-val" style="font-size:12px">${r.notes}</div></div>` : ""}
+</div>
+
+${payments.length > 0 ? `
+<div class="section-title">Payment History (${payments.length} payments)</div>
+<table>
+  <thead><tr><th>#</th><th>Date</th><th>Amount</th><th>Note</th></tr></thead>
+  <tbody>
+    ${[...payments].sort((a,b)=>new Date(a.date)-new Date(b.date)).map((p,i)=>`
+    <tr><td>${i+1}</td><td>${fmtDate(p.date)}</td><td style="color:#2D8A5E;font-weight:bold">${fmt(p.amount)}</td><td>${p.note||"—"}</td></tr>`).join("")}
+    <tr class="total-row"><td colspan="2">Total Paid</td><td>${fmt(payments.reduce((s,p)=>s+p.amount,0))}</td><td></td></tr>
+  </tbody>
+</table>` : ""}
+
+${r.interestOn && r.loanSetup ? `
+<div class="section-title">Loan Setup</div>
+<table>
+  <thead><tr><th>Type</th><th>Rate</th><th>Tenure</th><th>Payout</th><th>Scheduled EMI</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>${r.loanSetup.interestType || "compound"}</td>
+      <td>${r.loanSetup.rate ? r.loanSetup.rate + "% " + (r.loanSetup.ratePeriod||"yearly") : "Fixed"}</td>
+      <td>${r.loanSetup.tenure} ${r.loanSetup.tenureUnit}</td>
+      <td>${r.loanSetup.payoutFreq}</td>
+      <td style="font-weight:bold">${getScheduledEMI(r) ? fmt(getScheduledEMI(r)) : "—"}</td>
+    </tr>
+  </tbody>
+</table>` : ""}
+
+${schedRows.length > 0 ? `
+<div class="section-title">Repayment Schedule</div>
+${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:8px 12px;font-size:11px;color:#7B4FCC;margin-bottom:10px">
+  📌 Events: ${events.map(e=>e.label).join(" | ")}</div>` : ""}
+<table>
+  <thead><tr><th>#</th><th>Due Date</th><th>Opening Bal</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing Bal</th><th>Status</th></tr></thead>
+  <tbody>
+    ${schedRows.map(row=>`<tr style="${row.status==="paid"?"background:#E8F5E9":row.status==="current"?"background:#FFF8E1":""}">
+      <td>${row.num}</td><td>${fmtDate(row.date)}</td><td>${fmt(row.openBal)}</td>
+      <td style="font-weight:bold">${fmt(row.emi)}</td><td style="color:#2D8A5E">${fmt(row.principal)}</td>
+      <td style="color:#0369a1">${fmt(row.interest)}</td><td style="color:#9A6200">${fmt(row.closeBal)}</td>
+      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="current"?"● Due":"○ Upcoming"}</td>
+    </tr>`).join("")}
+  </tbody>
+</table>` : ""}
+
+<div class="footer">
+  <span>Generated by Money Lending Index Tracker · mannabhik.github.io/lending_tracker</span>
+  <span>Last Updated: ${r.updatedAt ? fmtDate(r.updatedAt) : "—"}</span>
+</div>
+
+</body></html>`;
+
+  const win = window.open("","_blank");
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 600);
+}
+
 // ── Backup & Restore ─────────────────────────────────────────────────────
 function exportBackup() {
   const backup = {
@@ -3541,6 +3847,84 @@ function autoArchiveClosed(data) {
   });
   return changed;
 }
+
+
+// ── Mobile Swipe Cards ───────────────────────────────────────────────────
+let swipeState = {};   // { id: { startX, currentX, swiped } }
+let openSwipeId = null;
+
+function initSwipeCards() {
+  // nothing extra needed — touch handlers are inline
+}
+
+function closeSwipe(id) {
+  const card = document.getElementById("swipe-" + id);
+  if (card) {
+    card.classList.remove("swiped");
+    const front = card.querySelector(".swipe-front");
+    if (front) front.style.transform = "";
+  }
+  if (openSwipeId === id) openSwipeId = null;
+}
+
+function closeAllSwipes() {
+  if (openSwipeId !== null) closeSwipe(openSwipeId);
+}
+
+function swipeTouchStart(e, id) {
+  closeAllSwipes();
+  swipeState[id] = {
+    startX: e.touches[0].clientX,
+    startY: e.touches[0].clientY,
+    currentX: 0,
+    moved: false,
+  };
+}
+
+function swipeTouchMove(e, id) {
+  const st = swipeState[id];
+  if (!st) return;
+  const dx = e.touches[0].clientX - st.startX;
+  const dy = e.touches[0].clientY - st.startY;
+  if (!st.moved && Math.abs(dy) > Math.abs(dx)) {
+    delete swipeState[id]; return; // vertical scroll — ignore
+  }
+  st.moved = true;
+  if (dx > 0) return; // only left swipe
+  e.preventDefault();
+  const maxSwipe = -320;
+  st.currentX = Math.max(maxSwipe, Math.min(0, dx));
+  const front = document.querySelector("#swipe-" + id + " .swipe-front");
+  if (front) front.style.transition = "none";
+  if (front) front.style.transform = "translateX(" + st.currentX + "px)";
+}
+
+function swipeTouchEnd(e, id) {
+  const st = swipeState[id];
+  if (!st || !st.moved) return;
+  const front = document.querySelector("#swipe-" + id + " .swipe-front");
+  if (front) front.style.transition = "";
+  if (st.currentX < -80) {
+    // Snap open
+    const card = document.getElementById("swipe-" + id);
+    if (card) card.classList.add("swiped");
+    if (front) front.style.transform = "";
+    openSwipeId = id;
+  } else {
+    // Snap closed
+    closeSwipe(id);
+  }
+  delete swipeState[id];
+}
+
+function swipeClick(id) {
+  if (openSwipeId === id) {
+    closeSwipe(id);
+  }
+}
+
+// Close swipe on scroll
+document.addEventListener("scroll", closeAllSwipes, true);
 
 // ── Search & Filter ──────────────────────────────────────────────────────
 let activeView   = "all";    // all | active | archived
