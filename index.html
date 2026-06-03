@@ -87,7 +87,8 @@
   .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: #fff; }
   .logo-sub { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 300; }
 
-  .header-right { display: flex; align-items: center; gap: 10px; }
+  .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .header-utils { display: flex; align-items: center; gap: 8px; }
   .header-date { font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; }
 
   .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -738,7 +739,7 @@
   /* ── Mobile (≤640px) ─────────────────────────────────────────────── */
   @media (max-width: 640px) {
     /* Header — compact on mobile */
-    header { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow: hidden; }
+    header { padding: 10px 12px; gap: 8px; flex-wrap: nowrap; overflow: visible; position: relative; }
     .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
     .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; }
@@ -746,21 +747,20 @@
     #headerTime { display: none; }
     #syncStatus { display: none; }
 
-    /* Header right — scrollable row of compact icon buttons */
-    .header-right { gap: 4px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 1; min-width: 0; }
-    .header-right::-webkit-scrollbar { display: none; }
+    /* Header right on mobile: [hamburger] [+ Add entry] */
+    .header-right { gap: 6px; flex-shrink: 0; align-items: center; }
+    .header-utils { display: none !important; } /* hide all utility buttons */
+    .hamburger-btn { display: flex; } /* show hamburger */
 
-    /* All header utility buttons → icon only, compact */
-    .sheets-sync-btn { padding: 7px 8px; font-size: 12px; min-width: 34px; justify-content: center; }
-    .sheets-sync-btn .sync-label { display: none; }
-    .currency-select { padding: 6px 5px; font-size: 11px; width: 62px; min-width: 62px; }
-    .theme-toggle-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
-    .backup-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
-    .chpw-btn { padding: 6px 8px; font-size: 14px; min-width: 34px; }
+    /* Add entry button — full text, always visible */
+    .add-btn { padding: 8px 14px; font-size: 13px; flex-shrink: 0; }
+    .add-btn svg { width: 14px; height: 14px; }
+    .add-label { display: inline; }
 
-    /* Add entry button — keep text but smaller */
-    .add-btn { padding: 7px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
-    .add-btn svg { width: 12px; height: 12px; }
+    /* Dropdown full width on mobile */
+    .header-menu { left: 8px; right: 8px; min-width: unset; top: calc(100% + 4px); }
+    /* Header: logo left, add+hamburger right */
+    .header-right { margin-left: auto; }
 
     /* Main layout */
     .main { padding: 14px 12px 80px; }
@@ -1285,6 +1285,118 @@
   .swipe-card.status-pending  .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--amber); }
   .swipe-card.status-returned .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--green); }
   .swipe-card.status-overdue  .swipe-front::before { content:''; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:0 3px 3px 0; background:var(--purple); }
+
+  /* Loan closed celebration */
+  .celebration-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(8,10,20,0.85); z-index: 700;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .celebration-overlay.open { display: flex; }
+  .celebration-box {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    padding: 40px 36px 32px;
+    width: 380px; max-width: 92vw;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,170,0.2);
+    animation: pop 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .celebration-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--accent), var(--green));
+  }
+  .celebration-emoji { font-size: 56px; margin-bottom: 12px; animation: bounce 0.6s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  .celebration-title { font-size: 22px; font-weight: 700; color: var(--green); margin-bottom: 8px; letter-spacing: -0.02em; }
+  .celebration-sub { font-size: 14px; color: var(--text2); margin-bottom: 6px; }
+  .celebration-amount { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); margin: 12px 0; }
+  .celebration-btn { width: 100%; margin-top: 20px; padding: 13px; background: linear-gradient(135deg, var(--green), #00A87F); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.2s; }
+  .celebration-btn:hover { opacity: 0.9; }
+
+  /* Sortable column headers */
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--accent); background: rgba(108,99,255,0.08); }
+  th.sortable.sort-asc::after  { content: ' ↑'; color: var(--accent); }
+  th.sortable.sort-desc::after { content: ' ↓'; color: var(--accent); }
+
+  /* Bulk actions */
+  .bulk-bar {
+    display: none; align-items: center; gap: 10px;
+    background: var(--surface2); border: 1px solid var(--accent);
+    border-radius: var(--radius); padding: 10px 14px;
+    margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .bulk-bar.visible { display: flex; }
+  .bulk-count { font-size: 13px; font-weight: 600; color: var(--accent); flex: 1; }
+  .bulk-btn {
+    padding: 6px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border2); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    background: var(--surface3); color: var(--text2); transition: all 0.15s;
+  }
+  .bulk-btn:hover { background: var(--surface2); color: var(--text); }
+  .bulk-btn.danger { color: var(--red); border-color: var(--red); }
+  .bulk-btn.danger:hover { background: var(--red-light); }
+  .bulk-btn.green { color: var(--green); border-color: var(--green); }
+  .bulk-btn.green:hover { background: var(--green-light); }
+  /* Checkbox in table */
+  .row-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+
+  /* Hamburger menu */
+  .hamburger-btn {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 9px 11px;
+    font-size: 18px; line-height: 1;
+    cursor: pointer; transition: all 0.2s;
+    display: none; /* desktop: hidden */
+    flex-shrink: 0;
+  }
+  .hamburger-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
+  body.light .hamburger-btn { background: rgba(0,0,0,0.05); color: var(--text2); border-color: var(--border2); }
+
+  /* Dropdown menu panel */
+  .header-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    z-index: 300;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    min-width: 200px;
+    animation: pop 0.15s ease;
+  }
+  .header-menu.open { display: block; }
+  .menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500; color: var(--text2);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    border: none; background: none; width: 100%;
+    font-family: 'DM Sans', sans-serif; text-align: left;
+  }
+  .menu-item:hover { background: var(--surface2); color: var(--text); }
+  .menu-item .menu-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .menu-separator { height: 1px; background: var(--border); margin: 4px 8px; }
+  .menu-item select {
+    background: none; border: none; color: var(--text2);
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; flex: 1; padding: 0;
+    -webkit-appearance: none;
+  }
+  .menu-item select:focus { outline: none; }
+  body.light .menu-item select { color: var(--text2); }
 </style>
 </head>
 <body>
@@ -1298,27 +1410,73 @@
     </div>
   </div>
   <div class="header-right">
-    <span id="syncStatus" style="font-size:12px;font-family:'DM Mono',monospace;transition:color 0.3s;"></span>
-    <span class="header-date" id="headerDate"></span>
-    <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
-    <button class="sheets-sync-btn" id="sheetsSyncBtn" onclick="syncToSheets()" title="Sync to Google Sheets">📊 <span class="sync-label">Sync Sheet</span></button>
-    <select class="currency-select" id="currencySelect" onchange="changeCurrency(this.value)" title="Currency">
-      <option value="INR">₹ INR</option>
-      <option value="USD">$ USD</option>
-      <option value="EUR">€ EUR</option>
-      <option value="GBP">£ GBP</option>
-      <option value="AED">AED</option>
-      <option value="SGD">S$ SGD</option>
-    </select>
-    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-    <button class="backup-btn" onclick="exportBackup()" title="Backup data">💾</button>
-    <button class="backup-btn" onclick="document.getElementById('restoreFile').click()" title="Restore backup">📂</button>
-    <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="importBackup(event)">
-    <button class="chpw-btn" onclick="openChangePassword()" title="Change Password">🔑</button>
+    <!-- Utility buttons — scrollable on mobile -->
+    <div class="header-utils">
+      <span id="syncStatus" style="font-size:12px;font-family:'DM Mono',monospace;transition:color 0.3s;"></span>
+      <span class="header-date" id="headerDate"></span>
+      <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
+      <button class="sheets-sync-btn" id="sheetsSyncBtn" onclick="syncToSheets()" title="Sync to Google Sheets">📊 <span class="sync-label">Sync Sheet</span></button>
+      <select class="currency-select" id="currencySelect" onchange="changeCurrency(this.value)" title="Currency">
+        <option value="INR">₹ INR</option>
+        <option value="USD">$ USD</option>
+        <option value="EUR">€ EUR</option>
+        <option value="GBP">£ GBP</option>
+        <option value="AED">AED</option>
+        <option value="SGD">S$ SGD</option>
+      </select>
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="backup-btn" onclick="exportBackup()" title="Backup data">💾</button>
+      <button class="backup-btn" onclick="document.getElementById('restoreFile').click()" title="Restore backup">📂</button>
+      <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="importBackup(event)">
+      <button class="chpw-btn" onclick="openChangePassword()" title="Change Password">🔑</button>
+    </div>
+
+    <!-- Dropdown menu (mobile only) -->
+    <div class="header-menu" id="headerMenu">
+      <button class="menu-item" onclick="toggleTheme();closeHamburger()">
+        <span class="menu-icon" id="menuThemeIcon">🌙</span>
+        <span id="menuThemeLabel">Switch to Light</span>
+      </button>
+      <div class="menu-separator"></div>
+      <div class="menu-item">
+        <span class="menu-icon">💱</span>
+        <select id="currencySelectMobile" onchange="changeCurrency(this.value);closeHamburger()">
+          <option value="INR">₹ INR</option>
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="AED">AED</option>
+          <option value="SGD">S$ SGD</option>
+        </select>
+      </div>
+      <div class="menu-separator"></div>
+      <button class="menu-item" onclick="syncToSheets();closeHamburger()">
+        <span class="menu-icon">📊</span> Sync to Google Sheet
+      </button>
+      <button class="menu-item" onclick="exportBackup();closeHamburger()">
+        <span class="menu-icon">💾</span> Backup data
+      </button>
+      <button class="menu-item" onclick="document.getElementById('restoreFile').click();closeHamburger()">
+        <span class="menu-icon">📂</span> Restore backup
+      </button>
+      <div class="menu-separator"></div>
+      <button class="menu-item" onclick="openChangePassword();closeHamburger()">
+        <span class="menu-icon">🔑</span> Change password
+      </button>
+      <div class="menu-separator"></div>
+      <button class="menu-item" onclick="openAbout();closeHamburger()">
+        <span class="menu-icon">ℹ️</span> About
+      </button>
+    </div>
+
+    <!-- Add entry — always visible -->
     <button class="add-btn" onclick="openModal()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add entry
+      <span class="add-label">Add entry</span>
     </button>
+
+    <!-- Mobile: hamburger at far right -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleHamburger()" title="Menu">☰</button>
   </div>
 </header>
 
@@ -1331,6 +1489,15 @@
       <button class="filter-btn" onclick="toggleDashboard()" id="dashToggleBtn" style="font-size:11px;padding:4px 10px">Hide</button>
     </div>
     <div id="dashboardContent"></div>
+  </div>
+
+  <!-- Bulk action bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <span class="bulk-count" id="bulkCount">0 selected</span>
+    <button class="bulk-btn green" onclick="bulkMarkReturned()">✓ Mark Returned</button>
+    <button class="bulk-btn" onclick="bulkArchive()">🗄 Archive</button>
+    <button class="bulk-btn danger" onclick="bulkDelete()">🗑 Delete</button>
+    <button class="bulk-btn" onclick="clearSelection()">✕ Clear</button>
   </div>
 
   <div class="section-header">
@@ -1365,19 +1532,20 @@
   <div class="table-card">
     <div class="table-scroll">
     <table>
-      <thead>
+      <thead id="mainThead">
         <tr>
-          <th>Date</th>
-          <th>Borrower</th>
-          <th>Lent</th>
-          <th>Returned</th>
-          <th>Pending</th>
-          <th>Overdue</th>
+          <th style="width:32px"><input type="checkbox" class="row-check" id="selectAll" onclick="toggleSelectAll()" title="Select all"></th>
+          <th class="sortable" onclick="sortBy('date')">Date</th>
+          <th class="sortable" onclick="sortBy('name')">Borrower</th>
+          <th class="sortable" onclick="sortBy('lent')">Lent</th>
+          <th class="sortable" onclick="sortBy('returned')">Returned</th>
+          <th class="sortable" onclick="sortBy('pending')">Pending</th>
+          <th class="sortable" onclick="sortBy('overdue')">Overdue</th>
           <th>Interest</th>
-          <th>Total Due</th>
+          <th class="sortable" onclick="sortBy('totaldue')">Total Due</th>
           <th>Sched. EMI</th>
-          <th>Status</th>
-          <th>Last Updated</th>
+          <th class="sortable" onclick="sortBy('status')">Status</th>
+          <th class="sortable" onclick="sortBy('updated')">Last Updated</th>
           <th></th>
         </tr>
       </thead>
@@ -1842,6 +2010,49 @@
       <div class="field"><label>Note (optional)</label><input type="text" id="payNote" placeholder="e.g. Cash, UPI, bank transfer"></div>
       <button class="modal-save" onclick="addPayment()">Log Payment</button>
     </div>
+  </div>
+</div>
+
+<!-- Loan Closed Celebration -->
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-box">
+    <div class="celebration-emoji">🎉</div>
+    <div class="celebration-title">Loan Fully Settled!</div>
+    <div class="celebration-sub" id="celebrationName"></div>
+    <div class="celebration-amount" id="celebrationAmount"></div>
+    <div class="celebration-sub" style="color:var(--text3);font-size:12px">has been fully returned. The record will be moved to Archived.</div>
+    <button class="celebration-btn" onclick="closeCelebration()">✓ Great, archive it!</button>
+  </div>
+</div>
+
+<!-- About Modal -->
+<div class="overlay" id="aboutOverlay" onclick="aboutBgClick(event)">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <div style="font-size:48px;margin-bottom:12px">💰</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em">Money Lending Index Tracker</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:24px;font-family:'DM Mono',monospace">Personal lending tracker</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text3)">Version</span>
+        <span style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)">v2.0.0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text3)">Last Updated</span>
+        <span style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace">4 Jun 2026</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text3)">Created by</span>
+        <span style="font-size:12px;font-weight:600;color:var(--accent)">mann@bhik</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0">
+        <span style="font-size:12px;color:var(--text3)">Hosted on</span>
+        <span style="font-size:12px;font-weight:600">GitHub Pages</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:20px;line-height:1.6">
+      Built with JSONBin cloud sync, Google Sheets weekly sync,<br>full loan engine with EMI schedules & renegotiation.
+    </div>
+    <button class="modal-save" onclick="closeAbout()">Close</button>
   </div>
 </div>
 
@@ -2900,7 +3111,7 @@ function renderSummary(data) {
 
 function renderTable(data) {
   if (!data.length) {
-    document.getElementById("tbody").innerHTML = `<tr><td colspan="12"><div class="empty-state">No entries yet. Click "Add entry" to get started.</div></td></tr>`;
+    document.getElementById("tbody").innerHTML = `<tr><td colspan="13"><div class="empty-state">No entries yet. Click "Add entry" to get started.</div></td></tr>`;
     document.getElementById("mobileCards").innerHTML = `<div class="empty-state">No entries yet. Tap "Add entry" to get started.</div>`;
     return;
   }
@@ -2915,6 +3126,7 @@ function renderTable(data) {
     const pct = r.lent > 0 ? Math.min(100, Math.round((r.returned / r.lent) * 100)) : 0;
     const barColor = pct === 100 ? "var(--green)" : pct >= 50 ? "var(--amber)" : "var(--accent)";
     return `<tr>
+      <td><input type="checkbox" class="row-check" data-id="${r.id}" onclick="toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""}></td>
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
       <td class="name-cell">${r.name}${r.notes?`<span class="note-text">${r.notes}</span>`:""}
         ${(() => { const ds=getDueStatus(r); return ds?`<span class="due-badge ${ds.cls}">${ds.label}</span>`:""; })()} </td>
@@ -3437,6 +3649,57 @@ function exportPDF() {
 }
 
 
+
+
+// ── About ─────────────────────────────────────────────────────────────────
+function openAbout() {
+  document.getElementById("aboutOverlay").classList.add("open");
+}
+function closeAbout() {
+  document.getElementById("aboutOverlay").classList.remove("open");
+}
+function aboutBgClick(e) {
+  if (e.target === document.getElementById("aboutOverlay")) closeAbout();
+}
+
+// ── Hamburger Menu ────────────────────────────────────────────────────────
+function toggleHamburger() {
+  const menu = document.getElementById("headerMenu");
+  const btn  = document.getElementById("hamburgerBtn");
+  const open = menu.classList.toggle("open");
+  btn.textContent = open ? "✕" : "☰";
+  // Sync currency select in menu
+  const mc = document.getElementById("currencySelectMobile");
+  if (mc) mc.value = activeCurrency;
+  // Sync theme label
+  updateMenuThemeLabel();
+}
+
+function closeHamburger() {
+  const menu = document.getElementById("headerMenu");
+  const btn  = document.getElementById("hamburgerBtn");
+  if (menu) menu.classList.remove("open");
+  if (btn)  btn.textContent = "☰";
+}
+
+function updateMenuThemeLabel() {
+  const icon  = document.getElementById("menuThemeIcon");
+  const label = document.getElementById("menuThemeLabel");
+  if (icon)  icon.textContent  = isDarkTheme ? "☀️" : "🌙";
+  if (label) label.textContent = isDarkTheme ? "Switch to Light" : "Switch to Dark";
+}
+
+// Close menu on outside click
+document.addEventListener("click", e => {
+  const menu = document.getElementById("headerMenu");
+  const btn  = document.getElementById("hamburgerBtn");
+  if (menu && menu.classList.contains("open")) {
+    if (!menu.contains(e.target) && e.target !== btn) {
+      closeHamburger();
+    }
+  }
+});
+
 // ── Theme Toggle ─────────────────────────────────────────────────────────
 
 function loadTheme() {
@@ -3449,6 +3712,7 @@ function applyTheme() {
   document.body.classList.toggle("light", !isDarkTheme);
   const btn = document.getElementById("themeToggleBtn");
   if (btn) btn.textContent = isDarkTheme ? "🌙" : "☀️";
+  updateMenuThemeLabel();
   // Update chart colors dynamically
   if (typeof localData !== "undefined" && localData.length) {
     renderCharts(localData.filter(r => !r.archived));
@@ -3839,16 +4103,29 @@ function renderDashboard(data) {
 
 
 // ── Auto-archive closed loans ────────────────────────────────────────────
-function autoArchiveClosed(data) {
+function autoArchiveClosed(data, celebrate = false) {
   let changed = false;
+  let justClosed = null;
   data.forEach(r => {
     if (!r.archived && r.status === "RETURNED" && r.returned >= r.lent) {
+      if (celebrate && !justClosed) justClosed = r; // show celebration for first newly closed
       r.archived = true;
       r.archivedAt = r.archivedAt || new Date().toISOString().split("T")[0];
       changed = true;
     }
   });
+  if (justClosed && celebrate) showCelebration(justClosed);
   return changed;
+}
+
+function showCelebration(r) {
+  document.getElementById("celebrationName").textContent = r.name + " has repaid";
+  document.getElementById("celebrationAmount").textContent = fmt(r.lent);
+  document.getElementById("celebrationOverlay").classList.add("open");
+}
+
+function closeCelebration() {
+  document.getElementById("celebrationOverlay").classList.remove("open");
 }
 
 
@@ -3928,6 +4205,148 @@ function swipeClick(id) {
 
 // Close swipe on scroll
 document.addEventListener("scroll", closeAllSwipes, true);
+
+
+// ── Sort state ───────────────────────────────────────────────────────────
+let sortCol = "date";
+let sortDir = "desc"; // asc | desc
+
+
+// ── Bulk Actions ─────────────────────────────────────────────────────────
+let selectedIds = new Set();
+
+function toggleRowSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateBulkBar();
+}
+
+function toggleSelectAll() {
+  const all = document.getElementById("selectAll");
+  const boxes = document.querySelectorAll(".row-check[data-id]");
+  boxes.forEach(cb => {
+    const id = parseInt(cb.dataset.id);
+    if (all.checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+    cb.checked = all.checked;
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById("bulkBar");
+  const cnt = document.getElementById("bulkCount");
+  if (selectedIds.size > 0) {
+    bar.classList.add("visible");
+    cnt.textContent = selectedIds.size + " selected";
+  } else {
+    bar.classList.remove("visible");
+  }
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  document.querySelectorAll(".row-check").forEach(cb => cb.checked = false);
+  updateBulkBar();
+}
+
+function bulkMarkReturned() {
+  if (!selectedIds.size) return;
+  requirePassword(() => {
+    const data = [...localData];
+    selectedIds.forEach(id => {
+      const idx = data.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        data[idx].returned = data[idx].lent;
+        data[idx].status = "RETURNED";
+        data[idx].updatedAt = new Date().toISOString().split("T")[0];
+      }
+    });
+    autoArchiveClosed(data, true);
+    localData = data; saveToCloud(data);
+    clearSelection(); applyFilters();
+    renderCharts(data.filter(r=>!r.archived));
+    showToast(selectedIds.size + " records marked as returned!");
+    selectedIds.clear();
+  });
+}
+
+function bulkArchive() {
+  if (!selectedIds.size) return;
+  requirePassword(() => {
+    const count = selectedIds.size;
+    const data = [...localData];
+    selectedIds.forEach(id => {
+      const idx = data.findIndex(r => r.id === id);
+      if (idx !== -1) {
+        data[idx].archived = true;
+        data[idx].archivedAt = new Date().toISOString().split("T")[0];
+      }
+    });
+    localData = data; saveToCloud(data);
+    clearSelection(); applyFilters();
+    showToast(count + " records archived!");
+  });
+}
+
+function bulkDelete() {
+  if (!selectedIds.size) return;
+  requirePassword(() => {
+    const count = selectedIds.size;
+    if (!confirm("Permanently delete " + count + " record(s)? This cannot be undone.")) return;
+    const data = localData.filter(r => !selectedIds.has(r.id));
+    localData = data; saveToCloud(data);
+    clearSelection(); applyFilters();
+    renderCharts(data.filter(r=>!r.archived));
+    showToast(count + " records permanently deleted");
+  });
+}
+
+// ── Sort ─────────────────────────────────────────────────────────────────
+function sortBy(col) {
+  if (sortCol === col) {
+    sortDir = sortDir === "asc" ? "desc" : "asc";
+  } else {
+    sortCol = col;
+    sortDir = col === "date" || col === "updated" ? "desc" : "asc";
+  }
+  // Update header classes
+  document.querySelectorAll("th.sortable").forEach(th => {
+    th.classList.remove("sort-asc","sort-desc");
+  });
+  const cols = ["date","name","lent","returned","pending","overdue",null,"totaldue",null,"status","updated"];
+  const idx = cols.indexOf(col);
+  if (idx >= 0) {
+    const ths = document.querySelectorAll("#mainThead th.sortable");
+    const sortableCols = ["date","name","lent","returned","pending","overdue","totaldue","status","updated"];
+    const sortIdx = sortableCols.indexOf(col);
+    if (sortIdx >= 0 && ths[sortIdx]) {
+      ths[sortIdx].classList.add("sort-" + sortDir);
+    }
+  }
+  applyFilters();
+}
+
+function applySortToData(data) {
+  return [...data].sort((a, b) => {
+    let va, vb;
+    switch(sortCol) {
+      case "date":    va = new Date(a.date);    vb = new Date(b.date); break;
+      case "name":    va = a.name.toLowerCase(); vb = b.name.toLowerCase(); break;
+      case "lent":    va = a.lent;   vb = b.lent; break;
+      case "returned":va = a.returned; vb = b.returned; break;
+      case "pending": va = Math.max(0,a.lent-a.returned); vb = Math.max(0,b.lent-b.returned); break;
+      case "overdue": va = a.returned>a.lent?a.returned-a.lent:0; vb = b.returned>b.lent?b.returned-b.lent:0; break;
+      case "totaldue":va = Math.max(0,a.lent-a.returned)+calcInterest(a); vb = Math.max(0,b.lent-b.returned)+calcInterest(b); break;
+      case "status":  va = a.status; vb = b.status; break;
+      case "updated": va = new Date(a.updatedAt||a.date); vb = new Date(b.updatedAt||b.date); break;
+      default:        va = new Date(a.date); vb = new Date(b.date);
+    }
+    if (va < vb) return sortDir === "asc" ? -1 : 1;
+    if (va > vb) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+}
 
 // ── Search & Filter ──────────────────────────────────────────────────────
 let activeView   = "all";    // all | active | archived
