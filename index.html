@@ -738,28 +738,30 @@
 
   /* ── Mobile (≤640px) ─────────────────────────────────────────────── */
   @media (max-width: 640px) {
-    /* Header — compact on mobile */
-    header { padding: 10px 12px; gap: 8px; flex-wrap: nowrap; overflow: visible; position: relative; }
+    /* Header — compact, no overflow */
+    header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: hidden; position: relative; justify-content: space-between; }
     .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
     .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; }
-    .header-date { display: none; }
+
+    /* Date visible, time + syncStatus hidden */
     #headerTime { display: none; }
     #syncStatus { display: none; }
-    #headerDate { display: inline !important; }
-    /* Header right on mobile: [hamburger] [+ Add entry] */
-    .header-right { gap: 6px; flex-shrink: 0; align-items: center; }
-    /* Header-utils already hidden globally, hamburger always shown */
+    #headerDate { display: inline !important; font-size: 11px; white-space: nowrap; }
 
-    /* Add entry button — full text, always visible */
-    .add-btn { padding: 8px 14px; font-size: 13px; flex-shrink: 0; }
-    .add-btn svg { width: 14px; height: 14px; }
+    /* Header right: date + add + hamburger only, no gap overflow */
+    .header-right { gap: 6px; flex-shrink: 0; align-items: center; flex-wrap: nowrap; }
+
+    /* Add entry button */
+    .add-btn { padding: 7px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
+    .add-btn svg { width: 13px; height: 13px; }
     .add-label { display: inline; }
+
+    /* Hamburger compact */
+    .hamburger-btn { padding: 7px 10px; font-size: 16px; flex-shrink: 0; }
 
     /* Dropdown full width on mobile */
     .header-menu { left: 8px; right: 8px; min-width: unset; top: calc(100% + 4px); position: fixed; }
-    /* Header: logo left, add+hamburger right */
-    .header-right { margin-left: auto; }
 
     /* Main layout */
     .main { padding: 14px 12px 80px; }
