@@ -2944,6 +2944,9 @@ function renderCharts(data) {
   });
 
   const isMobile = window.innerWidth <= 640;
+  const isLight  = document.body.classList.contains("light");
+  const textColor = isLight ? "#6B6259" : "#9BA3C8";
+  const gridColor = isLight ? "#E2DDD5" : "#2E3450";
 
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(document.getElementById("pieChart"), {
@@ -2963,7 +2966,7 @@ function renderCharts(data) {
             font: { size: isMobile ? 11 : 12, family:"DM Sans" },
             padding: isMobile ? 10 : 16,
             boxWidth: 10,
-            color: "#6B6259"
+            color: textColor
           }
         },
         tooltip: { callbacks:{ label: ctx => " " + fmt(ctx.parsed) }}
