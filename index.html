@@ -2478,17 +2478,19 @@ const PW_BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 async function loadPassword() {
   try {
     const res = await fetch(PW_BIN_URL + "/latest", { headers: HEADERS });
+    if (!res.ok) throw new Error("HTTP " + res.status);
     const json = await res.json();
     if (json.record && json.record.lendlog_pw) {
       _PW = atob(json.record.lendlog_pw);
+      console.log("Password loaded OK");
     } else {
-      // No password found — show first-time setup prompt
+      console.log("No password in bin — showing setup");
       document.getElementById("setupOverlay").classList.add("open");
       setTimeout(() => document.getElementById("setupPw").focus(), 100);
     }
   } catch(e) {
-    console.warn("Could not load password from cloud");
-    // Show setup prompt as fallback so user is not locked out
+    console.warn("loadPassword error:", e.message);
+    // On error, still allow app to load — show setup prompt
     document.getElementById("setupOverlay").classList.add("open");
     setTimeout(() => document.getElementById("setupPw").focus(), 100);
   }
@@ -3223,8 +3225,12 @@ document.addEventListener("keydown", e => {
 // Load password from JSONBin — render only if password exists
 // (first-time setup will call render() itself after password is set)
 loadTheme();
-loadPassword().then(() => {
-  if (_PW !== null) { loadCurrency(); render().then(() => checkAutoSync()); }
+loadCurrency();
+// Load data immediately — don't wait for password
+render().then(() => {
+  checkAutoSync();
+  // Load password in parallel for write protection
+  loadPassword();
 });
 
 // Live EMI preview on input change
