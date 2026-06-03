@@ -746,7 +746,7 @@
     .header-date { display: none; }
     #headerTime { display: none; }
     #syncStatus { display: none; }
-
+    #headerDate { display: inline !important; }
     /* Header right on mobile: [hamburger] [+ Add entry] */
     .header-right { gap: 6px; flex-shrink: 0; align-items: center; }
     /* Header-utils already hidden globally, hamburger always shown */
@@ -1420,11 +1420,12 @@
     </div>
   </div>
   <div class="header-right">
-    <!-- Utility buttons — scrollable on mobile -->
+    <!-- Date & time — visible on desktop/tablet, hidden on mobile -->
+    <span id="syncStatus" style="font-size:12px;font-family:'DM Mono',monospace;transition:color 0.3s;"></span>
+    <span class="header-date" id="headerDate"></span>
+    <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
+    <!-- Utility buttons inside header-utils (hidden, accessed via hamburger) -->
     <div class="header-utils">
-      <span id="syncStatus" style="font-size:12px;font-family:'DM Mono',monospace;transition:color 0.3s;"></span>
-      <span class="header-date" id="headerDate"></span>
-      <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
       <button class="sheets-sync-btn" id="sheetsSyncBtn" onclick="syncToSheets()" title="Sync to Google Sheets">📊 <span class="sync-label">Sync Sheet</span></button>
       <select class="currency-select" id="currencySelect" onchange="changeCurrency(this.value)" title="Currency">
         <option value="INR">₹ INR</option>
