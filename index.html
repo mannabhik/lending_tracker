@@ -92,7 +92,7 @@
   .header-utils { display: none !important; } /* all screens use hamburger now */
   .header-date { font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; }
 
-  .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+  .main { max-width: 1400px; margin: 0 auto; padding: 32px 40px 80px; }
 
   .summary-grid {
     display: grid;
@@ -1516,6 +1516,99 @@
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* ── Right panel: Activity + Stats + Upcoming ─────────────── */
+  .content-with-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+  }
+  .main-col { min-width: 0; }
+  .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Widget card */
+  .widget-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .widget-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .widget-title {
+    font-size: 11px; font-weight: 700; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.07em;
+  }
+  .widget-body { padding: 12px 16px; }
+
+  /* Activity timeline */
+  .activity-list { display: flex; flex-direction: column; gap: 0; }
+  .activity-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0; margin-top: 1px;
+  }
+  .activity-dot.add    { background: rgba(108,99,255,0.15); }
+  .activity-dot.pay    { background: rgba(0,212,170,0.15); }
+  .activity-dot.edit   { background: rgba(255,181,71,0.15); }
+  .activity-dot.close  { background: rgba(0,212,170,0.15); }
+  .activity-dot.overdue{ background: rgba(185,127,255,0.15); }
+  .activity-text { flex: 1; min-width: 0; }
+  .activity-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .activity-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .activity-time { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; flex-shrink: 0; }
+
+  /* Quick stats */
+  .stat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row-label { font-size: 12px; color: var(--text2); }
+  .stat-row-val { font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+
+  /* Upcoming payments */
+  .upcoming-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-date-box {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .upcoming-date-day  { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1; }
+  .upcoming-date-mon  { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .upcoming-info { flex: 1; min-width: 0; }
+  .upcoming-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upcoming-emi  { font-size: 11px; color: var(--text3); }
+  .upcoming-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; flex-shrink: 0; }
+  .upcoming-badge.overdue { background: rgba(185,127,255,0.15); color: var(--purple); }
+  .upcoming-badge.soon    { background: rgba(255,181,71,0.15);   color: var(--amber); }
+  .upcoming-badge.ok      { background: rgba(0,212,170,0.12);    color: var(--green); }
+  .no-upcoming { text-align: center; padding: 20px 0; font-size: 12px; color: var(--text3); }
+
+  /* Tablet: keep sidebar but narrower */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .content-with-sidebar { grid-template-columns: 1fr 260px; gap: 14px; }
+  }
+  /* Mobile: stack vertically */
+  @media (max-width: 640px) {
+    .content-with-sidebar { grid-template-columns: 1fr; }
+    .right-panel { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
@@ -1641,10 +1734,12 @@
     <button class="bulk-btn" onclick="clearSelection()">✕ Clear</button>
   </div>
 
+  <div class="content-with-sidebar">
+  <div class="main-col">
+
   <div class="section-header">
     <span class="section-title">All entries</span>
     <div style="display:flex;gap:8px;align-items:center">
-      <button class="filter-btn" onclick="exportExcel()" style="font-size:11px;padding:5px 12px">📥 Excel</button>
       <button class="filter-btn" onclick="exportPDF()" style="font-size:11px;padding:5px 12px">📄 PDF</button>
       <button class="filter-btn" onclick="toggleDashboard()" style="font-size:11px;padding:5px 12px">📊 Overview</button>
     </div>
@@ -1720,6 +1815,37 @@
 <!-- Skeleton Loader -->
 
 
+  </div><!-- end main-col -->
+
+  <!-- Right panel -->
+  <div class="right-panel">
+
+    <!-- Widget 1: Upcoming Payments -->
+    <div class="widget-card">
+      <div class="widget-hd">
+        <span class="widget-title">📅 Upcoming Payments</span>
+        <span style="font-size:10px;color:var(--text3)" id="upcomingSubtitle">Next 30 days</span>
+      </div>
+      <div class="widget-body" id="upcomingWidget"></div>
+    </div>
+
+    <!-- Widget 2: Quick Stats -->
+    <div class="widget-card">
+      <div class="widget-hd"><span class="widget-title">📊 Quick Stats</span></div>
+      <div class="widget-body" id="quickStatsWidget"></div>
+    </div>
+
+    <!-- Widget 3: Activity Timeline -->
+    <div class="widget-card">
+      <div class="widget-hd">
+        <span class="widget-title">⚡ Recent Activity</span>
+        <span style="font-size:10px;color:var(--text3)">Latest 8</span>
+      </div>
+      <div class="widget-body" id="activityWidget" style="padding:4px 16px 12px"></div>
+    </div>
+
+  </div><!-- end right-panel -->
+  </div><!-- end content-with-sidebar -->
   </div><!-- end mainContent -->
 
   <div class="charts-row">
@@ -3302,6 +3428,7 @@ async function render() {
   loadCurrency();
   applyFilters(); // respects active filter + search
   renderCharts(data.filter(r => !r.archived));
+  renderRightPanel(data);
 }
 
 
@@ -4646,6 +4773,192 @@ function migrateProfileNames() {
     saveToCloud(localData);
     console.log("Migrated profile names to uppercase");
   }
+}
+
+
+// ════════════════════════════════════════════════════════════════
+// RIGHT PANEL WIDGETS
+// ════════════════════════════════════════════════════════════════
+
+// ── 1. Upcoming Payments ─────────────────────────────────────────
+function renderUpcomingWidget(data) {
+  const el = document.getElementById("upcomingWidget");
+  if (!el) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const in30  = new Date(today); in30.setDate(in30.getDate() + 30);
+
+  // Collect due dates from records with dueDate set
+  const upcoming = [];
+  data.filter(r => !r.archived && r.status !== "RETURNED").forEach(r => {
+    if (r.dueDate) {
+      const due = new Date(r.dueDate); due.setHours(0,0,0,0);
+      const diffDays = Math.round((due - today) / (1000*60*60*24));
+      upcoming.push({ r, due, diffDays });
+    }
+    // Also add from loan schedule EMIs
+    if (r.loanSetup && r.interestOn) {
+      const sched = buildSchedule(r).filter(s => !s.event && s.status !== "paid");
+      const next = sched[0];
+      if (next) {
+        const due = new Date(next.date); due.setHours(0,0,0,0);
+        const diffDays = Math.round((due - today) / (1000*60*60*24));
+        if (diffDays <= 30) {
+          upcoming.push({ r, due, diffDays, emi: next.emi, isSchedule: true });
+        }
+      }
+    }
+  });
+
+  upcoming.sort((a,b) => a.due - b.due);
+  const show = upcoming.slice(0, 6);
+
+  if (!show.length) {
+    el.innerHTML = `<div class="no-upcoming">🎉 No payments due<br>in next 30 days</div>`;
+    return;
+  }
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  el.innerHTML = show.map(({ r, due, diffDays, emi, isSchedule }) => {
+    let badgeCls, badgeTxt;
+    if (diffDays < 0)      { badgeCls="overdue"; badgeTxt=`${Math.abs(diffDays)}d overdue`; }
+    else if (diffDays <= 7){ badgeCls="soon";    badgeTxt=`in ${diffDays}d`; }
+    else                   { badgeCls="ok";      badgeTxt=`in ${diffDays}d`; }
+    const amount = emi ? fmt(emi) : fmt(Math.max(0, r.lent - r.returned));
+    return `<div class="upcoming-item">
+      <div class="upcoming-date-box">
+        <span class="upcoming-date-day">${due.getDate()}</span>
+        <span class="upcoming-date-mon">${months[due.getMonth()]}</span>
+      </div>
+      <div class="upcoming-info">
+        <div class="upcoming-name">${r.name}</div>
+        <div class="upcoming-emi">${isSchedule ? "EMI: " : "Due: "}${amount}</div>
+      </div>
+      <span class="upcoming-badge ${badgeCls}">${badgeTxt}</span>
+    </div>`;
+  }).join("");
+}
+
+// ── 2. Quick Stats ───────────────────────────────────────────────
+function renderQuickStatsWidget(data) {
+  const el = document.getElementById("quickStatsWidget");
+  if (!el) return;
+  const active = data.filter(r => !r.archived);
+  const pending = active.filter(r => r.status === "PENDING" || r.status === "OVERDUE");
+
+  const totalLent     = active.reduce((s,r) => s + r.lent, 0);
+  const totalReturned = active.reduce((s,r) => s + r.returned, 0);
+  const totalPending  = pending.reduce((s,r) => s + Math.max(0, r.lent - r.returned), 0);
+  const recoveryRate  = totalLent > 0 ? ((totalReturned / totalLent) * 100).toFixed(1) : "0.0";
+
+  // Avg loan size
+  const avgLoan = active.length ? Math.round(totalLent / active.length) : 0;
+
+  // Longest pending (days since lent)
+  let longestDays = 0, longestName = "—";
+  pending.forEach(r => {
+    const days = Math.round((new Date() - new Date(r.date)) / (1000*60*60*24));
+    if (days > longestDays) { longestDays = days; longestName = r.name; }
+  });
+
+  // Top borrower by pending amount
+  const borrowerMap = {};
+  pending.forEach(r => {
+    borrowerMap[r.name] = (borrowerMap[r.name]||0) + Math.max(0, r.lent - r.returned);
+  });
+  const topBorrower = Object.entries(borrowerMap).sort((a,b)=>b[1]-a[1])[0];
+
+  // This month lent
+  const now = new Date();
+  const thisMonth = active.filter(r => {
+    const d = new Date(r.date);
+    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  }).reduce((s,r)=>s+r.lent,0);
+
+  const rows = [
+    ["Recovery Rate",   `${recoveryRate}%`],
+    ["Active Loans",    String(pending.length)],
+    ["Avg Loan Size",   fmt(avgLoan)],
+    ["This Month Lent", fmt(thisMonth)],
+    ["Top Borrower",    topBorrower ? topBorrower[0] : "—"],
+    ["Longest Pending", longestDays > 0 ? `${longestName} (${longestDays}d)` : "—"],
+    ["Total Outstanding", fmt(totalPending)],
+  ];
+
+  el.innerHTML = rows.map(([label, val]) => `
+    <div class="stat-row">
+      <span class="stat-row-label">${label}</span>
+      <span class="stat-row-val">${val}</span>
+    </div>`).join("");
+}
+
+// ── 3. Activity Timeline ─────────────────────────────────────────
+function renderActivityWidget(data) {
+  const el = document.getElementById("activityWidget");
+  if (!el) return;
+
+  // Build activity from record updatedAt / date
+  const events = [];
+  [...data].forEach(r => {
+    // Record creation
+    events.push({
+      type: "add", name: r.name, date: r.date,
+      sub: `Lent ${fmt(r.lent)}`, ts: new Date(r.date).getTime()
+    });
+    // Payments
+    (r.payments||[]).forEach(p => {
+      events.push({
+        type: "pay", name: r.name, date: p.date,
+        sub: `Paid ${fmt(p.amount)}${p.note?" — "+p.note:""}`,
+        ts: new Date(p.date).getTime()
+      });
+    });
+    // Closed
+    if (r.archived && r.archivedAt) {
+      events.push({
+        type: "close", name: r.name, date: r.archivedAt,
+        sub: `Loan fully settled`, ts: new Date(r.archivedAt).getTime()
+      });
+    }
+    // Overdue
+    if (r.status === "OVERDUE") {
+      events.push({
+        type: "overdue", name: r.name, date: r.updatedAt||r.date,
+        sub: `Marked overdue`, ts: new Date(r.updatedAt||r.date).getTime()
+      });
+    }
+  });
+
+  events.sort((a,b) => b.ts - a.ts);
+  const show = events.slice(0, 8);
+
+  const icons = { add:"➕", pay:"💳", edit:"✎", close:"✅", overdue:"⚠️" };
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  if (!show.length) {
+    el.innerHTML = `<div class="no-upcoming">No activity yet</div>`;
+    return;
+  }
+
+  el.innerHTML = show.map(ev => {
+    const d = new Date(ev.date);
+    const timeStr = `${d.getDate()} ${months[d.getMonth()]}`;
+    return `<div class="activity-item">
+      <div class="activity-dot ${ev.type}">${icons[ev.type]||"•"}</div>
+      <div class="activity-text">
+        <div class="activity-name">${ev.name}</div>
+        <div class="activity-sub">${ev.sub}</div>
+      </div>
+      <span class="activity-time">${timeStr}</span>
+    </div>`;
+  }).join("");
+}
+
+// Call all 3 widgets — called from render()
+function renderRightPanel(data) {
+  const active = data.filter(r => !r.archived);
+  renderUpcomingWidget(active);
+  renderQuickStatsWidget(data);
+  renderActivityWidget(data);
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
