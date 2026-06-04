@@ -1621,7 +1621,7 @@
   </div>
 </div>
 
-<div id="mainContent">
+<div id="mainContent" style="display:none">
   <div class="summary-grid" id="summaryGrid"></div>
 
   <div class="dashboard-panel" id="dashboardPanel" style="display:none">
@@ -3350,7 +3350,7 @@ function renderTable(data) {
     document.getElementById("mobileCards").innerHTML = `<div class="empty-state">No entries yet. Tap "Add entry" to get started.</div>`;
     return;
   }
-  const sorted = [...data].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const sorted = applySortToData(data);
   document.getElementById("tbody").innerHTML = sorted.map(r => {
     const isOverdue = r.returned > r.lent;
     const overdueAmt = isOverdue ? r.returned - r.lent : 0;
@@ -4799,6 +4799,12 @@ function closeAllSwipes() {
 }
 
 function swipeTouchStart(e, id) {
+  // If tap is on a name link, don't start swipe tracking
+  let el = e.target;
+  while (el && el !== document) {
+    if (el.classList && el.classList.contains("borrower-name-link")) return;
+    el = el.parentElement;
+  }
   closeAllSwipes();
   swipeState[id] = {
     startX: e.touches[0].clientX,
