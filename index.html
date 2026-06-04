@@ -3259,11 +3259,11 @@ function renderTable(data) {
       <td><input type="checkbox" class="row-check" data-id="${r.id}" onclick="toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""}></td>
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
       <td class="name-cell">
-        ${r.profile?.officialName ? `<span class="borrower-name-link"
+        <span class="borrower-name-link"
           onclick="openProfileByRecord(${r.id}, this)"
-          onmouseenter="showNameTooltip('${r.profile ? (r.profile.officialName.trim().toLowerCase().replace(/\s+/g,' ')+'|'+r.profile.phone) : ''}', event)"
+          onmouseenter="showNameTooltip('${r.profile?.officialName ? r.profile.officialName.trim().toLowerCase().replace(/\s+/g,\' \')+\'|\'+(r.profile.phone||\'\') : \'\'}', event)"
           onmouseleave="hideNameTooltip()"
-        >${r.name}</span>` : r.name}
+        >${r.name}</span>
         ${r.notes?`<span class="note-text">${r.notes}</span>`:""}
         ${(() => { const ds=getDueStatus(r); return ds?`<span class="due-badge ${ds.cls}">${ds.label}</span>`:""; })()} </td>
       <td class="amt-lent">${fmt(r.lent)}</td>
@@ -4301,7 +4301,14 @@ let profilePopupOpen = false;
 
 function openProfileByRecord(id, el) {
   const r = localData.find(x => x.id === id);
-  if (!r?.profile?.officialName || !r?.profile?.phone) { showToast("No profile — edit record to add profile"); return; }
+  if (!r) return;
+  if (!r.profile?.officialName || !r.profile?.phone) {
+    // No profile yet — offer to add one
+    if (confirm(`"${r.name}" has no profile yet.\n\nClick OK to edit this record and add profile details.`)) {
+      editRow(id);
+    }
+    return;
+  }
   const key = profileKey(r.profile.officialName, r.profile.phone);
   if (key) openProfilePopup(key, el);
 }
@@ -4383,6 +4390,7 @@ function editProfileKey(key) {
 let tooltipTimeout;
 function showNameTooltip(key, event) {
   clearTimeout(tooltipTimeout);
+  if (!key) return;
   tooltipTimeout = setTimeout(() => {
     const profiles = getProfiles();
     const p = profiles[key];
