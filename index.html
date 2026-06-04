@@ -1772,6 +1772,145 @@
   body.dim .table-card::before {
     background: linear-gradient(90deg, var(--accent), var(--amber), var(--accent2));
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: CLASSY — deep navy, gold accents, serif feel
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-classy {
+    --bg: #0B0D17; --surface: #131520; --surface2: #1A1D2E; --surface3: #212438;
+    --border: #2A2D45; --border2: #383C5A;
+    --text: #F0E6CC; --text2: #B8A882; --text3: #6B5E40;
+    --accent: #C8A84B; --accent2: #E8C870; --accent-light: rgba(200,168,75,0.15);
+    --accent-dark: #9A7A28;
+    --green: #5FB88A; --green-light: rgba(95,184,138,0.12);
+    --amber: #E8B84B; --amber-light: rgba(232,184,75,0.12);
+    --red: #E87878; --red-light: rgba(232,120,120,0.12);
+    --purple: #A888E8; --radius: 4px; --radius-lg: 8px; --radius-xl: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.6); --shadow-lg: 0 8px 32px rgba(0,0,0,0.7);
+    --state-hover: rgba(200,168,75,0.08); --state-active: rgba(200,168,75,0.15);
+  }
+  body.theme-classy header { background: #0B0D17; border-bottom: 1px solid #2A2D45; }
+  body.theme-classy .table-card::before { background: linear-gradient(90deg, #C8A84B, #E8C870, #C8A84B); }
+  body.theme-classy .add-btn { background: #C8A84B; box-shadow: 0 2px 8px rgba(200,168,75,0.3); }
+  body.theme-classy .stat { border-left: 3px solid #C8A84B !important; border-radius: 4px !important; }
+  body.theme-classy .filter-btn.active { background: #C8A84B; border-color: #C8A84B; }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: GLASS — frosted glass, blurred surfaces, translucent
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-glass {
+    --bg: #0A0A1A;
+    --surface: rgba(255,255,255,0.05); --surface2: rgba(255,255,255,0.08); --surface3: rgba(255,255,255,0.12);
+    --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.2);
+    --text: #F0F4FF; --text2: #A0AACC; --text3: #5A6480;
+    --accent: #818CF8; --accent2: #C084FC; --accent-light: rgba(129,140,248,0.2);
+    --green: #34D399; --green-light: rgba(52,211,153,0.15);
+    --amber: #FBBF24; --amber-light: rgba(251,191,36,0.15);
+    --red: #F87171; --red-light: rgba(248,113,113,0.15);
+    --purple: #C084FC; --radius: 16px; --radius-lg: 20px; --radius-xl: 28px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4); --shadow-lg: 0 16px 48px rgba(0,0,0,0.6);
+    --state-hover: rgba(129,140,248,0.1);
+  }
+  body.theme-glass { background: radial-gradient(ellipse at 20% 50%, #1a1060 0%, #0A0A1A 60%) !important; }
+  body.theme-glass header { background: rgba(15,15,35,0.7) !important; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  body.theme-glass .stat, body.theme-glass .table-card, body.theme-glass .chart-card, body.theme-glass .widget-card {
+    background: rgba(255,255,255,0.05) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1) !important;
+  }
+  body.theme-glass .modal { background: rgba(20,20,40,0.85) !important; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15) !important; }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: RETRO — terminal green, monospace feel
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-retro {
+    --bg: #0A0F0A; --surface: #0D150D; --surface2: #111C11; --surface3: #162216;
+    --border: #1E3A1E; --border2: #2A5A2A;
+    --text: #33FF33; --text2: #22BB22; --text3: #156615;
+    --accent: #33FF33; --accent2: #66FF66; --accent-light: rgba(51,255,51,0.12);
+    --accent-dark: #22BB22;
+    --green: #33FF33; --green-light: rgba(51,255,51,0.12);
+    --amber: #FFFF33; --amber-light: rgba(255,255,51,0.12);
+    --red: #FF3333; --red-light: rgba(255,51,51,0.12);
+    --purple: #33FFFF; --radius: 2px; --radius-lg: 4px; --radius-xl: 4px;
+    --shadow: 0 0 20px rgba(51,255,51,0.15); --shadow-lg: 0 0 40px rgba(51,255,51,0.2);
+    --state-hover: rgba(51,255,51,0.08);
+  }
+  body.theme-retro { font-family: 'JetBrains Mono', monospace !important; }
+  body.theme-retro header { background: #050A05 !important; border-bottom: 1px solid #1E3A1E; box-shadow: 0 0 20px rgba(51,255,51,0.1); }
+  body.theme-retro .table-card::before { background: #33FF33; }
+  body.theme-retro .add-btn { background: transparent !important; border: 1px solid #33FF33 !important; color: #33FF33 !important; box-shadow: 0 0 12px rgba(51,255,51,0.3) !important; border-radius: 2px !important; }
+  body.theme-retro .badge { border-radius: 2px !important; border: 1px solid currentColor; background: transparent !important; }
+  body.theme-retro .stat { border: 1px solid #1E3A1E !important; border-radius: 2px !important; }
+  body.theme-retro .stat::before { background: #33FF33 !important; }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: SHARP — high contrast, angular, bold
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-sharp {
+    --bg: #000000; --surface: #0A0A0A; --surface2: #141414; --surface3: #1E1E1E;
+    --border: #2A2A2A; --border2: #3A3A3A;
+    --text: #FFFFFF; --text2: #888888; --text3: #444444;
+    --accent: #FF2D55; --accent2: #FF6B35; --accent-light: rgba(255,45,85,0.15);
+    --accent-dark: #CC0033;
+    --green: #30D158; --green-light: rgba(48,209,88,0.12);
+    --amber: #FFD60A; --amber-light: rgba(255,214,10,0.12);
+    --red: #FF453A; --red-light: rgba(255,69,58,0.12);
+    --purple: #BF5AF2; --radius: 0px; --radius-lg: 0px; --radius-xl: 0px;
+    --shadow: none; --shadow-lg: none;
+    --state-hover: rgba(255,255,255,0.05);
+  }
+  body.theme-sharp header { background: #000 !important; border-bottom: 2px solid #FF2D55 !important; box-shadow: none; }
+  body.theme-sharp .table-card::before { background: #FF2D55; height: 2px; }
+  body.theme-sharp .add-btn { background: #FF2D55 !important; border-radius: 0 !important; box-shadow: none !important; }
+  body.theme-sharp .stat { border: 1px solid #2A2A2A !important; border-radius: 0 !important; }
+  body.theme-sharp .stat::before { background: #FF2D55; }
+  body.theme-sharp .badge { border-radius: 0 !important; }
+  body.theme-sharp .filter-btn, body.theme-sharp .view-toggle-btn { border-radius: 0 !important; }
+  body.theme-sharp .modal { border-radius: 0 !important; border: 2px solid #FF2D55 !important; }
+  body.theme-sharp .filter-btn.active { background: #FF2D55 !important; border-color: #FF2D55 !important; }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: OCEAN — deep sea blues, teal accents
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-ocean {
+    --bg: #020B18; --surface: #051525; --surface2: #0A1F35; --surface3: #0F2A47;
+    --border: #153560; --border2: #1E4880;
+    --text: #B8D4F0; --text2: #6A9BC4; --text3: #2D5A8A;
+    --accent: #0EA5E9; --accent2: #38BDF8; --accent-light: rgba(14,165,233,0.15);
+    --accent-dark: #0284C7;
+    --green: #2DD4BF; --green-light: rgba(45,212,191,0.12);
+    --amber: #F59E0B; --amber-light: rgba(245,158,11,0.12);
+    --red: #F87171; --red-light: rgba(248,113,113,0.12);
+    --purple: #818CF8; --radius: 10px; --radius-lg: 16px; --radius-xl: 20px;
+    --shadow: 0 2px 12px rgba(0,20,60,0.6); --shadow-lg: 0 8px 32px rgba(0,20,60,0.8);
+    --state-hover: rgba(14,165,233,0.08);
+  }
+  body.theme-ocean { background: radial-gradient(ellipse at 50% 0%, #051525 0%, #020B18 70%) !important; }
+  body.theme-ocean header { background: rgba(2,11,24,0.95) !important; border-bottom: 1px solid #153560; }
+  body.theme-ocean .table-card::before { background: linear-gradient(90deg, #0EA5E9, #2DD4BF, #0EA5E9); }
+  body.theme-ocean .add-btn { background: #0EA5E9 !important; box-shadow: 0 4px 16px rgba(14,165,233,0.4) !important; }
+  body.theme-ocean .filter-btn.active { background: #0EA5E9 !important; border-color: #0EA5E9 !important; }
+
+  /* ══════════════════════════════════════════════════════════════
+     THEME: ROSE — soft pink/rose, elegant feminine
+  ════════════════════════════════════════════════════════════════ */
+  body.theme-rose {
+    --bg: #1A0A12; --surface: #251020; --surface2: #301528; --surface3: #3C1C32;
+    --border: #4A2040; --border2: #602A55;
+    --text: #F8D8E8; --text2: #C090A8; --text3: #7A4560;
+    --accent: #F472B6; --accent2: #FB7185; --accent-light: rgba(244,114,182,0.15);
+    --accent-dark: #E11D87;
+    --green: #34D399; --green-light: rgba(52,211,153,0.12);
+    --amber: #FBBF24; --amber-light: rgba(251,191,36,0.12);
+    --red: #FB7185; --red-light: rgba(251,113,133,0.12);
+    --purple: #C084FC; --radius: 14px; --radius-lg: 20px; --radius-xl: 28px;
+    --shadow: 0 2px 12px rgba(100,0,50,0.4); --shadow-lg: 0 8px 32px rgba(100,0,50,0.6);
+    --state-hover: rgba(244,114,182,0.08);
+  }
+  body.theme-rose header { background: #1A0A12 !important; border-bottom: 1px solid #4A2040; }
+  body.theme-rose .table-card::before { background: linear-gradient(90deg, #F472B6, #FB7185, #C084FC); }
+  body.theme-rose .add-btn { background: #F472B6 !important; box-shadow: 0 4px 16px rgba(244,114,182,0.4) !important; }
+  body.theme-rose .filter-btn.active { background: #F472B6 !important; border-color: #F472B6 !important; }
+  body.theme-rose .stat { border-radius: 20px !important; }
 </style>
 </head>
 <body>
@@ -2565,35 +2704,64 @@
 
 <!-- Theme Picker Modal -->
 <div class="overlay" id="themePickerOverlay" onclick="themePickerBgClick(event)">
-  <div class="modal" style="max-width:360px;padding:0;overflow:hidden">
+  <div class="modal" style="max-width:380px;padding:0;overflow:hidden;max-height:85vh;display:flex;flex-direction:column">
     <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border)">
       <div style="font-size:16px;font-weight:700;margin-bottom:4px">Appearance</div>
       <div style="font-size:12px;color:var(--text3)">Choose how the app looks</div>
     </div>
-    <div style="padding:8px">
+    <div style="padding:8px;overflow-y:auto;flex:1">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px 4px">Standard</div>
       <button class="theme-option-btn" id="themeOptDark" onclick="setThemeMode('dark')">
         <span class="theme-option-icon">🌑</span>
-        <div class="theme-option-info">
-          <div class="theme-option-label">Dark</div>
-          <div class="theme-option-sub">Always use dark theme</div>
-        </div>
+        <div class="theme-option-info"><div class="theme-option-label">Dark</div><div class="theme-option-sub">Deep dark — classic night mode</div></div>
         <span class="theme-option-check" id="checkDark"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptDim" onclick="setThemeMode('dim')">
+        <span class="theme-option-icon">🌆</span>
+        <div class="theme-option-info"><div class="theme-option-label">Dim</div><div class="theme-option-sub">Warm dark — easy on evening eyes</div></div>
+        <span class="theme-option-check" id="checkDim"></span>
       </button>
       <button class="theme-option-btn" id="themeOptLight" onclick="setThemeMode('light')">
         <span class="theme-option-icon">☀️</span>
-        <div class="theme-option-info">
-          <div class="theme-option-label">Light</div>
-          <div class="theme-option-sub">Always use light theme</div>
-        </div>
+        <div class="theme-option-info"><div class="theme-option-label">Light</div><div class="theme-option-sub">Clean white — best for daylight</div></div>
         <span class="theme-option-check" id="checkLight"></span>
       </button>
       <button class="theme-option-btn" id="themeOptAuto" onclick="setThemeMode('auto')">
         <span class="theme-option-icon">🌓</span>
-        <div class="theme-option-info">
-          <div class="theme-option-label">Auto</div>
-          <div class="theme-option-sub">☀️ Light 6AM–6PM · 🌆 Dim 6PM–10PM · 🌙 Dark 10PM–6AM</div>
-        </div>
+        <div class="theme-option-info"><div class="theme-option-label">Auto</div><div class="theme-option-sub">☀️ Light 6AM–6PM · 🌆 Dim 6PM–10PM · 🌙 Dark 10PM–6AM</div></div>
         <span class="theme-option-check" id="checkAuto"></span>
+      </button>
+
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:12px 12px 4px;border-top:1px solid var(--border);margin-top:4px">Specialty</div>
+      <button class="theme-option-btn" id="themeOptTheme-classy" onclick="setThemeMode('theme-classy')">
+        <span class="theme-option-icon">👑</span>
+        <div class="theme-option-info"><div class="theme-option-label">Classy</div><div class="theme-option-sub">Navy & gold — sophisticated luxury</div></div>
+        <span class="theme-option-check" id="checkTheme-classy"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptTheme-glass" onclick="setThemeMode('theme-glass')">
+        <span class="theme-option-icon">🔮</span>
+        <div class="theme-option-info"><div class="theme-option-label">Glass</div><div class="theme-option-sub">Frosted surfaces — translucent depth</div></div>
+        <span class="theme-option-check" id="checkTheme-glass"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptTheme-retro" onclick="setThemeMode('theme-retro')">
+        <span class="theme-option-icon">💻</span>
+        <div class="theme-option-info"><div class="theme-option-label">Retro</div><div class="theme-option-sub">Terminal green — old school CRT</div></div>
+        <span class="theme-option-check" id="checkTheme-retro"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptTheme-sharp" onclick="setThemeMode('theme-sharp')">
+        <span class="theme-option-icon">⚡</span>
+        <div class="theme-option-info"><div class="theme-option-label">Sharp</div><div class="theme-option-sub">Black & red — high contrast brutal</div></div>
+        <span class="theme-option-check" id="checkTheme-sharp"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptTheme-ocean" onclick="setThemeMode('theme-ocean')">
+        <span class="theme-option-icon">🌊</span>
+        <div class="theme-option-info"><div class="theme-option-label">Ocean</div><div class="theme-option-sub">Deep sea blues — calm and focused</div></div>
+        <span class="theme-option-check" id="checkTheme-ocean"></span>
+      </button>
+      <button class="theme-option-btn" id="themeOptTheme-rose" onclick="setThemeMode('theme-rose')">
+        <span class="theme-option-icon">🌸</span>
+        <div class="theme-option-info"><div class="theme-option-label">Rose</div><div class="theme-option-sub">Pink & purple — warm and elegant</div></div>
+        <span class="theme-option-check" id="checkTheme-rose"></span>
       </button>
     </div>
     <div style="padding:12px 24px 20px;border-top:1px solid var(--border)">
@@ -4357,7 +4525,7 @@ function updateMenuThemeLabel() {
   const icon  = document.getElementById("menuThemeIcon");
   const label = document.getElementById("menuThemeLabel");
   const icons  = { dark:"🌙", light:"☀️", auto:"🌓" };
-  const labels = { dark:"Dark mode", light:"Light mode", auto:"Auto (time-based)", dim:"Dim mode" };
+  const labels = { dark:"Dark", light:"Light", auto:"Auto", dim:"Dim", "theme-classy":"Classy", "theme-glass":"Glass", "theme-retro":"Retro", "theme-sharp":"Sharp", "theme-ocean":"Ocean", "theme-rose":"Rose" };
   if (icon)  icon.textContent  = icons[themeMode]  || "🌙";
   if (label) label.textContent = labels[themeMode] || "Appearance";
 }
@@ -4391,13 +4559,16 @@ function loadTheme() {
 }
 
 function applyTheme() {
-  // currentTheme is the resolved theme: light | dim | dark
-  const currentTheme = themeMode === "auto" ? getAutoTheme() : themeMode;
-  document.body.classList.remove("light", "dim");
-  if (currentTheme === "light") document.body.classList.add("light");
-  if (currentTheme === "dim")   document.body.classList.add("dim");
-  isDarkTheme = (currentTheme !== "light");
-  const icons = { dark: "🌙", light: "☀️", auto: "🌓", dim: "🌆" };
+  const specialtyThemes = ["theme-classy","theme-glass","theme-retro","theme-sharp","theme-ocean","theme-rose"];
+  const resolved = themeMode === "auto" ? getAutoTheme() : themeMode;
+  document.body.classList.remove("light","dim",...specialtyThemes);
+  if (resolved === "light") document.body.classList.add("light");
+  else if (resolved === "dim") document.body.classList.add("dim");
+  else if (resolved.startsWith("theme-")) document.body.classList.add(resolved);
+  isDarkTheme = (resolved !== "light");
+  const icons = { dark:"🌙", light:"☀️", auto:"🌓", dim:"🌆",
+    "theme-classy":"👑","theme-glass":"🔮","theme-retro":"💻",
+    "theme-sharp":"⚡","theme-ocean":"🌊","theme-rose":"🌸" };
   const btn = document.getElementById("themeToggleBtn");
   if (btn) btn.textContent = icons[themeMode] || "🌙";
   updateMenuThemeLabel();
@@ -4453,8 +4624,10 @@ function themePickerBgClick(e) {
 }
 
 function updateThemePickerUI() {
-  ["dark","light","auto"].forEach(m => {
-    const btn = document.getElementById("themeOpt" + m.charAt(0).toUpperCase() + m.slice(1));
+  const all = ["dark","dim","light","auto","theme-classy","theme-glass","theme-retro","theme-sharp","theme-ocean","theme-rose"];
+  all.forEach(m => {
+    const key = "themeOpt" + m.charAt(0).toUpperCase() + m.slice(1);
+    const btn = document.getElementById(key);
     if (btn) btn.classList.toggle("selected", themeMode === m);
   });
 }
