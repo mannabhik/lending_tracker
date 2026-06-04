@@ -666,6 +666,12 @@
     color: var(--text);
     transition: border-color 0.15s, box-shadow 0.15s;
     -webkit-appearance: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .field input:focus {
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .field input::placeholder { color: var(--text3); }
@@ -1680,7 +1686,7 @@
       <div class="field-row">
         <div class="field">
           <label>First Name <span style="color:var(--red)">*</span></label>
-          <input id="fFirstName" type="text" placeholder="First name" oninput="updateOfficialName()">
+          <input id="fFirstName" type="text" placeholder="First name" oninput="updateOfficialName();onNameInput()">
         </div>
         <div class="field">
           <label>Middle Name <span style="color:var(--text3);font-weight:400">(optional)</span></label>
@@ -1688,7 +1694,7 @@
         </div>
         <div class="field">
           <label>Last Name <span style="color:var(--red)">*</span></label>
-          <input id="fLastName" type="text" placeholder="Last name" oninput="updateOfficialName()">
+          <input id="fLastName" type="text" placeholder="Last name" oninput="updateOfficialName();onNameInput()">
         </div>
       </div>
       <div style="margin:-8px 0 10px;padding:7px 10px;background:var(--surface3);border-radius:var(--radius);font-size:12px;color:var(--text2)">
@@ -1698,7 +1704,7 @@
       <div class="field-row">
         <div class="field" style="grid-column:span 2">
           <label>Phone Number <span style="color:var(--red)">*</span></label>
-          <input id="fPhone" type="tel" placeholder="+919999999999 or 9999999999" oninput="validatePhone(this)">
+          <input id="fPhone" type="tel" placeholder="+919999999999 or 9999999999" oninput="validatePhone(this);onNameInput()">
           <div id="fPhoneError" style="font-size:11px;color:var(--red);margin-top:3px;display:none"></div>
         </div>
       </div>
@@ -3640,9 +3646,9 @@ function saveEntry() {
   const returned = parseFloat(document.getElementById("fReturned").value)||0;
   const notes       = document.getElementById("fNotes").value.trim();
   const dueDate     = document.getElementById("fDueDate").value || null;
-  const firstName   = document.getElementById("fFirstName").value.trim();
-  const middleName  = document.getElementById("fMiddleName").value.trim();
-  const lastName    = document.getElementById("fLastName").value.trim();
+  const firstName   = document.getElementById("fFirstName").value.trim().toUpperCase();
+  const middleName  = document.getElementById("fMiddleName").value.trim().toUpperCase();
+  const lastName    = document.getElementById("fLastName").value.trim().toUpperCase();
   const officialName = [firstName, middleName, lastName].filter(Boolean).join(" ");
   const phone       = document.getElementById("fPhone").value.trim();
   const email       = document.getElementById("fEmail").value.trim();
@@ -4205,9 +4211,9 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
 
 // Build official name from parts
 function buildOfficialName() {
-  const first  = (document.getElementById("fFirstName")?.value || "").trim();
-  const middle = (document.getElementById("fMiddleName")?.value || "").trim();
-  const last   = (document.getElementById("fLastName")?.value || "").trim();
+  const first  = (document.getElementById("fFirstName")?.value || "").trim().toUpperCase();
+  const middle = (document.getElementById("fMiddleName")?.value || "").trim().toUpperCase();
+  const last   = (document.getElementById("fLastName")?.value || "").trim().toUpperCase();
   return [first, middle, last].filter(Boolean).join(" ");
 }
 
@@ -4245,7 +4251,8 @@ function validatePhone(input) {
 function profileKey(officialName, phone) {
   const norm = normalizePhone(phone);
   if (!norm) return null;
-  return officialName.trim().toLowerCase().replace(/\s+/g," ") + "|" + norm;
+  // Case insensitive — always normalize to uppercase then lowercase for key
+  return officialName.trim().toUpperCase().replace(/\s+/g," ") + "|" + norm;
 }
 
 // Get all profiles from localData
@@ -4266,31 +4273,54 @@ function getProfiles() {
 function getProfileRecords(key) {
   return localData.filter(r => {
     if (!r.profile?.officialName || !r.profile?.phone) return false;
+    // Case insensitive — profileKey normalizes to uppercase
     return profileKey(r.profile.officialName, r.profile.phone) === key;
   });
 }
 
 // Auto-suggest profiles on name input
 function onNameInput() {
-  const val = document.getElementById("fName").value.trim().toLowerCase();
+  // Search by display name OR any name field
+  const displayVal  = document.getElementById("fName").value.trim().toLowerCase();
+  const firstVal    = (document.getElementById("fFirstName")?.value || "").trim().toLowerCase();
+  const lastVal     = (document.getElementById("fLastName")?.value || "").trim().toLowerCase();
+  const searchVal   = displayVal || firstVal || lastVal;
+
   const suggest = document.getElementById("profileSuggest");
-  if (!val || val.length < 1) { suggest.style.display = "none"; return; }
+  if (!searchVal || searchVal.length < 1) { suggest.style.display = "none"; return; }
+
+  // Also check phone
+  const phoneVal = document.getElementById("fPhone")?.value || "";
+  const normPhone = normalizePhone(phoneVal) || "";
 
   const profiles = getProfiles();
-  const matches = Object.values(profiles).filter(p =>
-    p.officialName.toLowerCase().includes(val) ||
-    (p.nickname || "").toLowerCase().includes(val)
-  );
+  const matches = Object.values(profiles).filter(p => {
+    const sv   = searchVal.toLowerCase();
+    const full = (p.officialName || "").toLowerCase();
+    const nick = (p.nickname || "").toLowerCase();
+    const fn   = (p.firstName || "").toLowerCase();
+    const mn   = (p.middleName || "").toLowerCase();
+    const ln   = (p.lastName || "").toLowerCase();
+    const ph   = p.phone || "";
+    const nameMatch  = sv && (full.includes(sv) || nick.includes(sv) || fn.includes(sv) || mn.includes(sv) || ln.includes(sv));
+    const phoneMatch = normPhone.length >= 5 && ph.includes(normPhone);
+    return nameMatch || phoneMatch;
+  });
 
   if (!matches.length) { suggest.style.display = "none"; return; }
 
-  suggest.innerHTML = matches.slice(0,5).map(p => `
+  suggest.innerHTML = `
+    <div style="padding:6px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;border-bottom:1px solid var(--border);background:var(--surface3)">
+      Existing profiles — tap to auto-fill
+    </div>` +
+  matches.slice(0,5).map(p => `
     <div class="suggest-item" onclick="selectProfile('${p.key}')">
-      <div class="suggest-avatar">${p.officialName[0].toUpperCase()}</div>
+      <div class="suggest-avatar">${(p.firstName || p.officialName)[0].toUpperCase()}</div>
       <div class="suggest-info">
         <div class="suggest-name">${p.officialName}</div>
-        <div class="suggest-sub">${p.phone} · ${p.email || ""}</div>
+        <div class="suggest-sub">📞 ${p.phone}${p.email ? " · " + p.email : ""}</div>
       </div>
+      <div style="font-size:10px;color:var(--accent);font-weight:600">Auto-fill ↗</div>
     </div>
   `).join("");
   suggest.style.display = "block";
@@ -4328,6 +4358,7 @@ function checkProfileMatch() {
   const existing = localData.filter(r => {
     if (r.id === editId) return false;
     if (!r.profile?.officialName || !r.profile?.phone) return false;
+    // Case insensitive match — both keys normalized via profileKey
     return profileKey(r.profile.officialName, r.profile.phone) === key;
   });
 
@@ -4462,6 +4493,36 @@ function showNameTooltip(key, event) {
 function hideNameTooltip() {
   clearTimeout(tooltipTimeout);
   document.getElementById("nameTooltip").style.display = "none";
+}
+
+
+// ── Migrate existing profiles to uppercase official names ─────────────────
+function migrateProfileNames() {
+  let changed = false;
+  localData.forEach(r => {
+    if (r.profile) {
+      if (r.profile.officialName) {
+        const upper = r.profile.officialName.toUpperCase();
+        if (r.profile.officialName !== upper) { r.profile.officialName = upper; changed = true; }
+      }
+      if (r.profile.firstName) {
+        const upper = r.profile.firstName.toUpperCase();
+        if (r.profile.firstName !== upper) { r.profile.firstName = upper; changed = true; }
+      }
+      if (r.profile.middleName) {
+        const upper = r.profile.middleName.toUpperCase();
+        if (r.profile.middleName !== upper) { r.profile.middleName = upper; changed = true; }
+      }
+      if (r.profile.lastName) {
+        const upper = r.profile.lastName.toUpperCase();
+        if (r.profile.lastName !== upper) { r.profile.lastName = upper; changed = true; }
+      }
+    }
+  });
+  if (changed) {
+    saveToCloud(localData);
+    console.log("Migrated profile names to uppercase");
+  }
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
