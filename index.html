@@ -1602,40 +1602,22 @@
 </header>
 
 <main class="main">
-  <div id="skeletonLoader" style="display:block">
-  <!-- Stat cards skeleton -->
+  
+
+<!-- Skeleton Loader -->
+<div id="skeletonLoader" style="display:block">
   <div class="summary-grid" style="margin-bottom:24px">
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
+    <div class="skeleton-stat"><div class="skeleton skeleton-block" style="width:60%;height:10px;margin-bottom:10px"></div><div class="skeleton skeleton-block" style="width:80%;height:22px"></div></div>
+    <div class="skeleton-stat"><div class="skeleton skeleton-block" style="width:60%;height:10px;margin-bottom:10px"></div><div class="skeleton skeleton-block" style="width:80%;height:22px"></div></div>
+    <div class="skeleton-stat"><div class="skeleton skeleton-block" style="width:60%;height:10px;margin-bottom:10px"></div><div class="skeleton skeleton-block" style="width:80%;height:22px"></div></div>
+    <div class="skeleton-stat"><div class="skeleton skeleton-block" style="width:60%;height:10px;margin-bottom:10px"></div><div class="skeleton skeleton-block" style="width:80%;height:22px"></div></div>
   </div>
-  <!-- Table skeleton -->
   <div class="table-card" style="margin-bottom:24px">
-    ${[1,2,3,4,5].map(()=>`
-    <div class="skeleton-row">
-      <div class="skeleton skeleton-circle"></div>
-      <div class="skeleton-col">
-        <div class="skeleton skeleton-block" style="width:55%"></div>
-        <div class="skeleton skeleton-block" style="width:35%"></div>
-      </div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-badge"></div>
-    </div>`).join("")}
+    <div class="skeleton-row"><div class="skeleton skeleton-circle"></div><div class="skeleton-col"><div class="skeleton skeleton-block" style="width:55%;height:12px"></div><div class="skeleton skeleton-block" style="width:35%;height:10px;margin-top:6px"></div></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-badge"></div></div>
+    <div class="skeleton-row"><div class="skeleton skeleton-circle"></div><div class="skeleton-col"><div class="skeleton skeleton-block" style="width:45%;height:12px"></div><div class="skeleton skeleton-block" style="width:30%;height:10px;margin-top:6px"></div></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-badge"></div></div>
+    <div class="skeleton-row"><div class="skeleton skeleton-circle"></div><div class="skeleton-col"><div class="skeleton skeleton-block" style="width:50%;height:12px"></div><div class="skeleton skeleton-block" style="width:40%;height:10px;margin-top:6px"></div></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-badge"></div></div>
+    <div class="skeleton-row"><div class="skeleton skeleton-circle"></div><div class="skeleton-col"><div class="skeleton skeleton-block" style="width:60%;height:12px"></div><div class="skeleton skeleton-block" style="width:35%;height:10px;margin-top:6px"></div></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-badge"></div></div>
+    <div class="skeleton-row"><div class="skeleton skeleton-circle"></div><div class="skeleton-col"><div class="skeleton skeleton-block" style="width:40%;height:12px"></div><div class="skeleton skeleton-block" style="width:25%;height:10px;margin-top:6px"></div></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-block" style="width:60px;height:14px"></div><div class="skeleton skeleton-badge"></div></div>
   </div>
 </div>
 
@@ -1736,42 +1718,7 @@
   </div>
 
 <!-- Skeleton Loader -->
-<div id="skeletonLoader" style="display:block">
-  <!-- Stat cards skeleton -->
-  <div class="summary-grid" style="margin-bottom:24px">
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-    <div class="skeleton-stat">
-      <div class="skeleton skeleton-block skeleton-stat-label"></div>
-      <div class="skeleton skeleton-block skeleton-stat-value"></div>
-    </div>
-  </div>
-  <!-- Table skeleton -->
-  <div class="table-card" style="margin-bottom:24px">
-    ${[1,2,3,4,5].map(()=>`
-    <div class="skeleton-row">
-      <div class="skeleton skeleton-circle"></div>
-      <div class="skeleton-col">
-        <div class="skeleton skeleton-block" style="width:55%"></div>
-        <div class="skeleton skeleton-block" style="width:35%"></div>
-      </div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
-      <div class="skeleton skeleton-badge"></div>
-    </div>`).join("")}
-  </div>
-</div>
+
 
   </div><!-- end mainContent -->
 
@@ -3900,21 +3847,37 @@ function handleNameLinkTap(e) {
 
 // Handle both click (desktop) and touchend (mobile)
 document.addEventListener("click", handleNameLinkTap, { passive: false });
-document.addEventListener("touchend", function(e) {
+
+// Mobile: use touchstart+touchend to detect tap on name link
+let nameTouchStartX = 0, nameTouchStartY = 0, nameTouchTarget = null;
+document.addEventListener("touchstart", function(e) {
   let el = e.target;
   while (el && el !== document) {
     if (el.classList && el.classList.contains("borrower-name-link")) {
-      const id = parseInt(el.dataset.recordId);
-      if (id) {
-        e.preventDefault();
-        e.stopPropagation();
-        openProfileByRecord(id, el);
-      }
+      nameTouchTarget = el;
+      nameTouchStartX = e.touches[0].clientX;
+      nameTouchStartY = e.touches[0].clientY;
       return;
     }
     el = el.parentElement;
   }
-}, { passive: false, capture: true }); // capture:true fires BEFORE swipe handlers
+  nameTouchTarget = null;
+}, { passive: true, capture: true });
+
+document.addEventListener("touchend", function(e) {
+  if (!nameTouchTarget) return;
+  const dx = Math.abs(e.changedTouches[0].clientX - nameTouchStartX);
+  const dy = Math.abs(e.changedTouches[0].clientY - nameTouchStartY);
+  if (dx < 10 && dy < 10) { // it's a tap not a scroll
+    const id = parseInt(nameTouchTarget.dataset.recordId);
+    if (id) {
+      e.preventDefault();
+      e.stopPropagation();
+      openProfileByRecord(id, nameTouchTarget);
+    }
+  }
+  nameTouchTarget = null;
+}, { passive: false, capture: true });
 
 document.addEventListener("keydown", e => {
   if (e.key==="Escape") closeModal();
