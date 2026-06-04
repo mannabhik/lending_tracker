@@ -739,17 +739,19 @@
   /* ── Mobile (≤640px) ─────────────────────────────────────────────── */
   @media (max-width: 640px) {
     /* Header — compact, no overflow */
-    header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: hidden; position: relative; justify-content: space-between; }
+    header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: hidden; position: relative; justify-content: space-between; align-items: center; }
+    .logo { align-items: flex-start; }
     .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
-    .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; }
+    .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+    .logo-date-mobile { display: block; } /* show date below title */
 
-    /* Date visible, time + syncStatus hidden */
+    /* Hide headerDate/Time from header-right on mobile */
+    #headerDate { display: none !important; }
     #headerTime { display: none; }
     #syncStatus { display: none; }
-    #headerDate { display: inline !important; font-size: 11px; white-space: nowrap; }
 
-    /* Header right: date + add + hamburger only, no gap overflow */
+    /* Header right: just add + hamburger */
     .header-right { gap: 6px; flex-shrink: 0; align-items: center; flex-wrap: nowrap; }
 
     /* Add entry button */
@@ -1409,6 +1411,64 @@
   }
   .menu-item select:focus { outline: none; }
   body.light .menu-item select { color: var(--text2); }
+
+  /* Date below title on mobile */
+  .logo-date-mobile { display: none; font-size: 10px; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; margin-top: 1px; white-space: nowrap; }
+  body.light .logo-date-mobile { color: var(--text3); }
+
+  /* Borrower profile */
+  .suggest-item { padding: 10px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .suggest-item:last-child { border-bottom: none; }
+  .suggest-item:hover { background: var(--surface3); }
+  .suggest-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .suggest-info { flex: 1; }
+  .suggest-name { font-weight: 600; font-size: 13px; }
+  .suggest-sub  { font-size: 11px; color: var(--text3); }
+
+  /* Profile popup */
+  .profile-popup {
+    position: fixed; z-index: 500;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    width: 340px; max-width: 92vw;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    animation: pop 0.15s ease;
+  }
+  .profile-popup-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .profile-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; flex-shrink: 0; }
+  .profile-popup-name { font-size: 16px; font-weight: 700; }
+  .profile-popup-key  { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .profile-field-row  { display: flex; gap: 8px; margin-bottom: 8px; }
+  .profile-field-lbl  { font-size: 11px; color: var(--text3); min-width: 80px; padding-top: 1px; }
+  .profile-field-val  { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; word-break: break-all; }
+  .profile-loans-section { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .profile-loan-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
+  .profile-loan-row:last-child { border-bottom: none; }
+  .profile-total-row { display: flex; justify-content: space-between; padding: 8px 0 0; font-size: 13px; font-weight: 700; border-top: 1px solid var(--border); margin-top: 4px; }
+
+  /* Hover tooltip */
+  .name-tooltip {
+    position: fixed; z-index: 450;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 11px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    pointer-events: none;
+    white-space: nowrap;
+    animation: pop 0.1s ease;
+  }
+  .name-tooltip-row { display: flex; gap: 8px; margin-bottom: 3px; }
+  .name-tooltip-row:last-child { margin-bottom: 0; }
+  .name-tooltip-lbl { color: var(--text3); min-width: 60px; }
+  .name-tooltip-val { color: var(--text); font-weight: 600; }
+
+  /* Clickable name in table */
+  .borrower-name-link { cursor: pointer; color: var(--text); font-weight: 500; }
+  .borrower-name-link:hover { color: var(--accent); text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -1419,10 +1479,11 @@
     <div>
       <div class="logo-text">Money Lending Index Tracker</div>
       <div class="logo-sub">Personal lending tracker</div>
+      <div class="logo-date-mobile" id="logoDateMobile"></div>
     </div>
   </div>
   <div class="header-right">
-    <!-- Date & time — visible on desktop/tablet, hidden on mobile -->
+    <!-- Date & time — visible on desktop/tablet only -->
     <span id="syncStatus" style="font-size:12px;font-family:'DM Mono',monospace;transition:color 0.3s;"></span>
     <span class="header-date" id="headerDate"></span>
     <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
@@ -1610,8 +1671,38 @@
     </div>
     <input type="hidden" id="fEditId" value="">
     <div class="field">
-      <label>Borrower name</label>
-      <input id="fName" type="text" placeholder="e.g. Sagar">
+      <label>Borrower Name (display) <span style="color:var(--red)">*</span></label>
+      <input id="fName" type="text" placeholder="e.g. Sagar" oninput="onNameInput()">
+      <div id="profileSuggest" style="display:none;margin-top:4px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden"></div>
+    </div>
+    <!-- Borrower Profile Fields -->
+    <div id="profileFields">
+      <div class="field-row">
+        <div class="field">
+          <label>Official Name <span style="color:var(--red)">*</span></label>
+          <input id="fOfficialName" type="text" placeholder="Full legal name">
+        </div>
+        <div class="field">
+          <label>Phone Number <span style="color:var(--red)">*</span></label>
+          <input id="fPhone" type="tel" placeholder="+919999999999 or 9999999999" oninput="validatePhone(this)">
+          <div id="fPhoneError" style="font-size:11px;color:var(--red);margin-top:3px;display:none"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Email Address <span style="color:var(--red)">*</span></label>
+          <input id="fEmail" type="email" placeholder="borrower@email.com">
+        </div>
+        <div class="field">
+          <label>Guarantor <span style="color:var(--red)">*</span></label>
+          <input id="fGuarantor" type="text" placeholder="Witness / guarantor name">
+        </div>
+      </div>
+      <div class="field">
+        <label>Home Address <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+        <input id="fAddress" type="text" placeholder="Full address">
+      </div>
+      <div id="profileMatchBanner" style="display:none;margin-top:8px;padding:10px 12px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);border-radius:var(--radius);font-size:12px;color:var(--accent)"></div>
     </div>
     <div class="field-row">
       <div class="field">
@@ -2089,6 +2180,11 @@
     <button class="modal-save" onclick="closeAbout()">Close</button>
   </div>
 </div>
+
+<!-- Profile Popup (dynamic, appended by JS) -->
+<div id="profilePopupOverlay" style="display:none;position:fixed;inset:0;z-index:499" onclick="closeProfilePopup()"></div>
+<div id="profilePopup" class="profile-popup" style="display:none"></div>
+<div id="nameTooltip" class="name-tooltip" style="display:none"></div>
 
 <!-- Confirm Delete Dialog -->
 <div class="confirm-overlay" id="confirmOverlay">
@@ -3162,7 +3258,13 @@ function renderTable(data) {
     return `<tr>
       <td><input type="checkbox" class="row-check" data-id="${r.id}" onclick="toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""}></td>
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
-      <td class="name-cell">${r.name}${r.notes?`<span class="note-text">${r.notes}</span>`:""}
+      <td class="name-cell">
+        ${r.profile?.officialName ? `<span class="borrower-name-link"
+          onclick="openProfileByRecord(${r.id}, this)"
+          onmouseenter="showNameTooltip('${r.profile ? (r.profile.officialName.trim().toLowerCase().replace(/\s+/g,' ')+'|'+r.profile.phone) : ''}', event)"
+          onmouseleave="hideNameTooltip()"
+        >${r.name}</span>` : r.name}
+        ${r.notes?`<span class="note-text">${r.notes}</span>`:""}
         ${(() => { const ds=getDueStatus(r); return ds?`<span class="due-badge ${ds.cls}">${ds.label}</span>`:""; })()} </td>
       <td class="amt-lent">${fmt(r.lent)}</td>
       <td class="amt-ret">${fmt(r.returned)}</td>
@@ -3439,6 +3541,14 @@ function _openModal() {
   document.getElementById("fNotes").value = "";
   document.getElementById("fDueDate").value = "";
   document.getElementById("fStatus").value = "PENDING";
+  document.getElementById("fOfficialName").value = "";
+  document.getElementById("fPhone").value = "";
+  document.getElementById("fEmail").value = "";
+  document.getElementById("fGuarantor").value = "";
+  document.getElementById("fAddress").value = "";
+  document.getElementById("profileSuggest").style.display = "none";
+  document.getElementById("profileMatchBanner").style.display = "none";
+  document.getElementById("fPhoneError").style.display = "none";
   document.getElementById("fEditId").value = "";
   document.getElementById("fInterestOn").checked = false;
   document.getElementById("fInterestRate").value = "";
@@ -3473,6 +3583,15 @@ function _editRow(id) {
   document.getElementById("fStatus").value = r.status;
   document.getElementById("fNotes").value = r.notes || "";
   document.getElementById("fDueDate").value = r.dueDate || "";
+  const rp = r.profile || {};
+  document.getElementById("fOfficialName").value = rp.officialName || "";
+  document.getElementById("fPhone").value = rp.phone || "";
+  document.getElementById("fEmail").value = rp.email || "";
+  document.getElementById("fGuarantor").value = rp.guarantor || "";
+  document.getElementById("fAddress").value = rp.address || "";
+  document.getElementById("profileSuggest").style.display = "none";
+  document.getElementById("profileMatchBanner").style.display = "none";
+  document.getElementById("fPhoneError").style.display = "none";
   document.getElementById("fInterestOn").checked = !!r.interestOn;
   const ls = r.loanSetup || {};
   document.getElementById("fInterestRate").value = ls.rate || r.interestRate || "";
@@ -3499,8 +3618,13 @@ function saveEntry() {
   const date = document.getElementById("fDate").value;
   const lent = parseFloat(document.getElementById("fLent").value)||0;
   const returned = parseFloat(document.getElementById("fReturned").value)||0;
-  const notes = document.getElementById("fNotes").value.trim();
-  const dueDate = document.getElementById("fDueDate").value || null;
+  const notes       = document.getElementById("fNotes").value.trim();
+  const dueDate     = document.getElementById("fDueDate").value || null;
+  const officialName= document.getElementById("fOfficialName").value.trim();
+  const phone       = document.getElementById("fPhone").value.trim();
+  const email       = document.getElementById("fEmail").value.trim();
+  const guarantor   = document.getElementById("fGuarantor").value.trim();
+  const address     = document.getElementById("fAddress").value.trim();
   const interestOn = document.getElementById("fInterestOn").checked;
   const interestType = document.getElementById("fInterestOn").dataset.itype || 'compound';
   const interestRate = interestOn ? (parseFloat(document.getElementById("fInterestRate").value) || 9) : null;
@@ -3519,6 +3643,11 @@ function saveEntry() {
   } : null;
   const editId = document.getElementById("fEditId").value;
   if (!name || !date || lent<=0) { showToast("Please fill in name, date and amount lent"); return; }
+  if (!officialName) { showToast("Please enter official name"); return; }
+  if (!phone) { showToast("Please enter phone number"); return; }
+  if (!normalizePhone(phone)) { showToast("Invalid phone number format"); return; }
+  if (!email) { showToast("Please enter email address"); return; }
+  if (!guarantor) { showToast("Please enter guarantor name"); return; }
   // Auto-set status based on amounts
   const status = returned > lent ? "OVERDUE" : returned === lent ? "RETURNED" : "PENDING";
   document.getElementById("fStatus").value = status;
@@ -3533,7 +3662,8 @@ function saveEntry() {
       const interestJustEnabled = interestOn && !prev.interestOn;
       const interestStartDate = interestJustEnabled ? todayStr : (prev.interestStartDate || prev.date);
       const interestBase = interestJustEnabled ? Math.max(0, lent - returned) : (prev.interestBase ?? Math.max(0, prev.lent - prev.returned));
-      data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, interestOn, interestType, interestRate, interestFixed, loanSetup,
+      const profile = { officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+      data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile, interestOn, interestType, interestRate, interestFixed, loanSetup,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
       };
@@ -3544,7 +3674,8 @@ function saveEntry() {
     closeModal();
     showToast("Entry updated!");
   } else {
-    data.push({ id:nextId(data), date, name, lent, returned, status, notes, dueDate, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr });
+    const profileData = { officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+    data.push({ id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: profileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr });
     localData = data;
     saveToCloud(data);
     renderSummary(data); renderTable(data); renderCharts(data);
@@ -3563,7 +3694,10 @@ function showToast(msg) {
 // Set header date
 function updateClock() {
   const now = new Date();
-  document.getElementById("headerDate").textContent = now.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  const dateStr = now.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  document.getElementById("headerDate").textContent = dateStr;
+  const mob = document.getElementById("logoDateMobile");
+  if (mob) mob.textContent = dateStr;
   const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
   const hh = String(h).padStart(2,'0');
   const mm = String(m).padStart(2,'0');
@@ -4036,6 +4170,240 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
   win.document.write(html);
   win.document.close();
   setTimeout(() => win.print(), 600);
+}
+
+
+// ════════════════════════════════════════════════════
+// BORROWER PROFILES
+// ════════════════════════════════════════════════════
+
+// Normalize phone to 10-digit string for comparison
+function normalizePhone(phone) {
+  const p = phone.replace(/\s+/g, "").trim();
+  if (/^\+91(\d{10})$/.test(p)) return p.replace(/^\+91/, "");
+  if (/^0(\d{10})$/.test(p)) return p.replace(/^0/, "");
+  if (/^(\d{10})$/.test(p)) return p;
+  return null; // invalid
+}
+
+function validatePhone(input) {
+  const err = document.getElementById("fPhoneError");
+  const val = input.value.trim();
+  if (!val) { err.style.display = "none"; return; }
+  const norm = normalizePhone(val);
+  if (!norm) {
+    err.textContent = "Invalid format. Use: 9999999999, 09999999999, +919999999999 or +91 9999999999";
+    err.style.display = "block";
+    input.style.borderColor = "var(--red)";
+  } else {
+    err.style.display = "none";
+    input.style.borderColor = "";
+  }
+}
+
+// Generate profile key from official name + phone
+function profileKey(officialName, phone) {
+  const norm = normalizePhone(phone);
+  if (!norm) return null;
+  return officialName.trim().toLowerCase().replace(/\s+/g," ") + "|" + norm;
+}
+
+// Get all profiles from localData
+function getProfiles() {
+  const map = {};
+  localData.forEach(r => {
+    if (r.profile && r.profile.officialName && r.profile.phone) {
+      const key = profileKey(r.profile.officialName, r.profile.phone);
+      if (key && !map[key]) {
+        map[key] = { ...r.profile, key };
+      }
+    }
+  });
+  return map;
+}
+
+// Get records for a profile key
+function getProfileRecords(key) {
+  return localData.filter(r => {
+    if (!r.profile?.officialName || !r.profile?.phone) return false;
+    return profileKey(r.profile.officialName, r.profile.phone) === key;
+  });
+}
+
+// Auto-suggest profiles on name input
+function onNameInput() {
+  const val = document.getElementById("fName").value.trim().toLowerCase();
+  const suggest = document.getElementById("profileSuggest");
+  if (!val || val.length < 1) { suggest.style.display = "none"; return; }
+
+  const profiles = getProfiles();
+  const matches = Object.values(profiles).filter(p =>
+    p.officialName.toLowerCase().includes(val) ||
+    (p.nickname || "").toLowerCase().includes(val)
+  );
+
+  if (!matches.length) { suggest.style.display = "none"; return; }
+
+  suggest.innerHTML = matches.slice(0,5).map(p => `
+    <div class="suggest-item" onclick="selectProfile('${p.key}')">
+      <div class="suggest-avatar">${p.officialName[0].toUpperCase()}</div>
+      <div class="suggest-info">
+        <div class="suggest-name">${p.officialName}</div>
+        <div class="suggest-sub">${p.phone} · ${p.email || ""}</div>
+      </div>
+    </div>
+  `).join("");
+  suggest.style.display = "block";
+}
+
+function selectProfile(key) {
+  const profiles = getProfiles();
+  const p = profiles[key];
+  if (!p) return;
+  document.getElementById("fName").value = p.nickname || p.officialName;
+  document.getElementById("fOfficialName").value = p.officialName;
+  document.getElementById("fPhone").value = p.phone;
+  document.getElementById("fEmail").value = p.email || "";
+  document.getElementById("fGuarantor").value = p.guarantor || "";
+  document.getElementById("fAddress").value = p.address || "";
+  document.getElementById("profileSuggest").style.display = "none";
+  document.getElementById("fPhoneError").style.display = "none";
+}
+
+// Check if profile key already exists (warn on new loan)
+function checkProfileMatch() {
+  const officialName = document.getElementById("fOfficialName").value.trim();
+  const phone = document.getElementById("fPhone").value.trim();
+  const editId = parseInt(document.getElementById("fEditId").value) || 0;
+  const banner = document.getElementById("profileMatchBanner");
+
+  if (!officialName || !phone) { banner.style.display = "none"; return; }
+  const norm = normalizePhone(phone);
+  if (!norm) { banner.style.display = "none"; return; }
+
+  const key = profileKey(officialName, phone);
+  const existing = localData.filter(r => {
+    if (r.id === editId) return false;
+    if (!r.profile?.officialName || !r.profile?.phone) return false;
+    return profileKey(r.profile.officialName, r.profile.phone) === key;
+  });
+
+  if (existing.length > 0) {
+    banner.innerHTML = `⚠️ <strong>${existing[0].name}</strong> already has ${existing.length} loan record(s) with this profile. Adding a new loan for the same person.`;
+    banner.style.display = "block";
+  } else {
+    banner.style.display = "none";
+  }
+}
+
+// ── Profile popup ─────────────────────────────────
+let profilePopupOpen = false;
+
+function openProfileByRecord(id, el) {
+  const r = localData.find(x => x.id === id);
+  if (!r?.profile?.officialName || !r?.profile?.phone) { showToast("No profile — edit record to add profile"); return; }
+  const key = profileKey(r.profile.officialName, r.profile.phone);
+  if (key) openProfilePopup(key, el);
+}
+
+function openProfilePopup(key, anchorEl) {
+  const profiles = getProfiles();
+  const p = profiles[key];
+  if (!p) return;
+  const records = getProfileRecords(key);
+  const active = records.filter(r => !r.archived);
+
+  const totalLent    = active.reduce((s,r)=>s+r.lent,0);
+  const totalRet     = active.reduce((s,r)=>s+r.returned,0);
+  const totalPending = active.reduce((s,r)=>s+Math.max(0,r.lent-r.returned),0);
+
+  const popup = document.getElementById("profilePopup");
+  popup.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div class="profile-popup-hd" style="margin-bottom:0">
+        <div class="profile-avatar">${p.officialName[0].toUpperCase()}</div>
+        <div>
+          <div class="profile-popup-name">${p.nickname || p.officialName}</div>
+          <div class="profile-popup-key">${p.officialName}</div>
+        </div>
+      </div>
+      <button onclick="closeProfilePopup()" style="background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:26px;height:26px;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val">${p.phone}</span></div>
+    <div class="profile-field-row"><span class="profile-field-lbl">Email</span><span class="profile-field-val">${p.email||"—"}</span></div>
+    <div class="profile-field-row"><span class="profile-field-lbl">Guarantor</span><span class="profile-field-val">${p.guarantor||"—"}</span></div>
+    ${p.address ? `<div class="profile-field-row"><span class="profile-field-lbl">Address</span><span class="profile-field-val">${p.address}</span></div>` : ""}
+    <div class="profile-loans-section">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Loan Records (${active.length})</div>
+      ${active.map(r=>`
+        <div class="profile-loan-row">
+          <span style="color:var(--text2)">${fmtDate(r.date)}</span>
+          <span style="font-family:'DM Mono',monospace">${fmt(r.lent)}</span>
+          <span style="font-family:'DM Mono',monospace;color:${Math.max(0,r.lent-r.returned)>0?"var(--red)":"var(--green)"}">${fmt(Math.max(0,r.lent-r.returned))}</span>
+          <span class="badge badge-${r.status.toLowerCase()}" style="font-size:9px;padding:1px 6px">${r.status}</span>
+        </div>`).join("")}
+      <div class="profile-total-row">
+        <span>Total</span>
+        <span style="font-family:'DM Mono',monospace">${fmt(totalLent)}</span>
+        <span style="font-family:'DM Mono',monospace;color:${totalPending>0?"var(--red)":"var(--green)"}">${fmt(totalPending)}</span>
+        <span></span>
+      </div>
+    </div>
+    <button class="modal-save" style="margin-top:14px;font-size:12px;padding:9px" onclick="closeProfilePopup();editProfileKey('${key}')">✎ Edit Profile</button>
+  `;
+
+  // Position popup near anchor
+  const rect = anchorEl.getBoundingClientRect();
+  popup.style.display = "block";
+  const popH = popup.offsetHeight;
+  const popW = popup.offsetWidth;
+  let top = rect.bottom + 8;
+  let left = rect.left;
+  if (top + popH > window.innerHeight - 20) top = rect.top - popH - 8;
+  if (left + popW > window.innerWidth - 20) left = window.innerWidth - popW - 20;
+  if (left < 10) left = 10;
+  popup.style.top = top + "px";
+  popup.style.left = left + "px";
+  document.getElementById("profilePopupOverlay").style.display = "block";
+  profilePopupOpen = true;
+}
+
+function closeProfilePopup() {
+  document.getElementById("profilePopup").style.display = "none";
+  document.getElementById("profilePopupOverlay").style.display = "none";
+  profilePopupOpen = false;
+}
+
+function editProfileKey(key) {
+  const records = getProfileRecords(key);
+  if (records.length > 0) editRow(records[0].id);
+}
+
+// ── Hover tooltip ──────────────────────────────────
+let tooltipTimeout;
+function showNameTooltip(key, event) {
+  clearTimeout(tooltipTimeout);
+  tooltipTimeout = setTimeout(() => {
+    const profiles = getProfiles();
+    const p = profiles[key];
+    if (!p || profilePopupOpen) return;
+    const tt = document.getElementById("nameTooltip");
+    tt.innerHTML = `
+      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Official</span><span class="name-tooltip-val">${p.officialName}</span></div>
+      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Phone</span><span class="name-tooltip-val">${p.phone}</span></div>
+      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Email</span><span class="name-tooltip-val">${p.email||"—"}</span></div>
+    `;
+    tt.style.display = "block";
+    const x = Math.min(event.clientX + 12, window.innerWidth - 260);
+    const y = Math.min(event.clientY + 12, window.innerHeight - 80);
+    tt.style.left = x + "px";
+    tt.style.top  = y + "px";
+  }, 400);
+}
+
+function hideNameTooltip() {
+  clearTimeout(tooltipTimeout);
+  document.getElementById("nameTooltip").style.display = "none";
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
@@ -4684,6 +5052,13 @@ function applyRenegotiation() {
   const newEmi = getScheduledEMI(data[idx]);
   showToast('Terms renegotiated! New EMI: ' + (newEmi ? fmt(newEmi) : 'updated'));
 }
+
+// Profile match check listeners
+['fOfficialName','fPhone'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', checkProfileMatch);
+  if (el) el.addEventListener('change', checkProfileMatch);
+});
 
 // Renegotiate preview listeners
 ['renego_rate','renego_tenure','renego_ratePeriod','renego_tenureUnit','renego_payoutFreq'].forEach(id => {
