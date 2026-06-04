@@ -3440,7 +3440,7 @@ function renderTable(data) {
           <div style="display:flex;align-items:flex-start;gap:10px">
             <input type="checkbox" class="row-check" data-id="${r.id}" onclick="event.stopPropagation();toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""} style="margin-top:3px;flex-shrink:0;width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
             <div>
-              <div class="swipe-name">${r.name}</div>
+              <span class="swipe-name borrower-name-link" data-record-id="${r.id}" role="button" tabindex="0">${r.name}</span>
               <div class="swipe-date">${fmtDate(r.date)}</div>
               ${r.notes ? `<div class="swipe-note">${r.notes}</div>` : ""}
               ${ds ? `<div style="font-size:10px;margin-top:2px"><span class="due-badge ${ds.cls}">${ds.label}</span></div>` : ""}
