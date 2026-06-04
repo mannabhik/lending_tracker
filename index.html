@@ -1602,7 +1602,44 @@
 </header>
 
 <main class="main">
-  <div id="mainContent" style="display:none">
+  <div id="skeletonLoader" style="display:block">
+  <!-- Stat cards skeleton -->
+  <div class="summary-grid" style="margin-bottom:24px">
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+  </div>
+  <!-- Table skeleton -->
+  <div class="table-card" style="margin-bottom:24px">
+    ${[1,2,3,4,5].map(()=>`
+    <div class="skeleton-row">
+      <div class="skeleton skeleton-circle"></div>
+      <div class="skeleton-col">
+        <div class="skeleton skeleton-block" style="width:55%"></div>
+        <div class="skeleton skeleton-block" style="width:35%"></div>
+      </div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-badge"></div>
+    </div>`).join("")}
+  </div>
+</div>
+
+<div id="mainContent">
   <div class="summary-grid" id="summaryGrid"></div>
 
   <div class="dashboard-panel" id="dashboardPanel" style="display:none">
@@ -3201,9 +3238,10 @@ let pieChart, barChart;
 let isSyncing = false;
 
 function setLoading(on) {
-  document.getElementById("loadingOverlay").style.display = on ? "flex" : "none";
+  const ov   = document.getElementById("loadingOverlay");
   const sk   = document.getElementById("skeletonLoader");
   const main = document.getElementById("mainContent");
+  if (ov)   ov.style.display   = on ? "flex"  : "none";
   if (sk)   sk.style.display   = on ? "block" : "none";
   if (main) main.style.display = on ? "none"  : "block";
 }
@@ -3298,6 +3336,20 @@ const fmtDate = (d, twoLine=false) => {
   return `${day} ${months[parseInt(m)-1]} ${y}`;
 };
 
+function openProfileByRecord(id, el) {
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  if (!r.profile?.officialName || !r.profile?.phone) {
+    // No profile yet — offer to add one
+    if (confirm(`"${r.name}" has no profile yet.\n\nClick OK to edit this record and add profile details.`)) {
+      editRow(id);
+    }
+    return;
+  }
+  const key = profileKey(r.profile.officialName, r.profile.phone);
+  if (key) openProfilePopup(key, el);
+}
+
 async function render() {
   const data = await loadFromCloud();
   loadCurrency();
@@ -3366,6 +3418,7 @@ function renderTable(data) {
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
       <td class="name-cell">
         <span class="borrower-name-link" data-record-id="${r.id}"
+          role="button" tabindex="0"
           onclick="openProfileByRecord(${r.id}, this)"
           onmouseenter="showNameTooltipById(${r.id}, event)"
           onmouseleave="hideNameTooltip()"
@@ -3829,18 +3882,39 @@ setInterval(updateClock, 1000);
 // Keyboard shortcut
 
 // ── Global click delegation for mobile compatibility ─────────────────────
-document.addEventListener("click", function(e) {
-  // Walk up DOM tree manually instead of using closest() for compatibility
+function handleNameLinkTap(e) {
   let el = e.target;
   while (el && el !== document) {
     if (el.classList && el.classList.contains("borrower-name-link")) {
       const id = parseInt(el.dataset.recordId);
-      if (id) { e.preventDefault(); openProfileByRecord(id, el); }
+      if (id) {
+        e.preventDefault();
+        e.stopPropagation();
+        openProfileByRecord(id, el);
+      }
       return;
     }
     el = el.parentElement;
   }
-}, { passive: false });
+}
+
+// Handle both click (desktop) and touchend (mobile)
+document.addEventListener("click", handleNameLinkTap, { passive: false });
+document.addEventListener("touchend", function(e) {
+  let el = e.target;
+  while (el && el !== document) {
+    if (el.classList && el.classList.contains("borrower-name-link")) {
+      const id = parseInt(el.dataset.recordId);
+      if (id) {
+        e.preventDefault();
+        e.stopPropagation();
+        openProfileByRecord(id, el);
+      }
+      return;
+    }
+    el = el.parentElement;
+  }
+}, { passive: false, capture: true }); // capture:true fires BEFORE swipe handlers
 
 document.addEventListener("keydown", e => {
   if (e.key==="Escape") closeModal();
@@ -4475,20 +4549,6 @@ function checkProfileMatch() {
 
 // ── Profile popup ─────────────────────────────────
 let profilePopupOpen = false;
-
-function openProfileByRecord(id, el) {
-  const r = localData.find(x => x.id === id);
-  if (!r) return;
-  if (!r.profile?.officialName || !r.profile?.phone) {
-    // No profile yet — offer to add one
-    if (confirm(`"${r.name}" has no profile yet.\n\nClick OK to edit this record and add profile details.`)) {
-      editRow(id);
-    }
-    return;
-  }
-  const key = profileKey(r.profile.officialName, r.profile.phone);
-  if (key) openProfilePopup(key, el);
-}
 
 function openProfilePopup(key, anchorEl) {
   const profiles = getProfiles();
