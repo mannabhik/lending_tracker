@@ -755,11 +755,12 @@
   @media (max-width: 640px) {
     /* Header — compact, no overflow */
     header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: visible; position: relative; justify-content: space-between; align-items: center; }
-    .logo { align-items: flex-start; }
+    .logo { align-items: center; gap: 8px; }
+    .logo > div { display: flex; flex-direction: column; align-items: flex-start; }
     .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
-    .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
-    .logo-date-mobile { display: block; } /* show date below title */
+    .logo-icon { width: 26px; height: 26px; font-size: 13px; flex-shrink: 0; }
+    .logo-date-mobile { display: block !important; font-size: 10px; }
 
     /* Hide headerDate/Time from header-right on mobile */
     #headerDate { display: none !important; }
@@ -1601,7 +1602,7 @@
 </header>
 
 <main class="main">
-  <div id="mainContent">
+  <div id="mainContent" style="display:none">
   <div class="summary-grid" id="summaryGrid"></div>
 
   <div class="dashboard-panel" id="dashboardPanel" style="display:none">
@@ -1698,7 +1699,7 @@
   </div>
 
 <!-- Skeleton Loader -->
-<div id="skeletonLoader" style="display:none">
+<div id="skeletonLoader" style="display:block">
   <!-- Stat cards skeleton -->
   <div class="summary-grid" style="margin-bottom:24px">
     <div class="skeleton-stat">
@@ -3365,8 +3366,10 @@ function renderTable(data) {
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
       <td class="name-cell">
         <span class="borrower-name-link" data-record-id="${r.id}"
+          onclick="openProfileByRecord(${r.id}, this)"
           onmouseenter="showNameTooltipById(${r.id}, event)"
           onmouseleave="hideNameTooltip()"
+          style="display:inline-block;cursor:pointer"
         >${r.name}</span>
         ${r.notes?`<span class="note-text">${r.notes}</span>`:""}
         ${(() => { const ds=getDueStatus(r); return ds?`<span class="due-badge ${ds.cls}">${ds.label}</span>`:""; })()} </td>
@@ -3848,20 +3851,7 @@ document.addEventListener("keydown", e => {
 // (first-time setup will call render() itself after password is set)
 loadTheme();
 loadCurrency();
-// Show skeleton immediately on load
-document.addEventListener("DOMContentLoaded", function() {
-  const _sk = document.getElementById("skeletonLoader");
-  const _mc = document.getElementById("mainContent");
-  if (_sk) _sk.style.display = "block";
-  if (_mc) _mc.style.display = "none";
-});
-// Also show right away in case DOM already loaded
-(function() {
-  const _sk = document.getElementById("skeletonLoader");
-  const _mc = document.getElementById("mainContent");
-  if (_sk) _sk.style.display = "block";
-  if (_mc) _mc.style.display = "none";
-})();
+// Skeleton shown via HTML default, hidden by setLoading when data loads
 // Load data immediately — don't wait for password
 render().then(() => {
   checkAutoSync();
