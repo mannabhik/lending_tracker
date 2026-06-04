@@ -1679,10 +1679,24 @@
     <div id="profileFields">
       <div class="field-row">
         <div class="field">
-          <label>Official Name <span style="color:var(--red)">*</span></label>
-          <input id="fOfficialName" type="text" placeholder="Full legal name">
+          <label>First Name <span style="color:var(--red)">*</span></label>
+          <input id="fFirstName" type="text" placeholder="First name" oninput="updateOfficialName()">
         </div>
         <div class="field">
+          <label>Middle Name <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+          <input id="fMiddleName" type="text" placeholder="Middle name" oninput="updateOfficialName()">
+        </div>
+        <div class="field">
+          <label>Last Name <span style="color:var(--red)">*</span></label>
+          <input id="fLastName" type="text" placeholder="Last name" oninput="updateOfficialName()">
+        </div>
+      </div>
+      <div style="margin:-8px 0 10px;padding:7px 10px;background:var(--surface3);border-radius:var(--radius);font-size:12px;color:var(--text2)">
+        <span style="color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:0.06em">Official Name: </span>
+        <span id="officialNamePreview" style="font-weight:600">—</span>
+      </div>
+      <div class="field-row">
+        <div class="field" style="grid-column:span 2">
           <label>Phone Number <span style="color:var(--red)">*</span></label>
           <input id="fPhone" type="tel" placeholder="+919999999999 or 9999999999" oninput="validatePhone(this)">
           <div id="fPhoneError" style="font-size:11px;color:var(--red);margin-top:3px;display:none"></div>
@@ -3541,7 +3555,10 @@ function _openModal() {
   document.getElementById("fNotes").value = "";
   document.getElementById("fDueDate").value = "";
   document.getElementById("fStatus").value = "PENDING";
-  document.getElementById("fOfficialName").value = "";
+  document.getElementById("fFirstName").value = "";
+  document.getElementById("fMiddleName").value = "";
+  document.getElementById("fLastName").value = "";
+  const prev = document.getElementById("officialNamePreview"); if(prev) prev.textContent="—";
   document.getElementById("fPhone").value = "";
   document.getElementById("fEmail").value = "";
   document.getElementById("fGuarantor").value = "";
@@ -3584,7 +3601,10 @@ function _editRow(id) {
   document.getElementById("fNotes").value = r.notes || "";
   document.getElementById("fDueDate").value = r.dueDate || "";
   const rp = r.profile || {};
-  document.getElementById("fOfficialName").value = rp.officialName || "";
+  document.getElementById("fFirstName").value = rp.firstName || (rp.officialName ? rp.officialName.split(" ")[0] : "");
+  document.getElementById("fMiddleName").value = rp.middleName || "";
+  document.getElementById("fLastName").value = rp.lastName || (rp.officialName ? rp.officialName.split(" ").slice(-1)[0] : "");
+  const prevEl = document.getElementById("officialNamePreview"); if(prevEl) prevEl.textContent = rp.officialName || "—";
   document.getElementById("fPhone").value = rp.phone || "";
   document.getElementById("fEmail").value = rp.email || "";
   document.getElementById("fGuarantor").value = rp.guarantor || "";
@@ -3620,7 +3640,10 @@ function saveEntry() {
   const returned = parseFloat(document.getElementById("fReturned").value)||0;
   const notes       = document.getElementById("fNotes").value.trim();
   const dueDate     = document.getElementById("fDueDate").value || null;
-  const officialName= document.getElementById("fOfficialName").value.trim();
+  const firstName   = document.getElementById("fFirstName").value.trim();
+  const middleName  = document.getElementById("fMiddleName").value.trim();
+  const lastName    = document.getElementById("fLastName").value.trim();
+  const officialName = [firstName, middleName, lastName].filter(Boolean).join(" ");
   const phone       = document.getElementById("fPhone").value.trim();
   const email       = document.getElementById("fEmail").value.trim();
   const guarantor   = document.getElementById("fGuarantor").value.trim();
@@ -3643,7 +3666,8 @@ function saveEntry() {
   } : null;
   const editId = document.getElementById("fEditId").value;
   if (!name || !date || lent<=0) { showToast("Please fill in name, date and amount lent"); return; }
-  if (!officialName) { showToast("Please enter official name"); return; }
+  if (!firstName) { showToast("Please enter first name"); return; }
+  if (!lastName) { showToast("Please enter last name"); return; }
   if (!phone) { showToast("Please enter phone number"); return; }
   if (!normalizePhone(phone)) { showToast("Invalid phone number format"); return; }
   if (!email) { showToast("Please enter email address"); return; }
@@ -3662,7 +3686,7 @@ function saveEntry() {
       const interestJustEnabled = interestOn && !prev.interestOn;
       const interestStartDate = interestJustEnabled ? todayStr : (prev.interestStartDate || prev.date);
       const interestBase = interestJustEnabled ? Math.max(0, lent - returned) : (prev.interestBase ?? Math.max(0, prev.lent - prev.returned));
-      const profile = { officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+      const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
       data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile, interestOn, interestType, interestRate, interestFixed, loanSetup,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
@@ -3674,7 +3698,7 @@ function saveEntry() {
     closeModal();
     showToast("Entry updated!");
   } else {
-    const profileData = { officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+    const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
     data.push({ id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: profileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr });
     localData = data;
     saveToCloud(data);
@@ -4178,6 +4202,22 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
 // ════════════════════════════════════════════════════
 
 // Normalize phone to 10-digit string for comparison
+
+// Build official name from parts
+function buildOfficialName() {
+  const first  = (document.getElementById("fFirstName")?.value || "").trim();
+  const middle = (document.getElementById("fMiddleName")?.value || "").trim();
+  const last   = (document.getElementById("fLastName")?.value || "").trim();
+  return [first, middle, last].filter(Boolean).join(" ");
+}
+
+function updateOfficialName() {
+  const full = buildOfficialName();
+  const preview = document.getElementById("officialNamePreview");
+  if (preview) preview.textContent = full || "—";
+  onNameInput(); // re-run profile suggest
+}
+
 function normalizePhone(phone) {
   const p = phone.replace(/\s+/g, "").trim();
   if (/^\+91(\d{10})$/.test(p)) return p.replace(/^\+91/, "");
@@ -4261,7 +4301,10 @@ function selectProfile(key) {
   const p = profiles[key];
   if (!p) return;
   document.getElementById("fName").value = p.nickname || p.officialName;
-  document.getElementById("fOfficialName").value = p.officialName;
+  document.getElementById("fFirstName").value = p.firstName || "";
+  document.getElementById("fMiddleName").value = p.middleName || "";
+  document.getElementById("fLastName").value = p.lastName || "";
+  const prevEl2 = document.getElementById("officialNamePreview"); if(prevEl2) prevEl2.textContent = p.officialName||"—";
   document.getElementById("fPhone").value = p.phone;
   document.getElementById("fEmail").value = p.email || "";
   document.getElementById("fGuarantor").value = p.guarantor || "";
@@ -4272,7 +4315,7 @@ function selectProfile(key) {
 
 // Check if profile key already exists (warn on new loan)
 function checkProfileMatch() {
-  const officialName = document.getElementById("fOfficialName").value.trim();
+  const officialName = buildOfficialName();
   const phone = document.getElementById("fPhone").value.trim();
   const editId = parseInt(document.getElementById("fEditId").value) || 0;
   const banner = document.getElementById("profileMatchBanner");
@@ -4331,7 +4374,7 @@ function openProfilePopup(key, anchorEl) {
         <div class="profile-avatar">${p.officialName[0].toUpperCase()}</div>
         <div>
           <div class="profile-popup-name">${p.nickname || p.officialName}</div>
-          <div class="profile-popup-key">${p.officialName}</div>
+          <div class="profile-popup-key">${p.firstName || ""}${p.middleName ? " "+p.middleName : ""} ${p.lastName || ""}</div>
         </div>
       </div>
       <button onclick="closeProfilePopup()" style="background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:26px;height:26px;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
@@ -5069,7 +5112,7 @@ function applyRenegotiation() {
 }
 
 // Profile match check listeners
-['fOfficialName','fPhone'].forEach(id => {
+['fFirstName','fMiddleName','fLastName','fPhone'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', checkProfileMatch);
   if (el) el.addEventListener('change', checkProfileMatch);
