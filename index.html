@@ -1312,7 +1312,7 @@
   .swipe-action-btn.topup { background: #9A6200; }
   .swipe-action-btn.docs  { background: #0369a1; }
   .swipe-action-btn.del   { background: #D63050; }
-  .swipe-front { position: relative; z-index: 2; background: var(--surface); padding: 13px 16px 13px 22px; transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); will-change: transform; }
+  .swipe-front { position: relative; z-index: 2; background: var(--surface); padding: 13px 16px 13px 22px; transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); will-change: transform; isolation: isolate; }
   .swipe-card.swiped .swipe-front { transform: translateX(-320px); }
   .swipe-row1 { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
   .swipe-name { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -2069,6 +2069,116 @@
     border-color: rgba(251,113,133,0.2) !important;
   }
   body.theme-rose .widget-activity .widget-title { color: #FCA5A5 !important; }
+
+  /* Glass theme — solid backgrounds for swipe cards (can't be transparent) */
+  body.theme-glass .swipe-front { background: #1A1A35 !important; }
+  body.theme-glass .swipe-card { background: #1A1A35 !important; }
+  body.theme-glass .mobile-cards { background: transparent; }
+
+  /* All specialty themes — ensure swipe card front is solid */
+  body.theme-classy .swipe-front { background: #131520 !important; }
+  body.theme-retro .swipe-front { background: #0D150D !important; }
+  body.theme-sharp .swipe-front { background: #0A0A0A !important; }
+  body.theme-ocean .swipe-front { background: #051525 !important; }
+  body.theme-rose .swipe-front { background: #251020 !important; }
+  body.dim .swipe-front { background: #1C1814 !important; }
+
+  /* All themes: hamburger menu must be solid — never transparent */
+  .header-menu {
+    background: var(--surface) !important;
+  }
+  body.theme-glass .header-menu {
+    background: #1A1A35 !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    backdrop-filter: blur(20px);
+  }
+  body.theme-glass header {
+    background: rgba(10,10,26,0.92) !important;
+    backdrop-filter: blur(20px);
+  }
+  body.theme-classy .header-menu  { background: #131520 !important; }
+  body.theme-retro  .header-menu  { background: #0D150D !important; }
+  body.theme-sharp  .header-menu  { background: #0A0A0A !important; border: 1px solid #FF2D55 !important; }
+  body.theme-ocean  .header-menu  { background: #051525 !important; }
+  body.theme-rose   .header-menu  { background: #251020 !important; }
+  body.dim          .header-menu  { background: #1C1814 !important; }
+  body.light        .header-menu  { background: #FFFFFF !important; }
+
+  /* Overlay for hamburger menu on mobile — semi-opaque backdrop */
+  .header-menu-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 198;
+    backdrop-filter: blur(2px);
+  }
+  .header-menu-overlay.open { display: block; }
+
+  /* Classy theme — fix button text visibility */
+  body.theme-classy .filter-btn {
+    color: #B8A882 !important;
+    border-color: #2A2D45 !important;
+  }
+  body.theme-classy .filter-btn:hover {
+    color: #F0E6CC !important;
+    border-color: #C8A84B !important;
+    background: rgba(200,168,75,0.12) !important;
+  }
+  body.theme-classy .filter-btn.active {
+    background: #C8A84B !important;
+    border-color: #C8A84B !important;
+    color: #0B0D17 !important; /* dark text on gold */
+    font-weight: 700 !important;
+  }
+  body.theme-classy .view-toggle-btn {
+    color: #B8A882 !important;
+  }
+  body.theme-classy .view-toggle-btn.active {
+    background: #C8A84B !important;
+    color: #0B0D17 !important;
+    font-weight: 700 !important;
+  }
+  body.theme-classy .view-toggle-btn:hover:not(.active) {
+    background: rgba(200,168,75,0.1) !important;
+    color: #F0E6CC !important;
+  }
+  body.theme-classy .add-btn {
+    color: #0B0D17 !important; /* dark text on gold button */
+    font-weight: 700 !important;
+  }
+  body.theme-classy .modal-save {
+    background: #C8A84B !important;
+    color: #0B0D17 !important;
+    font-weight: 700 !important;
+  }
+  body.theme-classy .badge-pending  { color: #0B0D17 !important; background: #C8A84B !important; }
+  body.theme-classy .badge-returned { color: #0B0D17 !important; background: #5FB88A !important; }
+  body.theme-classy .swipe-action-btn.edit  { background: #3A3A8A !important; }
+  body.theme-classy .upcoming-badge.ok      { color: #0B0D17 !important; background: #5FB88A !important; }
+  body.theme-classy .upcoming-badge.soon    { color: #0B0D17 !important; background: #C8A84B !important; }
+
+  /* Retro theme — fix button text too */
+  body.theme-retro .filter-btn.active {
+    background: #33FF33 !important;
+    color: #050A05 !important;
+    border-color: #33FF33 !important;
+  }
+  body.theme-retro .view-toggle-btn.active {
+    background: #33FF33 !important;
+    color: #050A05 !important;
+  }
+  body.theme-retro .add-btn { color: #33FF33 !important; }
+  body.theme-retro .modal-save {
+    background: transparent !important;
+    border: 1px solid #33FF33 !important;
+    color: #33FF33 !important;
+    border-radius: 2px !important;
+  }
+
+  /* Sharp theme — active button text */
+  body.theme-sharp .filter-btn.active { color: #fff !important; }
+  body.theme-sharp .view-toggle-btn.active { color: #fff !important; }
+  body.theme-sharp .add-btn { color: #fff !important; }
 </style>
 </head>
 <body>
@@ -2156,6 +2266,8 @@
 
 <main class="main">
   
+
+<div class="header-menu-overlay" id="headerMenuOverlay" onclick="closeHamburger()"></div>
 
 <!-- Skeleton Loader -->
 <div id="skeletonLoader" style="display:block">
@@ -2271,6 +2383,8 @@
     </div>
     <div class="mobile-cards" id="mobileCards"></div>
   </div>
+
+<div class="header-menu-overlay" id="headerMenuOverlay" onclick="closeHamburger()"></div>
 
 <!-- Skeleton Loader -->
 
@@ -4663,22 +4777,24 @@ function aboutBgClick(e) {
 
 // ── Hamburger Menu ────────────────────────────────────────────────────────
 function toggleHamburger() {
-  const menu = document.getElementById("headerMenu");
-  const btn  = document.getElementById("hamburgerBtn");
+  const menu    = document.getElementById("headerMenu");
+  const btn     = document.getElementById("hamburgerBtn");
+  const overlay = document.getElementById("headerMenuOverlay");
   const open = menu.classList.toggle("open");
+  if (overlay) overlay.classList.toggle("open", open);
   btn.textContent = open ? "✕" : "☰";
-  // Sync currency select in menu
   const mc = document.getElementById("currencySelectMobile");
   if (mc) mc.value = activeCurrency;
-  // Sync theme label
   updateMenuThemeLabel();
 }
 
 function closeHamburger() {
-  const menu = document.getElementById("headerMenu");
-  const btn  = document.getElementById("hamburgerBtn");
-  if (menu) menu.classList.remove("open");
-  if (btn)  btn.textContent = "☰";
+  const menu    = document.getElementById("headerMenu");
+  const btn     = document.getElementById("hamburgerBtn");
+  const overlay = document.getElementById("headerMenuOverlay");
+  if (menu)    menu.classList.remove("open");
+  if (overlay) overlay.classList.remove("open");
+  if (btn)     btn.textContent = "☰";
 }
 
 function updateMenuThemeLabel() {
