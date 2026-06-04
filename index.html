@@ -3261,7 +3261,7 @@ function renderTable(data) {
       <td class="name-cell">
         <span class="borrower-name-link"
           onclick="openProfileByRecord(${r.id}, this)"
-          onmouseenter="showNameTooltip('${r.profile?.officialName ? r.profile.officialName.trim().toLowerCase().replace(/\s+/g,\' \')+\'|\'+(r.profile.phone||\'\') : \'\'}', event)"
+          onmouseenter="showNameTooltipById(${r.id}, event)"
           onmouseleave="hideNameTooltip()"
         >${r.name}</span>
         ${r.notes?`<span class="note-text">${r.notes}</span>`:""}
@@ -4388,6 +4388,13 @@ function editProfileKey(key) {
 
 // ── Hover tooltip ──────────────────────────────────
 let tooltipTimeout;
+function showNameTooltipById(id, event) {
+  const r = localData.find(x => x.id === id);
+  if (!r?.profile?.officialName) return;
+  const key = profileKey(r.profile.officialName, r.profile.phone);
+  if (key) showNameTooltip(key, event);
+}
+
 function showNameTooltip(key, event) {
   clearTimeout(tooltipTimeout);
   if (!key) return;
