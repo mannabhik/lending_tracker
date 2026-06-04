@@ -64,7 +64,8 @@
     justify-content: space-between;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
+    overflow: visible;
     backdrop-filter: blur(12px);
   }
 
@@ -162,6 +163,8 @@
     transition: all 0.2s;
     letter-spacing: 0.01em;
     box-shadow: 0 4px 15px rgba(108,99,255,0.3);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .add-btn:hover { background: var(--accent-dark); box-shadow: var(--glow-accent); }
@@ -729,7 +732,7 @@
     .stat-value { font-size: 20px; }
     .charts-row { grid-template-columns: 1fr 1fr; gap: 12px; }
     .chart-card { padding: 16px 18px; }
-    header { padding: 16px 24px; }
+    header { padding: 16px 24px; overflow: visible; position: sticky; }
     .logo-text { font-size: 15px; }
     /* Modal full-width on tablet */
     .modal { width: 90vw; max-width: 560px; }
@@ -740,12 +743,18 @@
     .schedule-modal { width: 95vw; }
     .schedule-summary-grid { grid-template-columns: repeat(2, 1fr); }
     .sched-form-grid { grid-template-columns: 1fr 1fr; }
+    /* Hamburger dropdown — anchor to header, no fixed */
+    .header-menu { position: absolute; top: 100%; right: 0; left: auto; min-width: 240px; }
+    /* Tap targets */
+    .hamburger-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .menu-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; min-height: 48px; }
+    .add-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   }
 
   /* ── Mobile (≤640px) ─────────────────────────────────────────────── */
   @media (max-width: 640px) {
     /* Header — compact, no overflow */
-    header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: hidden; position: relative; justify-content: space-between; align-items: center; }
+    header { padding: 10px 12px; gap: 0; flex-wrap: nowrap; overflow: visible; position: relative; justify-content: space-between; align-items: center; }
     .logo { align-items: flex-start; }
     .logo-text { font-size: 12px; letter-spacing: -0.01em; white-space: nowrap; }
     .logo-sub { display: none; }
@@ -769,7 +778,7 @@
     .hamburger-btn { padding: 7px 10px; font-size: 16px; flex-shrink: 0; }
 
     /* Dropdown full width on mobile */
-    .header-menu { left: 8px; right: 8px; min-width: unset; top: calc(100% + 4px); position: fixed; }
+    .header-menu { left: 0; right: 0; min-width: unset; top: 100%; position: absolute; margin: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
 
     /* Main layout */
     .main { padding: 14px 12px 80px; }
@@ -1378,6 +1387,8 @@
     font-size: 18px; line-height: 1;
     cursor: pointer; transition: all 0.2s;
     flex-shrink: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .hamburger-btn:hover { background: rgba(255,255,255,0.13); color: #fff; }
   body.light .hamburger-btn { background: rgba(0,0,0,0.05); color: var(--text2); border-color: var(--border2); }
@@ -1386,25 +1397,28 @@
   .header-menu {
     display: none;
     position: absolute;
-    top: calc(100% + 6px);
+    top: 100%;
     right: 0;
     background: var(--surface);
     border: 1px solid var(--border2);
-    border-radius: var(--radius-lg);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     padding: 8px;
-    z-index: 300;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    z-index: 500;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     min-width: 220px;
     animation: pop 0.15s ease;
   }
   .header-menu.open { display: block; }
   .menu-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px; border-radius: var(--radius);
-    font-size: 13px; font-weight: 500; color: var(--text2);
+    padding: 12px 14px; border-radius: var(--radius);
+    font-size: 14px; font-weight: 500; color: var(--text2);
     cursor: pointer; transition: background 0.12s, color 0.12s;
     border: none; background: none; width: 100%;
     font-family: 'DM Sans', sans-serif; text-align: left;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 48px;
   }
   .menu-item:hover { background: var(--surface2); color: var(--text); }
   .menu-item .menu-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
@@ -1475,6 +1489,26 @@
   /* Clickable name in table */
   .borrower-name-link { cursor: pointer; color: var(--text); font-weight: 500; }
   .borrower-name-link:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── Skeleton loader ─────────────────────────────────────────────── */
+  @keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 6px;
+  }
+  .skeleton-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .skeleton-col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .skeleton-block { height: 12px; border-radius: 4px; }
+  .skeleton-circle { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; }
+  .skeleton-badge { width: 60px; height: 20px; border-radius: 20px; flex-shrink: 0; }
+  .skeleton-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; }
+  .skeleton-stat-label { height: 10px; width: 60%; margin-bottom: 10px; border-radius: 4px; }
+  .skeleton-stat-value { height: 22px; width: 80%; border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -1561,6 +1595,7 @@
 </header>
 
 <main class="main">
+  <div id="mainContent">
   <div class="summary-grid" id="summaryGrid"></div>
 
   <div class="dashboard-panel" id="dashboardPanel" style="display:none">
@@ -1655,6 +1690,46 @@
     </div>
     <div class="mobile-cards" id="mobileCards"></div>
   </div>
+
+<!-- Skeleton Loader -->
+<div id="skeletonLoader" style="display:none">
+  <!-- Stat cards skeleton -->
+  <div class="summary-grid" style="margin-bottom:24px">
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+    <div class="skeleton-stat">
+      <div class="skeleton skeleton-block skeleton-stat-label"></div>
+      <div class="skeleton skeleton-block skeleton-stat-value"></div>
+    </div>
+  </div>
+  <!-- Table skeleton -->
+  <div class="table-card" style="margin-bottom:24px">
+    ${[1,2,3,4,5].map(()=>`
+    <div class="skeleton-row">
+      <div class="skeleton skeleton-circle"></div>
+      <div class="skeleton-col">
+        <div class="skeleton skeleton-block" style="width:55%"></div>
+        <div class="skeleton skeleton-block" style="width:35%"></div>
+      </div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-block" style="width:60px;height:14px"></div>
+      <div class="skeleton skeleton-badge"></div>
+    </div>`).join("")}
+  </div>
+</div>
+
+  </div><!-- end mainContent -->
 
   <div class="charts-row">
     <div class="chart-card">
