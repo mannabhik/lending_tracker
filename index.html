@@ -3366,7 +3366,6 @@ function renderTable(data) {
       <td class="name-cell">
         <span class="borrower-name-link" data-record-id="${r.id}"
           role="button" tabindex="0"
-          onclick="openProfileByRecord(${r.id}, this)"
           onmouseenter="showNameTooltipById(${r.id}, event)"
           onmouseleave="hideNameTooltip()"
           style="display:inline-block;cursor:pointer"
@@ -3828,55 +3827,53 @@ setInterval(updateClock, 1000);
 
 // Keyboard shortcut
 
-// ── Global click delegation for mobile compatibility ─────────────────────
-function handleNameLinkTap(e) {
+// ── Name link tap handler ─────────────────────────────────────────────────
+let _nameHandled = false; // prevent double-fire on mobile
+
+// Desktop: click handler
+document.addEventListener("click", function(e) {
+  if (_nameHandled) { _nameHandled = false; return; }
   let el = e.target;
   while (el && el !== document) {
     if (el.classList && el.classList.contains("borrower-name-link")) {
       const id = parseInt(el.dataset.recordId);
-      if (id) {
-        e.preventDefault();
-        e.stopPropagation();
-        openProfileByRecord(id, el);
-      }
+      if (id) { e.preventDefault(); e.stopPropagation(); openProfileByRecord(id, el); }
       return;
     }
     el = el.parentElement;
   }
-}
+}, false);
 
-// Handle both click (desktop) and touchend (mobile)
-document.addEventListener("click", handleNameLinkTap, { passive: false });
-
-// Mobile: use touchstart+touchend to detect tap on name link
-let nameTouchStartX = 0, nameTouchStartY = 0, nameTouchTarget = null;
+// Mobile: touchstart records position, touchend fires if tap (not scroll/swipe)
+let _ntX = 0, _ntY = 0, _ntEl = null;
 document.addEventListener("touchstart", function(e) {
+  _ntEl = null;
   let el = e.target;
   while (el && el !== document) {
     if (el.classList && el.classList.contains("borrower-name-link")) {
-      nameTouchTarget = el;
-      nameTouchStartX = e.touches[0].clientX;
-      nameTouchStartY = e.touches[0].clientY;
+      _ntEl = el;
+      _ntX = e.touches[0].clientX;
+      _ntY = e.touches[0].clientY;
       return;
     }
     el = el.parentElement;
   }
-  nameTouchTarget = null;
 }, { passive: true, capture: true });
 
 document.addEventListener("touchend", function(e) {
-  if (!nameTouchTarget) return;
-  const dx = Math.abs(e.changedTouches[0].clientX - nameTouchStartX);
-  const dy = Math.abs(e.changedTouches[0].clientY - nameTouchStartY);
-  if (dx < 10 && dy < 10) { // it's a tap not a scroll
-    const id = parseInt(nameTouchTarget.dataset.recordId);
+  if (!_ntEl) return;
+  const dx = Math.abs(e.changedTouches[0].clientX - _ntX);
+  const dy = Math.abs(e.changedTouches[0].clientY - _ntY);
+  if (dx < 10 && dy < 10) {
+    const id = parseInt(_ntEl.dataset.recordId);
     if (id) {
       e.preventDefault();
       e.stopPropagation();
-      openProfileByRecord(id, nameTouchTarget);
+      _nameHandled = true; // block the subsequent click event
+      openProfileByRecord(id, _ntEl);
     }
   }
-  nameTouchTarget = null;
+  _ntEl = null;
 }, { passive: false, capture: true });
 
 document.addEventListener("keydown", e => {
