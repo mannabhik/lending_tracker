@@ -1911,6 +1911,164 @@
   body.theme-rose .add-btn { background: #F472B6 !important; box-shadow: 0 4px 16px rgba(244,114,182,0.4) !important; }
   body.theme-rose .filter-btn.active { background: #F472B6 !important; border-color: #F472B6 !important; }
   body.theme-rose .stat { border-radius: 20px !important; }
+
+  /* ── Widget tonal backgrounds — theme dependent ─────────────── */
+
+  /* Default dark theme */
+  .widget-upcoming {
+    background: color-mix(in srgb, var(--surface) 92%, #0EA5E9 8%) !important;
+    border-color: rgba(14,165,233,0.18) !important;
+  }
+  .widget-upcoming .widget-hd { border-bottom-color: rgba(14,165,233,0.15) !important; }
+  .widget-upcoming .widget-title { color: #60C8F0 !important; }
+
+  .widget-stats {
+    background: color-mix(in srgb, var(--surface) 92%, #8B5CF6 8%) !important;
+    border-color: rgba(139,92,246,0.18) !important;
+  }
+  .widget-stats .widget-hd { border-bottom-color: rgba(139,92,246,0.15) !important; }
+  .widget-stats .widget-title { color: #A78BFA !important; }
+
+  .widget-activity {
+    background: color-mix(in srgb, var(--surface) 92%, #10B981 8%) !important;
+    border-color: rgba(16,185,129,0.18) !important;
+  }
+  .widget-activity .widget-hd { border-bottom-color: rgba(16,185,129,0.15) !important; }
+  .widget-activity .widget-title { color: #4ADE80 !important; }
+
+  /* Light theme — more pastel tints */
+  body.light .widget-upcoming {
+    background: color-mix(in srgb, #fff 88%, #0EA5E9 12%) !important;
+    border-color: rgba(14,165,233,0.25) !important;
+  }
+  body.light .widget-upcoming .widget-title { color: #0284C7 !important; }
+
+  body.light .widget-stats {
+    background: color-mix(in srgb, #fff 88%, #8B5CF6 12%) !important;
+    border-color: rgba(139,92,246,0.25) !important;
+  }
+  body.light .widget-stats .widget-title { color: #7C3AED !important; }
+
+  body.light .widget-activity {
+    background: color-mix(in srgb, #fff 88%, #10B981 12%) !important;
+    border-color: rgba(16,185,129,0.25) !important;
+  }
+  body.light .widget-activity .widget-title { color: #059669 !important; }
+
+  /* Dim theme — warm tints */
+  body.dim .widget-upcoming {
+    background: color-mix(in srgb, var(--surface) 90%, #0EA5E9 10%) !important;
+    border-color: rgba(14,165,233,0.15) !important;
+  }
+  body.dim .widget-stats {
+    background: color-mix(in srgb, var(--surface) 90%, #C8A84B 10%) !important;
+    border-color: rgba(200,168,75,0.15) !important;
+  }
+  body.dim .widget-stats .widget-title { color: #E8C870 !important; }
+  body.dim .widget-activity {
+    background: color-mix(in srgb, var(--surface) 90%, #E87878 10%) !important;
+    border-color: rgba(232,120,120,0.15) !important;
+  }
+  body.dim .widget-activity .widget-title { color: #F0A0A0 !important; }
+
+  /* Classy — navy gold tints */
+  body.theme-classy .widget-upcoming {
+    background: color-mix(in srgb, var(--surface) 90%, #C8A84B 10%) !important;
+    border-color: rgba(200,168,75,0.2) !important;
+  }
+  body.theme-classy .widget-upcoming .widget-title { color: #E8C870 !important; }
+  body.theme-classy .widget-stats {
+    background: color-mix(in srgb, var(--surface) 92%, #A888E8 8%) !important;
+    border-color: rgba(168,136,232,0.15) !important;
+  }
+  body.theme-classy .widget-stats .widget-title { color: #C4A0F0 !important; }
+  body.theme-classy .widget-activity {
+    background: color-mix(in srgb, var(--surface) 92%, #5FB88A 8%) !important;
+    border-color: rgba(95,184,138,0.15) !important;
+  }
+  body.theme-classy .widget-activity .widget-title { color: #7ECFA0 !important; }
+
+  /* Glass — transparent tints */
+  body.theme-glass .widget-upcoming {
+    background: rgba(14,165,233,0.08) !important;
+    border-color: rgba(14,165,233,0.2) !important;
+  }
+  body.theme-glass .widget-stats {
+    background: rgba(139,92,246,0.08) !important;
+    border-color: rgba(139,92,246,0.2) !important;
+  }
+  body.theme-glass .widget-activity {
+    background: rgba(16,185,129,0.08) !important;
+    border-color: rgba(16,185,129,0.2) !important;
+  }
+
+  /* Retro — green tints */
+  body.theme-retro .widget-upcoming {
+    background: rgba(51,255,51,0.04) !important;
+    border-color: rgba(51,255,51,0.15) !important;
+  }
+  body.theme-retro .widget-stats {
+    background: rgba(255,255,51,0.04) !important;
+    border-color: rgba(255,255,51,0.12) !important;
+  }
+  body.theme-retro .widget-stats .widget-title { color: #FFFF66 !important; }
+  body.theme-retro .widget-activity {
+    background: rgba(51,255,255,0.04) !important;
+    border-color: rgba(51,255,255,0.12) !important;
+  }
+  body.theme-retro .widget-activity .widget-title { color: #66FFFF !important; }
+
+  /* Sharp — bold tints */
+  body.theme-sharp .widget-upcoming {
+    background: rgba(255,45,85,0.06) !important;
+    border-left: 3px solid #FF2D55 !important;
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  }
+  body.theme-sharp .widget-stats {
+    background: rgba(255,214,10,0.06) !important;
+    border-left: 3px solid #FFD60A !important;
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  }
+  body.theme-sharp .widget-stats .widget-title { color: #FFD60A !important; }
+  body.theme-sharp .widget-activity {
+    background: rgba(48,209,88,0.06) !important;
+    border-left: 3px solid #30D158 !important;
+    border-top: none !important; border-right: none !important; border-bottom: none !important;
+  }
+  body.theme-sharp .widget-activity .widget-title { color: #30D158 !important; }
+
+  /* Ocean — sea tints */
+  body.theme-ocean .widget-upcoming {
+    background: color-mix(in srgb, var(--surface) 88%, #0EA5E9 12%) !important;
+    border-color: rgba(14,165,233,0.25) !important;
+  }
+  body.theme-ocean .widget-stats {
+    background: color-mix(in srgb, var(--surface) 88%, #2DD4BF 12%) !important;
+    border-color: rgba(45,212,191,0.2) !important;
+  }
+  body.theme-ocean .widget-stats .widget-title { color: #5EEEDD !important; }
+  body.theme-ocean .widget-activity {
+    background: color-mix(in srgb, var(--surface) 90%, #818CF8 10%) !important;
+    border-color: rgba(129,140,248,0.2) !important;
+  }
+  body.theme-ocean .widget-activity .widget-title { color: #A5B4FC !important; }
+
+  /* Rose — pink tints */
+  body.theme-rose .widget-upcoming {
+    background: color-mix(in srgb, var(--surface) 88%, #F472B6 12%) !important;
+    border-color: rgba(244,114,182,0.2) !important;
+  }
+  body.theme-rose .widget-upcoming .widget-title { color: #F9A8D4 !important; }
+  body.theme-rose .widget-stats {
+    background: color-mix(in srgb, var(--surface) 88%, #C084FC 12%) !important;
+    border-color: rgba(192,132,252,0.2) !important;
+  }
+  body.theme-rose .widget-stats .widget-title { color: #D8B4FE !important; }
+  body.theme-rose .widget-activity {
+    background: color-mix(in srgb, var(--surface) 90%, #FB7185 10%) !important;
+    border-color: rgba(251,113,133,0.2) !important;
+  }
+  body.theme-rose .widget-activity .widget-title { color: #FCA5A5 !important; }
 </style>
 </head>
 <body>
@@ -2135,7 +2293,7 @@
   <div class="right-panel">
 
     <!-- Widget 1: Upcoming Payments -->
-    <div class="widget-card">
+    <div class="widget-card widget-upcoming">
       <div class="widget-hd">
         <span class="widget-title">📅 Upcoming Payments</span>
         <span style="font-size:10px;color:var(--text3)" id="upcomingSubtitle">Next 30 days</span>
@@ -2144,13 +2302,13 @@
     </div>
 
     <!-- Widget 2: Quick Stats -->
-    <div class="widget-card">
+    <div class="widget-card widget-stats">
       <div class="widget-hd"><span class="widget-title">📊 Quick Stats</span></div>
       <div class="widget-body" id="quickStatsWidget"></div>
     </div>
 
     <!-- Widget 3: Activity Timeline -->
-    <div class="widget-card">
+    <div class="widget-card widget-activity">
       <div class="widget-hd">
         <span class="widget-title">⚡ Recent Activity</span>
         <span style="font-size:10px;color:var(--text3)">Latest 8</span>
