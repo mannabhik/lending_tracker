@@ -2704,13 +2704,14 @@
 
 <!-- Theme Picker Modal -->
 <div class="overlay" id="themePickerOverlay" onclick="themePickerBgClick(event)">
-  <div class="modal" style="max-width:380px;padding:0;overflow:hidden;max-height:85vh;display:flex;flex-direction:column">
-    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border)">
+  <div class="modal" style="max-width:380px;padding:0;border-radius:24px;overflow:hidden;max-height:85vh;display:flex;flex-direction:column">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
       <div style="font-size:16px;font-weight:700;margin-bottom:4px">Appearance</div>
       <div style="font-size:12px;color:var(--text3)">Choose how the app looks</div>
     </div>
-    <div style="padding:8px;overflow-y:auto;flex:1">
-      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:8px 12px 4px">Standard</div>
+    <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch">
+      <div style="padding:0 8px 8px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:12px 12px 4px">Standard</div>
       <button class="theme-option-btn" id="themeOptDark" onclick="setThemeMode('dark')">
         <span class="theme-option-icon">🌑</span>
         <div class="theme-option-info"><div class="theme-option-label">Dark</div><div class="theme-option-sub">Deep dark — classic night mode</div></div>
@@ -2763,8 +2764,9 @@
         <div class="theme-option-info"><div class="theme-option-label">Rose</div><div class="theme-option-sub">Pink & purple — warm and elegant</div></div>
         <span class="theme-option-check" id="checkTheme-rose"></span>
       </button>
-    </div>
-    <div style="padding:12px 24px 20px;border-top:1px solid var(--border)">
+    </div><!-- end inner padding -->
+    </div><!-- end scrollable -->
+    <div style="padding:12px 24px 20px;border-top:1px solid var(--border);flex-shrink:0">
       <button class="modal-save" onclick="closeThemePicker()" style="margin-top:0">Done</button>
     </div>
   </div>
