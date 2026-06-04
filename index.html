@@ -3201,6 +3201,10 @@ let isSyncing = false;
 
 function setLoading(on) {
   document.getElementById("loadingOverlay").style.display = on ? "flex" : "none";
+  const sk   = document.getElementById("skeletonLoader");
+  const main = document.getElementById("mainContent");
+  if (sk)   sk.style.display   = on ? "block" : "none";
+  if (main) main.style.display = on ? "none"  : "block";
 }
 
 function setSyncStatus(state) {
@@ -3360,8 +3364,7 @@ function renderTable(data) {
       <td><input type="checkbox" class="row-check" data-id="${r.id}" onclick="toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""}></td>
       <td><span class="date-pill">${fmtDate(r.date, true)}</span></td>
       <td class="name-cell">
-        <span class="borrower-name-link"
-          onclick="openProfileByRecord(${r.id}, this)"
+        <span class="borrower-name-link" data-record-id="${r.id}"
           onmouseenter="showNameTooltipById(${r.id}, event)"
           onmouseleave="hideNameTooltip()"
         >${r.name}</span>
@@ -3821,6 +3824,18 @@ updateClock();
 setInterval(updateClock, 1000);
 
 // Keyboard shortcut
+
+// ── Global click delegation for mobile compatibility ─────────────────────
+document.addEventListener("click", function(e) {
+  // Borrower name link
+  const nameLink = e.target.closest(".borrower-name-link");
+  if (nameLink) {
+    const id = parseInt(nameLink.dataset.recordId);
+    if (id) { e.preventDefault(); e.stopPropagation(); openProfileByRecord(id, nameLink); }
+    return;
+  }
+}, { passive: false });
+
 document.addEventListener("keydown", e => {
   if (e.key==="Escape") closeModal();
   if ((e.metaKey||e.ctrlKey) && e.key==="k") { e.preventDefault(); openModal(); }
@@ -3830,6 +3845,11 @@ document.addEventListener("keydown", e => {
 // (first-time setup will call render() itself after password is set)
 loadTheme();
 loadCurrency();
+// Show skeleton immediately on load
+const _sk = document.getElementById("skeletonLoader");
+const _mc = document.getElementById("mainContent");
+if (_sk) _sk.style.display = "block";
+if (_mc) _mc.style.display = "none";
 // Load data immediately — don't wait for password
 render().then(() => {
   checkAutoSync();
