@@ -1487,7 +1487,7 @@
   .name-tooltip-val { color: var(--text); font-weight: 600; }
 
   /* Clickable name in table */
-  .borrower-name-link { cursor: pointer; color: var(--text); font-weight: 500; }
+  .borrower-name-link { cursor: pointer; color: var(--text); font-weight: 500; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .borrower-name-link:hover { color: var(--accent); text-decoration: underline; }
 
   /* ── Skeleton loader ─────────────────────────────────────────────── */
@@ -1509,6 +1509,12 @@
   .skeleton-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; }
   .skeleton-stat-label { height: 10px; width: 60%; margin-bottom: 10px; border-radius: 4px; }
   .skeleton-stat-value { height: 22px; width: 80%; border-radius: 4px; }
+
+  /* Touch fix for all interactive elements in table */
+  .row-actions button, .borrower-name-link, .row-check, .swipe-action-btn, .filter-btn, .view-toggle-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 </style>
 </head>
 <body>
