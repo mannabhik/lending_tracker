@@ -3827,12 +3827,15 @@ setInterval(updateClock, 1000);
 
 // ── Global click delegation for mobile compatibility ─────────────────────
 document.addEventListener("click", function(e) {
-  // Borrower name link
-  const nameLink = e.target.closest(".borrower-name-link");
-  if (nameLink) {
-    const id = parseInt(nameLink.dataset.recordId);
-    if (id) { e.preventDefault(); e.stopPropagation(); openProfileByRecord(id, nameLink); }
-    return;
+  // Walk up DOM tree manually instead of using closest() for compatibility
+  let el = e.target;
+  while (el && el !== document) {
+    if (el.classList && el.classList.contains("borrower-name-link")) {
+      const id = parseInt(el.dataset.recordId);
+      if (id) { e.preventDefault(); openProfileByRecord(id, el); }
+      return;
+    }
+    el = el.parentElement;
   }
 }, { passive: false });
 
@@ -3846,10 +3849,19 @@ document.addEventListener("keydown", e => {
 loadTheme();
 loadCurrency();
 // Show skeleton immediately on load
-const _sk = document.getElementById("skeletonLoader");
-const _mc = document.getElementById("mainContent");
-if (_sk) _sk.style.display = "block";
-if (_mc) _mc.style.display = "none";
+document.addEventListener("DOMContentLoaded", function() {
+  const _sk = document.getElementById("skeletonLoader");
+  const _mc = document.getElementById("mainContent");
+  if (_sk) _sk.style.display = "block";
+  if (_mc) _mc.style.display = "none";
+});
+// Also show right away in case DOM already loaded
+(function() {
+  const _sk = document.getElementById("skeletonLoader");
+  const _mc = document.getElementById("mainContent");
+  if (_sk) _sk.style.display = "block";
+  if (_mc) _mc.style.display = "none";
+})();
 // Load data immediately — don't wait for password
 render().then(() => {
   checkAutoSync();
