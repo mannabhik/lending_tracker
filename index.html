@@ -2331,6 +2331,10 @@
         <span class="menu-icon">🔑</span> Change password
       </button>
       <div class="menu-separator"></div>
+      <button class="menu-item" onclick="openLoanCalc();closeHamburger()">
+        <span class="menu-icon">🧮</span> Loan Calculator
+      </button>
+      <div class="menu-separator"></div>
       <button class="menu-item" onclick="openAbout();closeHamburger()">
         <span class="menu-icon">ℹ️</span> About
       </button>
@@ -3125,6 +3129,125 @@
     <div style="padding:12px 24px 20px;border-top:1px solid var(--border);flex-shrink:0">
       <button class="modal-save" onclick="closeThemePicker()" style="margin-top:0">Done</button>
     </div>
+  </div>
+</div>
+
+<!-- Loan Calculator Modal -->
+<div class="overlay" id="loanCalcOverlay" onclick="loanCalcBgClick(event)">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hd">
+      <span class="modal-title">🧮 Loan Calculator</span>
+      <button class="close-btn" onclick="closeLoanCalc()">✕</button>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Principal Amount</label>
+        <input id="lcPrincipal" type="number" placeholder="e.g. 50000" oninput="calcLoan()">
+      </div>
+      <div class="field">
+        <label>Interest Type</label>
+        <select id="lcType" onchange="calcLoan()">
+          <option value="compound">Compound</option>
+          <option value="simple">Simple</option>
+          <option value="fixed">Fixed EMI</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="lcRateSection">
+      <div class="field-row">
+        <div class="field">
+          <label>Interest Rate</label>
+          <input id="lcRate" type="number" placeholder="e.g. 15" step="0.1" oninput="calcLoan()">
+        </div>
+        <div class="field">
+          <label>Rate Period</label>
+          <select id="lcRatePeriod" onchange="calcLoan()">
+            <option value="yearly">% per year</option>
+            <option value="monthly">% per month</option>
+            <option value="quarterly">% per quarter</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="lcFixedSection" style="display:none">
+      <div class="field">
+        <label>Fixed EMI Amount</label>
+        <input id="lcFixedEMI" type="number" placeholder="e.g. 5000" oninput="calcLoan()">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Tenure</label>
+        <input id="lcTenure" type="number" placeholder="e.g. 24" oninput="calcLoan()">
+      </div>
+      <div class="field">
+        <label>Tenure Unit</label>
+        <select id="lcTenureUnit" onchange="calcLoan()">
+          <option value="months">Months</option>
+          <option value="years">Years</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>EMI Frequency</label>
+      <select id="lcPayoutFreq" onchange="calcLoan()">
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="weekly">Weekly</option>
+        <option value="onetime">One-time (at end)</option>
+      </select>
+    </div>
+
+    <!-- Results -->
+    <div id="lcResults" style="display:none;margin-top:16px">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Monthly EMI</div>
+            <div id="lcEMI" style="font-size:22px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Total Payable</div>
+            <div id="lcTotal" style="font-size:22px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Total Interest</div>
+            <div id="lcInterest" style="font-size:18px;font-weight:600;color:var(--amber);font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Interest %</div>
+            <div id="lcInterestPct" style="font-size:18px;font-weight:600;color:var(--text2);font-family:'JetBrains Mono',monospace"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini schedule toggle -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em">Repayment Schedule</div>
+        <button class="filter-btn" style="font-size:10px;padding:3px 10px" onclick="toggleCalcSchedule()">Show</button>
+      </div>
+      <div id="lcSchedule" style="display:none;max-height:220px;overflow-y:auto;border-radius:var(--radius);border:1px solid var(--border)">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead style="background:var(--surface2);position:sticky;top:0">
+            <tr>
+              <th style="padding:7px 10px;text-align:left;font-size:10px;color:var(--text3);font-weight:600">#</th>
+              <th style="padding:7px 10px;text-align:right;font-size:10px;color:var(--text3);font-weight:600">EMI</th>
+              <th style="padding:7px 10px;text-align:right;font-size:10px;color:var(--text3);font-weight:600">Principal</th>
+              <th style="padding:7px 10px;text-align:right;font-size:10px;color:var(--text3);font-weight:600">Interest</th>
+              <th style="padding:7px 10px;text-align:right;font-size:10px;color:var(--text3);font-weight:600">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="lcScheduleBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="lcError" style="display:none;margin-top:12px;padding:10px 14px;background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius);font-size:12px;color:var(--red)"></div>
   </div>
 </div>
 
@@ -4078,6 +4201,8 @@ async function saveToCloud(data) {
   isSyncing = true;
   setSyncStatus("syncing");
   localData = data;
+  // Refresh widgets whenever data changes
+  renderRightPanel(data);
   try {
     // Include pw in every save to avoid overwriting it
     const payload = { records: data };
@@ -5698,42 +5823,54 @@ function renderActivityWidget(data) {
   const el = document.getElementById("activityWidget");
   if (!el) return;
 
-  // Build activity from record updatedAt / date
   const events = [];
   [...data].forEach(r => {
     // Record creation
+    const displayName = r.profile?.officialName || r.name;
     events.push({
-      type: "add", name: r.name, date: r.date,
+      type: "add", name: displayName, date: r.date,
       sub: `Lent ${fmt(r.lent)}`, ts: new Date(r.date).getTime()
     });
     // Payments
     (r.payments||[]).forEach(p => {
       events.push({
-        type: "pay", name: r.name, date: p.date,
+        type: "pay", name: displayName, date: p.date,
         sub: `Paid ${fmt(p.amount)}${p.note?" — "+p.note:""}`,
         ts: new Date(p.date).getTime()
       });
     });
-    // Closed
+    // Closed/archived
     if (r.archived && r.archivedAt) {
       events.push({
-        type: "close", name: r.name, date: r.archivedAt,
+        type: "close", name: displayName, date: r.archivedAt,
         sub: `Loan fully settled`, ts: new Date(r.archivedAt).getTime()
       });
     }
     // Overdue
     if (r.status === "OVERDUE") {
       events.push({
-        type: "overdue", name: r.name, date: r.updatedAt||r.date,
+        type: "overdue", name: displayName, date: r.updatedAt||r.date,
         sub: `Marked overdue`, ts: new Date(r.updatedAt||r.date).getTime()
       });
+    }
+    // Edit/update
+    if (r.updatedAt && r.updatedAt !== r.date && r.status !== "OVERDUE" && !r.archived) {
+      const updTs = new Date(r.updatedAt).getTime();
+      const sameDayPayment = (r.payments||[]).some(p => p.date === r.updatedAt);
+      if (!sameDayPayment) {
+        events.push({
+          type: "edit", name: displayName, date: r.updatedAt,
+          sub: `Record updated`,
+          ts: updTs
+        });
+      }
     }
   });
 
   events.sort((a,b) => b.ts - a.ts);
   const show = events.slice(0, 8);
 
-  const icons = { add:"➕", pay:"💳", edit:"✎", close:"✅", overdue:"⚠️" };
+  const icons = { add:"➕", pay:"💳", edit:"✏️", close:"✅", overdue:"⚠️" };
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   if (!show.length) {
@@ -5761,6 +5898,121 @@ function renderRightPanel(data) {
   renderUpcomingWidget(active);
   renderQuickStatsWidget(data);
   renderActivityWidget(data);
+}
+
+
+// ── Loan Calculator ───────────────────────────────────────────────────────
+function openLoanCalc() {
+  document.getElementById("loanCalcOverlay").classList.add("open");
+  document.getElementById("lcPrincipal").focus();
+  calcLoan();
+}
+
+function closeLoanCalc() {
+  document.getElementById("loanCalcOverlay").classList.remove("open");
+}
+
+function loanCalcBgClick(e) {
+  if (e.target === document.getElementById("loanCalcOverlay")) closeLoanCalc();
+}
+
+function toggleCalcSchedule() {
+  const s = document.getElementById("lcSchedule");
+  const btn = s.previousElementSibling.querySelector("button");
+  const open = s.style.display === "none";
+  s.style.display = open ? "block" : "none";
+  btn.textContent = open ? "Hide" : "Show";
+}
+
+function calcLoan() {
+  const principal  = parseFloat(document.getElementById("lcPrincipal")?.value) || 0;
+  const type       = document.getElementById("lcType")?.value || "compound";
+  const rate       = parseFloat(document.getElementById("lcRate")?.value) || 0;
+  const ratePeriod = document.getElementById("lcRatePeriod")?.value || "yearly";
+  const tenure     = parseFloat(document.getElementById("lcTenure")?.value) || 0;
+  const tenureUnit = document.getElementById("lcTenureUnit")?.value || "months";
+  const payoutFreq = document.getElementById("lcPayoutFreq")?.value || "monthly";
+  const fixedEMI   = parseFloat(document.getElementById("lcFixedEMI")?.value) || 0;
+
+  const results = document.getElementById("lcResults");
+  const errEl   = document.getElementById("lcError");
+
+  // Show/hide rate vs fixed sections
+  const isFixed = type === "fixed";
+  document.getElementById("lcRateSection").style.display = isFixed ? "none" : "block";
+  document.getElementById("lcFixedSection").style.display = isFixed ? "block" : "none";
+
+  if (!principal || !tenure) {
+    results.style.display = "none"; errEl.style.display = "none"; return;
+  }
+
+  try {
+    const tenureMonths = toMonths(tenure, tenureUnit);
+    let totalPayable, emi, totalInterest;
+
+    if (isFixed) {
+      if (!fixedEMI) { results.style.display = "none"; return; }
+      const intervalMonths = payoutIntervalMonths(payoutFreq, 0);
+      const numPayments    = Math.ceil(tenureMonths / intervalMonths);
+      emi          = fixedEMI;
+      totalPayable = emi * numPayments;
+      totalInterest = totalPayable - principal;
+    } else if (type === "compound") {
+      totalPayable  = calcCompoundTotal(principal, rate, ratePeriod, tenureMonths);
+      emi           = calcEMI(principal, rate, ratePeriod, tenureMonths, payoutFreq, 0);
+      totalInterest = totalPayable - principal;
+    } else {
+      // simple
+      const monthlyRate = toMonthlyRate(rate, ratePeriod);
+      totalPayable  = calcSimpleTotal(principal, monthlyRate, tenureMonths);
+      emi           = calcEMI(principal, rate, ratePeriod, tenureMonths, payoutFreq, 0);
+      totalInterest = totalPayable - principal;
+    }
+
+    if (totalInterest < 0) totalInterest = 0;
+    const interestPct = principal > 0 ? ((totalInterest / principal) * 100).toFixed(1) : "0.0";
+    const intervalMonths = payoutIntervalMonths(payoutFreq, 0);
+    const emiLabel = payoutFreq === "weekly" ? "Weekly EMI" : payoutFreq === "quarterly" ? "Quarterly EMI" : payoutFreq === "onetime" ? "One-time" : "Monthly EMI";
+
+    document.getElementById("lcEMI").textContent = fmt(Math.round(emi));
+    document.getElementById("lcEMI").previousElementSibling.textContent = emiLabel;
+    document.getElementById("lcTotal").textContent = fmt(Math.round(totalPayable));
+    document.getElementById("lcInterest").textContent = fmt(Math.round(totalInterest));
+    document.getElementById("lcInterestPct").textContent = interestPct + "%";
+    results.style.display = "block";
+    errEl.style.display = "none";
+
+    // Build mini schedule
+    const numPayments = Math.ceil(tenureMonths / intervalMonths);
+    let balance = principal;
+    const monthlyRate = isFixed ? 0 : toMonthlyRate(rate, ratePeriod);
+    const rows = [];
+    for (let i = 1; i <= Math.min(numPayments, 60); i++) {
+      let intAmt = 0, principalAmt = 0;
+      if (!isFixed && monthlyRate > 0) {
+        intAmt = balance * monthlyRate * intervalMonths;
+        principalAmt = emi - intAmt;
+      } else {
+        principalAmt = emi;
+      }
+      balance = Math.max(0, balance - principalAmt);
+      if (i === numPayments) balance = 0;
+      rows.push(`<tr style="border-bottom:1px solid var(--border)${i===numPayments?";font-weight:600":""}">
+        <td style="padding:6px 10px;color:var(--text3)">${i}</td>
+        <td style="padding:6px 10px;text-align:right;font-family:'JetBrains Mono',monospace">${fmt(Math.round(emi))}</td>
+        <td style="padding:6px 10px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--green)">${fmt(Math.round(principalAmt))}</td>
+        <td style="padding:6px 10px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--amber)">${fmt(Math.round(intAmt))}</td>
+        <td style="padding:6px 10px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--red)">${fmt(Math.round(balance))}</td>
+      </tr>`);
+    }
+    if (numPayments > 60) rows.push(`<tr><td colspan="5" style="padding:8px 10px;text-align:center;font-size:11px;color:var(--text3)">... ${numPayments - 60} more payments</td></tr>`);
+    document.getElementById("lcScheduleBody").innerHTML = rows.join("");
+
+  } catch(err) {
+    results.style.display = "none";
+    errEl.style.display = "block";
+    errEl.textContent = "Error: " + err.message;
+  }
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
