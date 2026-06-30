@@ -1319,7 +1319,7 @@
   .swipe-name { font-size: 14px; font-weight: 600; color: var(--text); }
   .swipe-date { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
   .swipe-note { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .swipe-amounts { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 8px; }
+  .swipe-amounts { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px; margin-bottom: 8px; }
   .swipe-amt { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
   .swipe-amt-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
   .swipe-amt-val { font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
@@ -4470,6 +4470,10 @@ function renderTable(data) {
             <div class="swipe-amt-lbl">${overdue > 0 ? "Overdue" : "Pending"}</div>
             <div class="swipe-amt-val" style="color:${overdue>0?"var(--purple)":pending>0?"var(--red)":"var(--text3)"}">${fmt(overdue>0?overdue:pending)}</div>
           </div>
+          ${r.interestOn && r.loanSetup ? `<div class="swipe-amt">
+            <div class="swipe-amt-lbl">Sched. EMI</div>
+            <div class="swipe-amt-val" style="color:var(--accent)">${getScheduledEMI(r) ? fmt(getScheduledEMI(r)) : "—"}</div>
+          </div>` : ""}
         </div>
         <div class="swipe-row3">
           <div class="swipe-meta">
