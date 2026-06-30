@@ -8,5 +8,5 @@
   <polygon points="256,72 388,148 388,300 256,376 124,300 124,148" fill="none" stroke="url(#g5h)" stroke-width="6"/>
   <polygon points="256,120 348,173 348,279 256,332 164,279 164,173" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="2"/>
   <text x="256" y="290" text-anchor="middle" font-family="Arial" font-size="160" font-weight="900" fill="url(#g5h)" opacity="0.9">₹</text>
-  <text x="256" y="450" text-anchor="middle" font-family="Georgia,serif" font-size="38" font-weight="700" fill="rgba(14,165,233,0.7)" letter-spacing="4">MANNABHIK</text>
+  <text x="256" y="450" text-anchor="middle" font-family="Georgia,serif" font-size="38" font-weight="700" fill="rgba(14,165,233,0.7)" letter-spacing="4">LENDINGSTATE</text>
 </svg>

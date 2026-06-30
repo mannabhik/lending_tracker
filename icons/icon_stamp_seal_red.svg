@@ -6,6 +6,6 @@
   <text x="256" y="306" text-anchor="middle" font-family="Georgia,serif" font-size="230" font-weight="700" fill="#FF2D55" opacity="0.9">M</text>
   <text x="256" y="372" text-anchor="middle" font-family="Arial" font-size="34" font-weight="700" fill="rgba(255,45,85,0.55)">LENDING TRACKER</text>
   <path id="a1" d="M 90 240 A 166 166 0 0 1 422 240" fill="none"/>
-  <text font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.7)" letter-spacing="6"><textPath href="#a1" startOffset="15%">MANNABHIK</textPath></text>
-  <text x="256" y="476" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.45)" letter-spacing="6">EST. 2024</text>
+  <text font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.7)" letter-spacing="6"><textPath href="#a1" startOffset="15%">LENDINGSTATE</textPath></text>
+  <text x="256" y="476" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.45)" letter-spacing="6">EST. 2025</text>
 </svg>

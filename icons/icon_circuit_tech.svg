@@ -13,5 +13,5 @@
   <circle cx="372" cy="300" r="5" fill="#0EA5E9"/>
   <text x="256" y="318" text-anchor="middle" font-family="Courier New,monospace" font-size="260" font-weight="700" fill="#0EA5E9" opacity="0.9">M</text>
   <rect x="100" y="250" width="312" height="2" rx="1" fill="rgba(14,165,233,0.2)"/>
-  <text x="256" y="468" text-anchor="middle" font-family="Courier New,monospace" font-size="28" font-weight="700" fill="rgba(14,165,233,0.5)" letter-spacing="4">MANNABHIK</text>
+  <text x="256" y="468" text-anchor="middle" font-family="Courier New,monospace" font-size="28" font-weight="700" fill="rgba(14,165,233,0.5)" letter-spacing="4">LENDINGSTATE</text>
 </svg>
