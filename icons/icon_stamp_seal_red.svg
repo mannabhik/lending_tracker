@@ -1,0 +1,11 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="115" fill="#0A0000"/>
+  <circle cx="256" cy="240" r="195" fill="none" stroke="#FF2D55" stroke-width="8"/>
+  <circle cx="256" cy="240" r="170" fill="none" stroke="#FF2D55" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="256" y="72" text-anchor="middle" font-size="22" fill="#FF2D55" font-family="Arial">✦ ✦ ✦ ✦ ✦</text>
+  <text x="256" y="306" text-anchor="middle" font-family="Georgia,serif" font-size="230" font-weight="700" fill="#FF2D55" opacity="0.9">M</text>
+  <text x="256" y="372" text-anchor="middle" font-family="Arial" font-size="34" font-weight="700" fill="rgba(255,45,85,0.55)">LENDING TRACKER</text>
+  <path id="a1" d="M 90 240 A 166 166 0 0 1 422 240" fill="none"/>
+  <text font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.7)" letter-spacing="6"><textPath href="#a1" startOffset="15%">MANNABHIK</textPath></text>
+  <text x="256" y="476" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="rgba(255,45,85,0.45)" letter-spacing="6">EST. 2024</text>
+</svg>

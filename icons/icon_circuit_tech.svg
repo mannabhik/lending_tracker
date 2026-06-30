@@ -1,0 +1,17 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g15bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#050A14"/><stop offset="100%" stop-color="#0A1828"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#g15bg)"/>
+  <path d="M 80 200 L 160 200 L 160 160 L 240 160" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="3"/>
+  <path d="M 80 300 L 140 300 L 140 340 L 200 340" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="3"/>
+  <path d="M 432 200 L 352 200 L 352 160 L 272 160" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="3"/>
+  <path d="M 432 300 L 372 300 L 372 340 L 312 340" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="3"/>
+  <circle cx="160" cy="200" r="5" fill="#0EA5E9"/>
+  <circle cx="140" cy="300" r="5" fill="#0EA5E9"/>
+  <circle cx="352" cy="200" r="5" fill="#0EA5E9"/>
+  <circle cx="372" cy="300" r="5" fill="#0EA5E9"/>
+  <text x="256" y="318" text-anchor="middle" font-family="Courier New,monospace" font-size="260" font-weight="700" fill="#0EA5E9" opacity="0.9">M</text>
+  <rect x="100" y="250" width="312" height="2" rx="1" fill="rgba(14,165,233,0.2)"/>
+  <text x="256" y="468" text-anchor="middle" font-family="Courier New,monospace" font-size="28" font-weight="700" fill="rgba(14,165,233,0.5)" letter-spacing="4">MANNABHIK</text>
+</svg>

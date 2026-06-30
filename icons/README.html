@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mannabhik — Icon Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Outfit', sans-serif; background: #0E0F16; color: #E6E8F8; padding: 40px 24px; }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #5A6290; margin-bottom: 8px; }
+  .note { font-size: 12px; color: #3A4060; background: #13141F; border: 1px solid #2C3050; border-radius: 10px; padding: 12px 16px; margin-bottom: 32px; line-height: 1.6; }
+  .note code { background: #1F2235; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #7B72F5; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+  .card { background: #181A24; border: 2px solid #2C3050; border-radius: 20px; padding: 24px 16px 18px; display: flex; flex-direction: column; align-items: center; transition: all 0.2s; position: relative; }
+  .card.active { border-color: #7B72F5; background: #1A1C30; }
+  .card.active::after { content: '✓ ACTIVE'; position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 700; background: rgba(123,114,245,0.2); color: #7B72F5; padding: 2px 8px; border-radius: 20px; }
+  .card img { width: 120px; height: 120px; border-radius: 26px; }
+  .card-name { margin-top: 14px; font-size: 13px; font-weight: 600; }
+  .card-file { margin-top: 3px; font-size: 10px; color: #3A4268; font-family: monospace; }
+  .copy-btn { margin-top: 12px; width: 100%; padding: 8px; background: #7B72F5; border: none; border-radius: 10px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.15s; }
+  .copy-btn:hover { background: #5A52D5; }
+  .copy-btn.copied { background: #10B981; }
+  .instructions { margin-top: 40px; background: #13141F; border: 1px solid #2C3050; border-radius: 16px; padding: 24px; }
+  .instructions h2 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #7B72F5; }
+  .step { font-size: 13px; color: #9DA5CC; margin-bottom: 8px; padding-left: 20px; position: relative; line-height: 1.6; }
+  .step::before { content: attr(data-n); position: absolute; left: 0; color: #7B72F5; font-weight: 700; }
+  .step code { background: #1F2235; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #A78BFA; }
+</style>
+</head>
+<body>
+
+<h1>🎨 Mannabhik — Icon Library</h1>
+<div class="sub">All icons for mannabhik.github.io/lending_tracker</div>
+
+<div class="note">
+  <strong>How to switch icons:</strong> Each card has a "Copy SVG Path" button.<br>
+  Paste the path into <code>index.html</code> in two places:<br>
+  1. The <code>&lt;link rel="icon" href="..."&gt;</code> tag (favicon)<br>
+  2. The <code>&lt;div class="logo-icon"&gt;</code> tag in the header<br>
+  Or just tell Claude which icon you want and it'll do it automatically!
+</div>
+
+<div class="grid">
+
+  <div class="card active">
+    <img src="icon_frosted_glass.svg" alt="Frosted Glass"/>
+    <div class="card-name">Frosted Glass</div>
+    <div class="card-file">icon_frosted_glass.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_frosted_glass.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_current.svg" alt="Current"/>
+    <div class="card-name">Original (M + Coin)</div>
+    <div class="card-file">icon_current.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_current.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_neon_m.svg" alt="Neon M"/>
+    <div class="card-name">Neon M</div>
+    <div class="card-file">icon_neon_m.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_neon_m.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_hex_ocean.svg" alt="Hex Ocean"/>
+    <div class="card-name">Hex Ocean</div>
+    <div class="card-file">icon_hex_ocean.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_hex_ocean.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_minimal_white.svg" alt="Minimal White"/>
+    <div class="card-name">Minimal White</div>
+    <div class="card-file">icon_minimal_white.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_minimal_white.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_stamp_seal_red.svg" alt="Stamp Seal Red"/>
+    <div class="card-name">Stamp Seal (Red)</div>
+    <div class="card-file">icon_stamp_seal_red.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_stamp_seal_red.svg', this)">Copy SVG Path</button>
+  </div>
+
+  <div class="card">
+    <img src="icon_circuit_tech.svg" alt="Circuit Tech"/>
+    <div class="card-name">Circuit Tech</div>
+    <div class="card-file">icon_circuit_tech.svg</div>
+    <button class="copy-btn" onclick="copyPath('icon_circuit_tech.svg', this)">Copy SVG Path</button>
+  </div>
+
+</div>
+
+<div class="instructions">
+  <h2>📋 How to switch icons in the future</h2>
+  <div class="step" data-n="1.">Open <code>index.html</code> in your GitHub repo (pencil icon to edit)</div>
+  <div class="step" data-n="2.">Find the line: <code>&lt;link rel="icon" href="icons/icon_frosted_glass.svg"&gt;</code></div>
+  <div class="step" data-n="3.">Change the filename to whichever icon you want, e.g. <code>icons/icon_neon_m.svg</code></div>
+  <div class="step" data-n="4.">Also find <code>&lt;img src="icons/icon_frosted_glass.svg"</code> in the header logo and update that too</div>
+  <div class="step" data-n="5.">Commit changes — done! ✅</div>
+  <div class="step" data-n="💡">Or just tell Claude "switch to Neon M icon" and it'll do it in seconds.</div>
+</div>
+
+<script>
+function copyPath(filename, btn) {
+  navigator.clipboard.writeText(filename).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy SVG Path'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
