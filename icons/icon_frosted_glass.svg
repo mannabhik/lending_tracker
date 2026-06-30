@@ -1,0 +1,38 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="c5bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1C3080"/>
+      <stop offset="100%" stop-color="#0A1548"/>
+    </linearGradient>
+    <linearGradient id="c5glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+      <stop offset="30%" stop-color="rgba(200,215,255,0.15)"/>
+      <stop offset="70%" stop-color="rgba(100,140,255,0.08)"/>
+      <stop offset="100%" stop-color="rgba(50,80,200,0.05)"/>
+    </linearGradient>
+    <linearGradient id="c5edge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.6)"/>
+      <stop offset="50%" stop-color="rgba(200,215,255,0.2)"/>
+      <stop offset="100%" stop-color="rgba(80,100,200,0.1)"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#c5bg)"/>
+  <circle cx="256" cy="245" r="205" fill="url(#c5glass)"/>
+  <circle cx="258" cy="248" r="203" fill="none" stroke="rgba(0,0,50,0.5)" stroke-width="10"/>
+  <circle cx="256" cy="244" r="203" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="4" stroke-dasharray="350 600" stroke-dashoffset="490"/>
+  <circle cx="256" cy="244" r="203" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <circle cx="256" cy="245" r="185" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-dasharray="8 6"/>
+  <circle cx="258" cy="247" r="183" fill="none" stroke="rgba(0,0,60,0.3)" stroke-width="2" stroke-dasharray="8 6"/>
+  <circle cx="256" cy="245" r="180" fill="rgba(255,255,255,0.04)"/>
+  <text x="258" y="78" text-anchor="middle" font-size="19" fill="rgba(0,0,50,0.5)" font-family="Arial">✦ ✦ ✦ ✦ ✦</text>
+  <text x="256" y="76" text-anchor="middle" font-size="19" fill="rgba(255,255,255,0.7)" font-family="Arial">✦ ✦ ✦ ✦ ✦</text>
+  <text x="259" y="313" text-anchor="middle" font-family="Georgia,serif" font-size="216" font-weight="700" fill="rgba(0,0,60,0.5)">M</text>
+  <text x="256" y="310" text-anchor="middle" font-family="Georgia,serif" font-size="216" font-weight="700" fill="url(#c5edge)">M</text>
+  <path id="ca5" d="M 90 245 A 166 166 0 0 1 422 245" fill="none"/>
+  <text font-family="Arial" font-size="22" font-weight="700" fill="rgba(0,0,60,0.45)" letter-spacing="5"><textPath href="#ca5" startOffset="13%">MANNABHIK</textPath></text>
+  <text font-family="Arial" font-size="22" font-weight="700" fill="rgba(255,255,255,0.65)" letter-spacing="5"><textPath href="#ca5" startOffset="14%">MANNABHIK</textPath></text>
+  <text x="258" y="389" text-anchor="middle" font-family="Arial" font-size="27" font-weight="700" fill="rgba(0,0,60,0.4)">LENDING TRACKER</text>
+  <text x="256" y="386" text-anchor="middle" font-family="Arial" font-size="27" font-weight="700" fill="rgba(255,255,255,0.38)">LENDING TRACKER</text>
+  <text x="258" y="472" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="rgba(0,0,60,0.4)" letter-spacing="5">EST. 2024</text>
+  <text x="256" y="470" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="rgba(255,255,255,0.35)" letter-spacing="5">EST. 2024</text>
+</svg>
