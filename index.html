@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="icons/icon_frosted_glass.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://api.jsonbin.io https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://script.google.com https://script.googleusercontent.com;">
-<title>Money Lending Index Tracker</title>
+<title>Mannabhik · Lending Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -2262,16 +2263,24 @@
   }
   body.theme-glass .add-btn { color: #FFFFFF !important; font-weight: 700 !important; }
   body.theme-glass .modal-save { background: #818CF8 !important; color: #FFFFFF !important; font-weight: 700 !important; }
+
+  /* Notes history log */
+  .note-log-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .note-log-item:last-child { border-bottom: none; }
+  .note-log-date { font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono',monospace; margin-bottom: 3px; }
+  .note-log-text { font-size: 13px; color: var(--text); }
+  .note-log-del { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 12px; padding: 2px 6px; border-radius: 4px; float: right; }
+  .note-log-del:hover { color: var(--red); background: var(--red-light); }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <div class="logo-icon" style="font-family:'Outfit',sans-serif;font-weight:700">₹</div>
+    <div class="logo-icon" style="padding:0;overflow:hidden;border-radius:8px"><img src="icons/icon_frosted_glass.svg" width="32" height="32" style="display:block;border-radius:8px" alt="Mannabhik"></div>
     <div>
-      <div class="logo-text">Money Lending Index Tracker</div>
-      <div class="logo-sub">Personal lending tracker</div>
+      <div class="logo-text">Mannabhik <span style="opacity:0.45;font-weight:300">·</span> Lending Tracker</div>
+      <div class="logo-sub">Personal lending tracker by Mannabhik</div>
       <div class="logo-date-mobile" id="logoDateMobile"></div>
     </div>
   </div>
@@ -3000,6 +3009,18 @@
       <span class="modal-title" id="paymentsTitle">💳 Payment History</span>
       <button class="close-btn" onclick="closePayments()">✕</button>
     </div>
+    <!-- Remarks Log -->
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em">📝 Remarks Log</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="noteLogInput" type="text" placeholder="e.g. Called, said will pay by 15th..." style="flex:1;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:12px;font-family:'Outfit',sans-serif">
+        <button onclick="addNoteLog()" style="background:var(--accent);color:#fff;border:none;border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;touch-action:manipulation">+ Add</button>
+      </div>
+      <div id="noteLogList" style="max-height:140px;overflow-y:auto"></div>
+    </div>
+
     <div id="paymentsTotals" class="payment-total-bar"></div>
     <div id="paymentsList"></div>
     <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
@@ -3030,8 +3051,8 @@
 <div class="overlay" id="aboutOverlay" onclick="aboutBgClick(event)">
   <div class="modal" style="max-width:360px;text-align:center">
     <div style="font-size:48px;margin-bottom:12px">💰</div>
-    <div style="font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em">Money Lending Index Tracker</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:24px;font-family:'DM Mono',monospace">Personal lending tracker</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em">Mannabhik · Lending Tracker</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:24px;font-family:'JetBrains Mono',monospace">Personal lending tracker by Mannabhik</div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left">
       <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
         <span style="font-size:12px;color:var(--text3)">Version</span>
@@ -4381,6 +4402,7 @@ function renderTable(data) {
       <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
       <td><span class="date-pill updated" style="min-width:unset">${r.updatedAt ? fmtDate(r.updatedAt, true) : "—"}</span></td>
       <td><div class="row-actions">
+        <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
         <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
         <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
         <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
@@ -4413,6 +4435,9 @@ function renderTable(data) {
         </button>
         <button class="swipe-action-btn docs"  onclick="closeSwipe(${r.id});openDocs(${r.id})">
           <span class="icon">📎</span>Docs
+        </button>
+        <button class="swipe-action-btn" style="background:#25D366;width:64px" onclick="closeSwipe(${r.id});openWhatsAppReminder(${r.id})">
+          <span class="icon">💬</span>Remind
         </button>
         <button class="swipe-action-btn del"   onclick="closeSwipe(${r.id});askDelete(${r.id})">
           <span class="icon">✕</span>Delete
@@ -5801,6 +5826,14 @@ function renderQuickStatsWidget(data) {
     return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
   }).reduce((s,r)=>s+r.lent,0);
 
+  // Anniversary alerts — loans crossing 6m or 1yr without payment
+  const anniversaryAlerts = [];
+  pending.forEach(r => {
+    const days = Math.round((new Date() - new Date(r.date)) / (1000*60*60*24));
+    if (days >= 365 && days < 395) anniversaryAlerts.push(`${r.name}: 1 year!`);
+    else if (days >= 180 && days < 210) anniversaryAlerts.push(`${r.name}: 6 months`);
+  });
+
   const rows = [
     ["Recovery Rate",   `${recoveryRate}%`],
     ["Active Loans",    String(pending.length)],
@@ -5809,6 +5842,7 @@ function renderQuickStatsWidget(data) {
     ["Top Borrower",    topBorrower ? topBorrower[0] : "—"],
     ["Longest Pending", longestDays > 0 ? `${longestName} (${longestDays}d)` : "—"],
     ["Total Outstanding", fmt(totalPending)],
+    ...(anniversaryAlerts.length ? [["⏰ Anniversary", anniversaryAlerts[0]]] : []),
   ];
 
   el.innerHTML = rows.map(([label, val]) => `
@@ -6013,6 +6047,115 @@ function calcLoan() {
     errEl.style.display = "block";
     errEl.textContent = "Error: " + err.message;
   }
+}
+
+
+// ── Notes / Remarks Log ───────────────────────────────────────────────────
+function renderNoteLog(id) {
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  const el = document.getElementById("noteLogList");
+  if (!el) return;
+  const logs = r.noteLog || [];
+  if (!logs.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0;text-align:center">No remarks yet</div>';
+    return;
+  }
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  el.innerHTML = [...logs].reverse().map((n, ri) => {
+    const d = new Date(n.date);
+    const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}`;
+    const realIdx = logs.length - 1 - ri;
+    return `<div class="note-log-item">
+      <div class="note-log-date">${dateStr}<button class="note-log-del" onclick="removeNoteLog(${id}, ${realIdx})" title="Delete">✕</button></div>
+      <div class="note-log-text">${n.text}</div>
+    </div>`;
+  }).join("");
+}
+
+function addNoteLog() {
+  const input = document.getElementById("noteLogInput");
+  const text = input?.value.trim();
+  if (!text) { showToast("Please enter a remark"); return; }
+  const idx = localData.findIndex(r => r.id === paymentsRecordId);
+  if (idx === -1) return;
+  const data = [...localData];
+  if (!data[idx].noteLog) data[idx].noteLog = [];
+  data[idx].noteLog.push({ date: new Date().toISOString(), text });
+  data[idx].updatedAt = new Date().toISOString().split("T")[0];
+  input.value = "";
+  localData = data;
+  saveToCloud(data);
+  renderNoteLog(paymentsRecordId);
+  applyFilters();
+  showToast("Remark added!");
+}
+
+function removeNoteLog(id, idx) {
+  const rIdx = localData.findIndex(r => r.id === id);
+  if (rIdx === -1) return;
+  const data = [...localData];
+  data[rIdx].noteLog = (data[rIdx].noteLog || []).filter((_,i) => i !== idx);
+  localData = data;
+  saveToCloud(data);
+  renderNoteLog(id);
+  showToast("Remark deleted");
+}
+
+
+// ── WhatsApp Reminder Generator ───────────────────────────────────────────
+function openWhatsAppReminder(id) {
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  const pending  = Math.max(0, r.lent - r.returned);
+  const interest = calcInterest(r);
+  const totalDue = pending + interest;
+  const emi      = getScheduledEMI(r);
+  const name     = r.profile?.officialName || r.name;
+  const phone    = r.profile?.phone || "";
+
+  const messages = [
+    // Polite
+    `Hi ${r.name}, hope you're doing well! 😊 Just a gentle reminder about the loan of ${fmt(r.lent)} taken on ${fmtDate(r.date)}. The pending amount is *${fmt(pending)}*${interest>0?" (including interest: "+fmt(Math.round(interest))+")":""}.${emi?" Monthly EMI: *"+fmt(Math.round(emi))+"*":""} Please let me know when you can arrange the payment. Thank you! 🙏`,
+    // Formal
+    `Dear ${name}, this is a reminder regarding your outstanding loan amount of *${fmt(totalDue)}* (Principal: ${fmt(r.lent)}, Paid: ${fmt(r.returned)}, Pending: *${fmt(pending)}*${interest>0?", Interest: "+fmt(Math.round(interest)):""}) dated ${fmtDate(r.date)}. Kindly arrange payment at your earliest convenience.`,
+    // Brief
+    `Hi ${r.name}! 👋 Quick reminder — loan pending: *${fmt(pending)}*${emi?" | EMI: "+fmt(Math.round(emi)):""}. Please let me know. Thanks!`
+  ];
+
+  const popup = document.createElement("div");
+  popup.id = "waReminderPopup";
+  popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px";
+  popup.innerHTML = `
+    <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:460px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700">💬 WhatsApp Reminder</div>
+        <button onclick="document.getElementById('waReminderPopup').remove()" style="background:var(--surface2);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--text2);font-size:14px">✕</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Choose a message style, edit if needed, then send:</div>
+      ${messages.map((msg, i) => `
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">${["Friendly 😊","Formal 📋","Brief ⚡"][i]}</div>
+          <textarea id="waMsg${i}" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:12px;font-family:'Outfit',sans-serif;resize:vertical;min-height:80px;line-height:1.5">${msg}</textarea>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button onclick="copyWAMessage(${i})" style="flex:1;padding:7px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;font-size:12px;color:var(--text2);font-family:'Outfit',sans-serif">📋 Copy</button>
+            ${phone ? `<a href="https://wa.me/91${phone}?text=${encodeURIComponent(messages[i])}" target="_blank" style="flex:1;padding:7px;background:#25D366;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;color:#fff;font-family:'Outfit',sans-serif;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px" id="waLink${i}">🟢 Open WhatsApp</a>` : ""}
+          </div>
+        </div>`).join("")}
+    </div>`;
+  document.body.appendChild(popup);
+  popup.addEventListener("click", e => { if (e.target === popup) popup.remove(); });
+}
+
+function copyWAMessage(i) {
+  const text = document.getElementById("waMsg"+i)?.value;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => showToast("Message copied!")).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta);
+    showToast("Message copied!");
+  });
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
@@ -6439,6 +6582,17 @@ function applyFilters() {
   searchQuery = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
   updateToggleCounts();
   const filtered = localData.filter(r => {
+    // If searching with 2+ chars — search ALL records including archived
+    if (searchQuery && searchQuery.length >= 2) {
+      const hay = [
+        r.name, r.notes||"", String(r.lent), String(r.returned),
+        r.status, r.date,
+        r.profile?.officialName||"", r.profile?.firstName||"",
+        r.profile?.lastName||"", r.profile?.phone||"",
+        r.profile?.email||""
+      ].join(" ").toLowerCase();
+      return hay.includes(searchQuery);
+    }
     // View filter (3-way toggle)
     if (activeView === "archived") return !!r.archived;
     if (activeView !== "all" && r.archived) return false;
@@ -6447,11 +6601,7 @@ function applyFilters() {
     if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
     if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
     if (activeFilter === "returned" && r.status !== "RETURNED") return false;
-    // Search
-    if (searchQuery) {
-      const hay = [r.name, r.notes||"", String(r.lent), String(r.returned), r.status, r.date].join(" ").toLowerCase();
-      if (!hay.includes(searchQuery)) return false;
-    }
+    // Search (less than 2 chars — no search applied)
     return true;
   });
   renderTable(filtered);
