@@ -11,6 +11,7 @@
 <title>LendingState · Lending Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3731,6 +3732,7 @@ function applyTopup() {
   renderScheduleModal(data[idx]);
   renderSummary(data); renderTable(data); renderCharts(data);
   closeTopupForm(); showToast('Top-up applied!');
+  if (data[idx].interestOn) triggerTopupEmail(data[idx], topupAmount);
 }
 
 function updateEMIPreview() {
@@ -4804,12 +4806,14 @@ function saveEntry() {
     showToast("Entry updated!");
   } else {
     const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
-    data.push({ id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: profileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr });
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: profileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr };
+    data.push(newRecord);
     localData = data;
     saveToCloud(data);
     renderSummary(data); renderTable(data); renderCharts(data);
     closeModal();
     showToast("Entry saved!");
+    if (interestOn) triggerNewLoanEmail(newRecord);
   }
 }
 
@@ -6162,6 +6166,177 @@ function copyWAMessage(i) {
   });
 }
 
+
+// ── EmailJS Configuration ─────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY   = "jMOeZIeBbVUmbpORT";
+const EMAILJS_SERVICE_ID   = "service_ypku4fw";
+const EMAILJS_TPL_NEWLOAN  = "template_dqbokzt"; // also used for top-ups
+const EMAILJS_TPL_PAYMENT  = "template_cfuicbp";
+
+(function(){ if (window.emailjs) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); })();
+
+
+// ── Email Notification System ─────────────────────────────────────────────
+
+function formatTenure(loanSetup) {
+  if (!loanSetup) return "—";
+  if (loanSetup.interestType === "fixed") {
+    return `${loanSetup.tenure} ${loanSetup.tenureUnit}`;
+  }
+  return `${loanSetup.tenure} ${loanSetup.tenureUnit}`;
+}
+
+function formatRate(loanSetup) {
+  if (!loanSetup) return "—";
+  if (loanSetup.interestType === "fixed") return "Fixed EMI";
+  const periodLabel = { yearly: "% per annum", monthly: "% per month", quarterly: "% per quarter" }[loanSetup.ratePeriod] || "%";
+  return `${loanSetup.rate}${periodLabel}`;
+}
+
+function fmtEventDate() {
+  const d = new Date();
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// Show confirmation popup before sending — returns nothing, user decides via buttons
+function confirmSendEmail(opts) {
+  // opts: { type: 'newloan'|'topup'|'payment', record, templateParams, templateId }
+  const r = opts.record;
+  const toEmail = r.profile?.email;
+  if (!toEmail) {
+    showToast("No email on file for this borrower — skipping notification");
+    return;
+  }
+
+  const typeLabels = {
+    newloan: { icon: "🎉", title: "Send New Loan Email?", color: "var(--accent)" },
+    topup:   { icon: "💰", title: "Send Top-up Email?",   color: "var(--accent)" },
+    payment: { icon: "✅", title: "Send Payment Receipt?", color: "var(--green)" }
+  };
+  const meta = typeLabels[opts.type] || typeLabels.newloan;
+
+  const popup = document.createElement("div");
+  popup.id = "emailConfirmPopup";
+  popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;display:flex;align-items:center;justify-content:center;padding:16px";
+  popup.innerHTML = `
+    <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
+      <div style="font-size:34px;text-align:center;margin-bottom:8px">${meta.icon}</div>
+      <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:6px">${meta.title}</div>
+      <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px">
+        Email will be sent to <strong style="color:var(--text)">${r.name}</strong><br>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3)">${toEmail}</span>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--text2);line-height:1.7">
+        ${Object.entries(opts.previewFields).map(([k,v]) => `<div><strong style="color:var(--text3)">${k}:</strong> ${v}</div>`).join("")}
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="document.getElementById('emailConfirmPopup').remove()" style="flex:1;padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);font-family:'Outfit',sans-serif">Cancel</button>
+        <button onclick="executeSendEmail()" style="flex:1;padding:12px;background:${meta.color};border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;color:#fff;font-family:'Outfit',sans-serif">Send Email</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.addEventListener("click", e => { if (e.target === popup) popup.remove(); });
+
+  // Stash the pending send so the Send button can trigger it
+  window._pendingEmailSend = opts;
+}
+
+function executeSendEmail() {
+  const opts = window._pendingEmailSend;
+  document.getElementById("emailConfirmPopup")?.remove();
+  if (!opts) return;
+
+  if (typeof emailjs === "undefined") {
+    showToast("⚠ Email service not loaded");
+    return;
+  }
+
+  emailjs.send(EMAILJS_SERVICE_ID, opts.templateId, opts.templateParams)
+    .then(() => showToast("📧 Email sent to " + opts.record.name + "!"))
+    .catch((err) => {
+      console.error("EmailJS error:", err);
+      showToast("⚠ Failed to send email");
+    });
+
+  window._pendingEmailSend = null;
+}
+
+// Trigger: New Loan created (interest must be on)
+function triggerNewLoanEmail(r) {
+  if (!r.interestOn || !r.profile?.email) return;
+  const emi = getScheduledEMI(r);
+  confirmSendEmail({
+    type: "newloan",
+    record: r,
+    templateId: EMAILJS_TPL_NEWLOAN,
+    previewFields: {
+      "Principal": fmt(r.lent),
+      "Interest Rate": formatRate(r.loanSetup),
+      "Tenure": formatTenure(r.loanSetup),
+      "EMI": emi ? fmt(emi) : "—"
+    },
+    templateParams: {
+      to_name: r.profile.officialName || r.name,
+      to_email: r.profile.email,
+      lent: fmt(r.lent),
+      interest_rate: formatRate(r.loanSetup),
+      tenure: formatTenure(r.loanSetup),
+      emi: emi ? fmt(emi) : "—",
+      event_date: fmtEventDate()
+    }
+  });
+}
+
+// Trigger: Top-up applied (interest must be on) — reuses New Loan template
+function triggerTopupEmail(r, topupAmount) {
+  if (!r.interestOn || !r.profile?.email) return;
+  const emi = getScheduledEMI(r);
+  const pending = Math.max(0, r.lent - r.returned);
+  confirmSendEmail({
+    type: "topup",
+    record: r,
+    templateId: EMAILJS_TPL_NEWLOAN,
+    previewFields: {
+      "Top-up Amount": fmt(topupAmount),
+      "New Principal": fmt(r.lent),
+      "Pending": fmt(pending),
+      "Updated EMI": emi ? fmt(emi) : "—"
+    },
+    templateParams: {
+      to_name: r.profile.officialName || r.name,
+      to_email: r.profile.email,
+      lent: fmt(r.lent) + " (Top-up: " + fmt(topupAmount) + ")",
+      interest_rate: formatRate(r.loanSetup),
+      tenure: formatTenure(r.loanSetup),
+      emi: emi ? fmt(emi) : "—",
+      event_date: fmtEventDate()
+    }
+  });
+}
+
+// Trigger: Payment received (interest must be on)
+function triggerPaymentEmail(r, paymentAmount) {
+  if (!r.interestOn || !r.profile?.email) return;
+  const pending = Math.max(0, r.lent - r.returned);
+  confirmSendEmail({
+    type: "payment",
+    record: r,
+    templateId: EMAILJS_TPL_PAYMENT,
+    previewFields: {
+      "Amount Paid": fmt(paymentAmount),
+      "Remaining Pending": fmt(pending)
+    },
+    templateParams: {
+      to_name: r.profile.officialName || r.name,
+      to_email: r.profile.email,
+      payment_amount: fmt(paymentAmount),
+      pending: fmt(pending),
+      event_date: fmtEventDate()
+    }
+  });
+}
+
 // ── Backup & Restore ─────────────────────────────────────────────────────
 function exportBackup() {
   const backup = {
@@ -6693,6 +6868,7 @@ function addPayment() {
   document.getElementById("payAmt").value = "";
   document.getElementById("payNote").value = "";
   showToast(fmt(amount) + " payment logged!");
+  if (data[idx].interestOn) triggerPaymentEmail(data[idx], amount);
 }
 
 function removePayment(payIndex) {
