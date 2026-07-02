@@ -2447,7 +2447,7 @@
           <th class="sortable" onclick="sortBy('returned')">Returned</th>
           <th class="sortable" onclick="sortBy('pending')">Pending</th>
           <th class="sortable" onclick="sortBy('overdue')">Overdue</th>
-          <th>Interest</th>
+          <th>Interest (to date)</th>
           <th class="sortable" onclick="sortBy('totaldue')">Total Due</th>
           <th>Sched. EMI</th>
           <th class="sortable" onclick="sortBy('status')">Status</th>
@@ -4328,18 +4328,28 @@ function getDueStatus(r) {
   return { label: `Due ${fmtDate(r.dueDate)}`, cls: "due-ok" };
 }
 
-// Calculate interest: lent × rate% × months elapsed since date lent
+// Calculate interest on reducing balance — accounts for payments made
 function calcInterest(r) {
   if (!r.interestOn) return 0;
   if (r.interestType === 'fixed') return Math.round(parseFloat(r.interestFixed) || 0);
-  // Monthly: rate% × months since interest was enabled × base amount (pending at that time)
-  const rate = parseFloat(r.interestRate) || 9;
-  const base = parseFloat(r.interestBase) || Math.max(0, r.lent - r.returned);
-  const start = new Date(r.interestStartDate || r.date);
-  const now = new Date();
-  const months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + (now.getDate() >= start.getDate() ? 0 : -1);
-  const m = Math.max(0, months);
-  return Math.round(base * (rate / 100) * m);
+
+  const rate    = parseFloat(r.interestRate) || 9;
+  const start   = new Date(r.interestStartDate || r.date);
+  const now     = new Date();
+
+  // Count full months elapsed
+  let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (now.getDate() < start.getDate()) months = Math.max(0, months - 1);
+  if (months === 0) return 0;
+
+  // Use reducing balance — current outstanding principal after all payments
+  const totalPaid   = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+  const originalBase = parseFloat(r.interestBase) || r.lent;
+  // Principal portion paid = total paid minus interest that has already accrued on original base
+  // For simplicity: use current outstanding (lent - returned) as the reducing base
+  const currentBase = Math.max(0, r.lent - r.returned);
+
+  return Math.round(currentBase * (rate / 100) * months);
 }
 
 function renderSummary(data) {
