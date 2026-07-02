@@ -477,7 +477,7 @@
   .view-toggle-btn.active.all    { color: var(--accent); }
   .view-toggle-btn.active.active-tab { color: var(--amber); }
   .view-toggle-btn.active.archived { color: var(--purple); }
-  .toggle-count { display: inline-block; background: currentColor; color: var(--surface); border-radius: 10px; font-size: 10px; padding: 1px 6px; margin-left: 4px; font-weight: 700; opacity: 0.85; }
+  .toggle-count { display: inline-block; background: rgba(255,255,255,0.18); color: #fff; border-radius: 10px; font-size: 10px; padding: 1px 6px; margin-left: 4px; font-weight: 700; }
 
   /* Search & filter bar */
   .search-filter-bar {
@@ -6771,7 +6771,7 @@ function updateFilterBtns() {
 }
 
 function updateToggleCounts() {
-  const all      = localData.filter(r => !r.archived).length;
+  const all      = localData.length;
   const active   = localData.filter(r => !r.archived && (r.status==="PENDING"||r.status==="OVERDUE")).length;
   const archived = localData.filter(r => !!r.archived).length;
   const cntAll      = document.getElementById("cntAll");
