@@ -11,7 +11,6 @@
 <title>LendingState · Lending Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -6173,7 +6172,17 @@ const EMAILJS_SERVICE_ID   = "service_ypku4fw";
 const EMAILJS_TPL_NEWLOAN  = "template_dqbokzt"; // also used for top-ups
 const EMAILJS_TPL_PAYMENT  = "template_cfuicbp";
 
-(function(){ if (window.emailjs) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); })();
+(function initEmailJS() {
+  function tryInit() {
+    if (window.emailjs) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      console.log("EmailJS initialized ✓");
+    } else {
+      setTimeout(tryInit, 300);
+    }
+  }
+  tryInit();
+})();
 
 
 // ── Email Notification System ─────────────────────────────────────────────
@@ -6247,16 +6256,19 @@ function executeSendEmail() {
   document.getElementById("emailConfirmPopup")?.remove();
   if (!opts) return;
 
-  if (typeof emailjs === "undefined") {
-    showToast("⚠ Email service not loaded");
+  if (typeof emailjs === "undefined" || !emailjs.send) {
+    showToast("⚠ Email service not ready — please try again in a moment");
     return;
   }
+
+  // Re-init just in case
+  try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) {}
 
   emailjs.send(EMAILJS_SERVICE_ID, opts.templateId, opts.templateParams)
     .then(() => showToast("📧 Email sent to " + opts.record.name + "!"))
     .catch((err) => {
       console.error("EmailJS error:", err);
-      showToast("⚠ Failed to send email");
+      showToast("⚠ Failed to send email: " + (err.text || err.message || "unknown error"));
     });
 
   window._pendingEmailSend = null;
@@ -7035,5 +7047,6 @@ window.addEventListener("resize", () => {
   }, 200);
 });
 </script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </body>
 </html>
