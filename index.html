@@ -155,7 +155,7 @@
   .stat.amber::after { background: var(--amber); }
 
   .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; font-weight: 600; }
-  .stat-value { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+  .stat-value { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; font-feature-settings: "zero" 1; }
   .stat-value.red { color: var(--red); }
   .stat-value.green { color: var(--green); }
 
@@ -372,18 +372,18 @@
     border-left-color: var(--accent) !important;
   }
 
-  .mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-feature-settings: "zero" 1; }
   .muted { color: var(--text2); }
 
   .name-cell { font-weight: 600; font-size: 13px; }
   .name-cell .note-text { font-size: 11px; color: var(--text3); font-weight: 400; margin-top: 2px; display: block; }
 
   /* Amount cells */
-  .amt-lent   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); }
-  .amt-overdue { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--purple); }
-  .amt-overdue-empty { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); }
-  .amt-ret    { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--green); text-shadow: 0 0 8px rgba(0,212,170,0.3); }
-  .amt-pend   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
+  .amt-lent   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); font-feature-settings: "zero" 1; }
+  .amt-overdue { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--purple); font-feature-settings: "zero" 1; }
+  .amt-overdue-empty { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); font-feature-settings: "zero" 1; }
+  .amt-ret    { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--green); text-shadow: 0 0 8px rgba(0,212,170,0.3); font-feature-settings: "zero" 1; }
+  .amt-pend   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; font-feature-settings: "zero" 1; }
   .amt-pend.has-pending { color: var(--red); }
   .amt-pend.no-pending  { color: var(--text3); }
 
@@ -3570,14 +3570,14 @@ function renderScheduleModal(r) {
   const dataRows = schedule.filter(s => !s.event);
   const totalInterest = dataRows.reduce((s, row) => s + (row.interest||0), 0);
   const totalPaid = dataRows.filter(s => s.status === 'paid').reduce((s, row) => s + (row.emi||0), 0);
-  const lastRow = dataRows[dataRows.length - 1];
-  const remaining = lastRow ? lastRow.closeBal : r.lent;
+  const actualPaid = (r.payments||[]).reduce((s,p) => s + (p.amount||0), 0);
+  const remaining = Math.max(0, r.lent - actualPaid);
   const emi = getScheduledEMI(r);
 
   document.getElementById('schedSummary').innerHTML = `
     <div class="sched-stat"><div class="sched-stat-label">Scheduled EMI</div><div class="sched-stat-value" style="color:var(--accent)">${emi ? fmt(emi) : '—'}</div></div>
     <div class="sched-stat"><div class="sched-stat-label">Total Interest</div><div class="sched-stat-value" style="color:#0369a1">${fmt(totalInterest)}</div></div>
-    <div class="sched-stat"><div class="sched-stat-label">Total Paid</div><div class="sched-stat-value" style="color:var(--green)">${fmt(totalPaid)}</div></div>
+    <div class="sched-stat"><div class="sched-stat-label">Total Paid</div><div class="sched-stat-value" style="color:var(--green)">${fmt(actualPaid)}</div></div>
     <div class="sched-stat"><div class="sched-stat-label">Remaining Balance</div><div class="sched-stat-value" style="color:var(--amber)">${fmt(remaining)}</div></div>
   `;
 
