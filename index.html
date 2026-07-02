@@ -3521,7 +3521,12 @@ function buildSchedule(r) {
     currentBalance = Math.max(0, openBal - principalComp);
 
     const today = new Date();
-    const status = dueDate < today ? 'paid' : (dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear()) ? 'current' : 'future';
+    // Mark as paid if: enough cumulative payments received to cover this EMI slot
+    const totalPaidSoFar = (r.payments||[]).reduce((s,p) => s + (p.amount||0), 0);
+    const cumulativeEmiDue = periodNum * actualEmi;
+    const paidByPayments = totalPaidSoFar >= cumulativeEmiDue;
+    const dateIsPast = dueDate < today;
+    const status = paidByPayments ? 'paid' : (dateIsPast ? 'paid' : (dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear()) ? 'current' : 'future');
     schedule.push({ num: periodNum, date: dueDateStr, openBal, emi: actualEmi, principal: principalComp, interest: interestComp, closeBal: currentBalance, status });
   }
   return schedule;
