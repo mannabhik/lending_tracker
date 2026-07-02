@@ -6258,19 +6258,33 @@ function executeSendEmail() {
   document.getElementById("emailConfirmPopup")?.remove();
   if (!opts) return;
 
-  if (typeof emailjs === "undefined" || !emailjs.send) {
-    showToast("⚠ Email service not ready — please try again in a moment");
-    return;
+  function doSend() {
+    emailjs.send(EMAILJS_SERVICE_ID, opts.templateId, opts.templateParams, { publicKey: EMAILJS_PUBLIC_KEY })
+      .then(() => showToast("📧 Email sent to " + opts.record.name + "!"))
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+        showToast("⚠ Failed to send: " + (err.text || err.message || JSON.stringify(err)));
+      });
+    window._pendingEmailSend = null;
   }
 
-  emailjs.send(EMAILJS_SERVICE_ID, opts.templateId, opts.templateParams, { publicKey: EMAILJS_PUBLIC_KEY })
-    .then(() => showToast("📧 Email sent to " + opts.record.name + "!"))
-    .catch((err) => {
-      console.error("EmailJS error:", err);
-      showToast("⚠ Failed to send email: " + (err.text || err.message || JSON.stringify(err)));
-    });
-
-  window._pendingEmailSend = null;
+  // If emailjs is ready, send immediately; otherwise wait up to 5s
+  if (window.emailjs && emailjs.send) {
+    doSend();
+  } else {
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (window.emailjs && emailjs.send) {
+        clearInterval(interval);
+        doSend();
+      } else if (attempts > 25) { // 5 seconds
+        clearInterval(interval);
+        showToast("⚠ Email service unavailable — check internet connection");
+        window._pendingEmailSend = null;
+      }
+    }, 200);
+  }
 }
 
 // Trigger: New Loan created (interest must be on)
