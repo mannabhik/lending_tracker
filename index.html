@@ -5653,7 +5653,7 @@ function onNameInput() {
       <div class="suggest-avatar">${(p.firstName || p.officialName)[0].toUpperCase()}</div>
       <div class="suggest-info">
         <div class="suggest-name">${p.officialName}</div>
-        <div class="suggest-sub">📞 ${p.phone}${p.email ? " · " + p.email : ""}</div>
+        <div class="suggest-sub">📞 ${maskField(p.phone,"phone")}${p.email ? " · " + maskField(p.email,"email") : ""}</div>
       </div>
       <div style="font-size:10px;color:var(--accent);font-weight:600">Auto-fill ↗</div>
     </div>
@@ -5733,9 +5733,7 @@ function openProfilePopup(key, anchorEl) {
       </div>
       <button onclick="closeProfilePopup()" style="background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:26px;height:26px;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
-    <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val">${p.phone}</span></div>
-    <div class="profile-field-row"><span class="profile-field-lbl">Email</span><span class="profile-field-val">${p.email||"—"}</span></div>
-    <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val" style="font-family:'JetBrains Mono',monospace;letter-spacing:0.05em" title="Encrypted">${maskField(p.phone,"phone")}</span></div>
+    <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val" style="font-family:'JetBrains Mono',monospace;letter-spacing:0.05em" title="Encrypted — last 4 digits shown">${maskField(p.phone,"phone")}</span></div>
     <div class="profile-field-row"><span class="profile-field-lbl">Email</span><span class="profile-field-val" title="Encrypted">${maskField(p.email,"email")}</span></div>
     ${p.pan ? `<div class="profile-field-row"><span class="profile-field-lbl">PAN</span><span class="profile-field-val" style="font-family:'JetBrains Mono',monospace;letter-spacing:0.1em" title="Encrypted">${maskField(p.pan,"pan")}</span></div>` : ""}
     ${p.aadhaar ? `<div class="profile-field-row"><span class="profile-field-lbl">Aadhaar</span><span class="profile-field-val" style="font-family:'JetBrains Mono',monospace;letter-spacing:0.1em" title="Encrypted">${maskField(p.aadhaar,"aadhaar")}</span></div>` : ""}
@@ -5886,8 +5884,8 @@ function showNameTooltip(key, event) {
     const tt = document.getElementById("nameTooltip");
     tt.innerHTML = `
       <div class="name-tooltip-row"><span class="name-tooltip-lbl">Official</span><span class="name-tooltip-val">${p.officialName}</span></div>
-      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Phone</span><span class="name-tooltip-val">${p.phone}</span></div>
-      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Email</span><span class="name-tooltip-val">${p.email||"—"}</span></div>
+      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Phone</span><span class="name-tooltip-val">${maskField(p.phone,"phone")}</span></div>
+      <div class="name-tooltip-row"><span class="name-tooltip-lbl">Email</span><span class="name-tooltip-val">${maskField(p.email,"email")}</span></div>
     `;
     tt.style.display = "block";
     const x = Math.min(event.clientX + 12, window.innerWidth - 260);
