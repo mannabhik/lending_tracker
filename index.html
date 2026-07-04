@@ -4421,7 +4421,7 @@ function renderTable(data) {
       </td>
       <td>
         ${r.interestOn
-          ? `<span class="amt-interest">${fmt(interest)}</span><div class="interest-meta">${r.interestType==="fixed" ? "Fixed amount" : `${rate}% × ${(()=>{ const s=new Date(r.interestStartDate||r.date),n=new Date(); let m=(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth()); if(n.getDate()<s.getDate()) m=Math.max(0,m-1); return m; })()} mo`}</div>`
+          ? `<span class="amt-interest">${fmt(interest)}</span><div class="interest-meta">${r.interestType==="fixed" ? "Fixed amount" : `${rate}% × ${(()=>{ const s=new Date(r.interestStartDate||r.date),n=new Date(); let m=(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth()); if(n.getDate()<s.getDate()) m=Math.max(0,m-1); return m===0?"< 1 mo":m+" mo"; })()} `}</div>`
           : `<span class="amt-interest-na">—</span>`}
       </td>
       <td>
