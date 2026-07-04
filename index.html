@@ -2579,8 +2579,18 @@
           <input id="fEmail" type="email" placeholder="borrower@email.com">
         </div>
         <div class="field">
+          <label>Father's Name <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+          <input id="fFatherName" type="text" placeholder="Father's full name">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
           <label>Guarantor <span style="color:var(--red)">*</span></label>
           <input id="fGuarantor" type="text" placeholder="Witness / guarantor name">
+        </div>
+        <div class="field">
+          <label>Guarantor Relation <span style="color:var(--red)">*</span></label>
+          <input id="fGuarantorRelation" type="text" placeholder="e.g. Friend, Brother">
         </div>
       </div>
       <div class="field">
@@ -3048,6 +3058,39 @@
     <div class="celebration-amount" id="celebrationAmount"></div>
     <div class="celebration-sub" style="color:var(--text3);font-size:12px">has been fully returned. The record will be moved to Archived.</div>
     <button class="celebration-btn" onclick="closeCelebration()">✓ Great, archive it!</button>
+  </div>
+</div>
+
+<!-- Profile Edit Modal -->
+<div class="overlay" id="profileEditOverlay" onclick="if(event.target===this)closeProfileEdit()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hd">
+      <span class="modal-title">✎ Edit Profile</span>
+      <button class="close-btn" onclick="closeProfileEdit()">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px">
+      Changes will apply to <strong id="profileEditCount" style="color:var(--accent)"></strong> record(s) for this person.
+    </div>
+    <div class="field-row">
+      <div class="field"><label>First Name <span style="color:var(--red)">*</span></label><input type="text" id="peFirstName" placeholder="First name" oninput="updatePeOfficialName()"></div>
+      <div class="field"><label>Middle Name</label><input type="text" id="peMiddleName" placeholder="Optional" oninput="updatePeOfficialName()"></div>
+    </div>
+    <div class="field"><label>Last Name <span style="color:var(--red)">*</span></label><input type="text" id="peLastName" placeholder="Last name" oninput="updatePeOfficialName()"></div>
+    <div class="field" style="margin-top:4px">
+      <label style="font-size:11px;color:var(--text3)">Official Name (auto)</label>
+      <div id="peOfficialName" style="padding:8px 10px;background:var(--surface2);border-radius:var(--radius);font-size:13px;color:var(--text2);border:1px solid var(--border)">—</div>
+    </div>
+    <div class="field"><label>Phone Number <span style="color:var(--red)">*</span></label><input type="text" id="pePhone" placeholder="10-digit number"></div>
+    <div class="field-row">
+      <div class="field"><label>Email Address</label><input type="email" id="peEmail" placeholder="email@example.com"></div>
+      <div class="field"><label>Father's Name <span style="color:var(--text3);font-weight:400">(optional)</span></label><input type="text" id="peFatherName" placeholder="Father's full name"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Guarantor <span style="color:var(--red)">*</span></label><input type="text" id="peGuarantor" placeholder="Name"></div>
+      <div class="field"><label>Guarantor Relation <span style="color:var(--red)">*</span></label><input type="text" id="peGuarantorRelation" placeholder="e.g. Friend, Brother"></div>
+    </div>
+    <div class="field"><label>Home Address</label><input type="text" id="peAddress" placeholder="Full address (optional)"></div>
+    <button class="modal-save" onclick="saveProfileEdit()" style="margin-top:16px;width:100%">Save Profile</button>
   </div>
 </div>
 
@@ -4705,6 +4748,8 @@ function _openModal() {
   document.getElementById("fPhone").value = "";
   document.getElementById("fEmail").value = "";
   document.getElementById("fGuarantor").value = "";
+  document.getElementById("fGuarantorRelation").value = "";
+  document.getElementById("fFatherName").value = "";
   document.getElementById("fAddress").value = "";
   document.getElementById("profileSuggest").style.display = "none";
   document.getElementById("profileMatchBanner").style.display = "none";
@@ -4751,6 +4796,8 @@ function _editRow(id) {
   document.getElementById("fPhone").value = rp.phone || "";
   document.getElementById("fEmail").value = rp.email || "";
   document.getElementById("fGuarantor").value = rp.guarantor || "";
+  document.getElementById("fGuarantorRelation").value = rp.guarantorRelation || "";
+  document.getElementById("fFatherName").value = rp.fatherName || "";
   document.getElementById("fAddress").value = rp.address || "";
   document.getElementById("profileSuggest").style.display = "none";
   document.getElementById("profileMatchBanner").style.display = "none";
@@ -4790,6 +4837,8 @@ function saveEntry() {
   const phone       = document.getElementById("fPhone").value.trim();
   const email       = document.getElementById("fEmail").value.trim();
   const guarantor   = document.getElementById("fGuarantor").value.trim();
+  const guarantorRelation = document.getElementById("fGuarantorRelation").value.trim();
+  const fatherName  = document.getElementById("fFatherName").value.trim();
   const address     = document.getElementById("fAddress").value.trim();
   const interestOn = document.getElementById("fInterestOn").checked;
   const interestType = document.getElementById("fInterestOn").dataset.itype || 'compound';
@@ -4815,6 +4864,7 @@ function saveEntry() {
   if (!normalizePhone(phone)) { showToast("Invalid phone number format"); return; }
   if (!email) { showToast("Please enter email address"); return; }
   if (!guarantor) { showToast("Please enter guarantor name"); return; }
+  if (!guarantorRelation) { showToast("Please enter guarantor's relation"); return; }
   // Auto-set status based on amounts
   const status = returned > lent ? "OVERDUE" : returned === lent ? "RETURNED" : "PENDING";
   document.getElementById("fStatus").value = status;
@@ -4829,7 +4879,7 @@ function saveEntry() {
       const interestJustEnabled = interestOn && !prev.interestOn;
       const interestStartDate = interestJustEnabled ? todayStr : (prev.interestStartDate || prev.date);
       const interestBase = interestJustEnabled ? Math.max(0, lent - returned) : (prev.interestBase ?? Math.max(0, prev.lent - prev.returned));
-      const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+      const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, guarantorRelation, fatherName, address, nickname: name };
       data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile, interestOn, interestType, interestRate, interestFixed, loanSetup,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
@@ -4841,7 +4891,7 @@ function saveEntry() {
     closeModal();
     showToast("Entry updated!");
   } else {
-    const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, address, nickname: name };
+    const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, guarantor, guarantorRelation, fatherName, address, nickname: name };
     const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: profileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr };
     data.push(newRecord);
     localData = data;
@@ -5598,6 +5648,8 @@ function selectProfile(key) {
   document.getElementById("fPhone").value = p.phone;
   document.getElementById("fEmail").value = p.email || "";
   document.getElementById("fGuarantor").value = p.guarantor || "";
+  document.getElementById("fGuarantorRelation").value = p.guarantorRelation || "";
+  document.getElementById("fFatherName").value = p.fatherName || "";
   document.getElementById("fAddress").value = p.address || "";
   document.getElementById("profileSuggest").style.display = "none";
   document.getElementById("fPhoneError").style.display = "none";
@@ -5658,7 +5710,8 @@ function openProfilePopup(key, anchorEl) {
     </div>
     <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val">${p.phone}</span></div>
     <div class="profile-field-row"><span class="profile-field-lbl">Email</span><span class="profile-field-val">${p.email||"—"}</span></div>
-    <div class="profile-field-row"><span class="profile-field-lbl">Guarantor</span><span class="profile-field-val">${p.guarantor||"—"}</span></div>
+    <div class="profile-field-row"><span class="profile-field-lbl">Guarantor</span><span class="profile-field-val">${p.guarantor||"—"}${p.guarantorRelation ? ` <span style="color:var(--text3);font-size:11px">(${p.guarantorRelation})</span>` : ""}</span></div>
+    ${p.fatherName ? `<div class="profile-field-row"><span class="profile-field-lbl">Father's Name</span><span class="profile-field-val">${p.fatherName}</span></div>` : ""}
     ${p.address ? `<div class="profile-field-row"><span class="profile-field-lbl">Address</span><span class="profile-field-val">${p.address}</span></div>` : ""}
     <div class="profile-loans-section">
       <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Loan Records (${active.length})</div>
@@ -5701,9 +5754,81 @@ function closeProfilePopup() {
   profilePopupOpen = false;
 }
 
+let editingProfileKey = null;
+
 function editProfileKey(key) {
   const records = getProfileRecords(key);
-  if (records.length > 0) editRow(records[0].id);
+  if (!records.length) return;
+  const profile = records[0].profile || {};
+  editingProfileKey = key;
+
+  document.getElementById("peFirstName").value   = profile.firstName  || "";
+  document.getElementById("peMiddleName").value  = profile.middleName || "";
+  document.getElementById("peLastName").value    = profile.lastName   || "";
+  document.getElementById("pePhone").value       = profile.phone      || "";
+  document.getElementById("peEmail").value       = profile.email      || "";
+  document.getElementById("peFatherName").value  = profile.fatherName || "";
+  document.getElementById("peGuarantor").value   = profile.guarantor  || "";
+  document.getElementById("peGuarantorRelation").value = profile.guarantorRelation || "";
+  document.getElementById("peAddress").value     = profile.address    || "";
+  document.getElementById("profileEditCount").textContent = records.length;
+  updatePeOfficialName();
+  document.getElementById("profileEditOverlay").classList.add("open");
+}
+
+function updatePeOfficialName() {
+  const first  = document.getElementById("peFirstName").value.trim().toUpperCase();
+  const middle = document.getElementById("peMiddleName").value.trim().toUpperCase();
+  const last   = document.getElementById("peLastName").value.trim().toUpperCase();
+  const official = [first, middle, last].filter(Boolean).join(" ");
+  document.getElementById("peOfficialName").textContent = official || "—";
+}
+
+function closeProfileEdit() {
+  document.getElementById("profileEditOverlay").classList.remove("open");
+  editingProfileKey = null;
+}
+
+function saveProfileEdit() {
+  const firstName  = document.getElementById("peFirstName").value.trim();
+  const middleName = document.getElementById("peMiddleName").value.trim();
+  const lastName   = document.getElementById("peLastName").value.trim();
+  const phone      = document.getElementById("pePhone").value.trim();
+  const email      = document.getElementById("peEmail").value.trim();
+  const fatherName = document.getElementById("peFatherName").value.trim();
+  const guarantor  = document.getElementById("peGuarantor").value.trim();
+  const guarantorRelation = document.getElementById("peGuarantorRelation").value.trim();
+  const address    = document.getElementById("peAddress").value.trim();
+
+  if (!firstName || !lastName) { showToast("First and last name are required"); return; }
+  if (!phone)  { showToast("Phone number is required"); return; }
+  if (!guarantor) { showToast("Please enter guarantor name"); return; }
+  if (!guarantorRelation) { showToast("Please enter guarantor's relation"); return; }
+
+  const officialName = [firstName, middleName, lastName].filter(Boolean).join(" ").toUpperCase();
+  const normalizedPhone = normalizePhone(phone);
+
+  const data = [...localData];
+  const records = getProfileRecords(editingProfileKey);
+
+  records.forEach(r => {
+    const idx = data.findIndex(x => x.id === r.id);
+    if (idx !== -1) {
+      data[idx].profile = {
+        ...data[idx].profile,
+        firstName, middleName, lastName, officialName,
+        phone: normalizedPhone, email, guarantor, guarantorRelation, fatherName, address,
+        nickname: data[idx].profile?.nickname || data[idx].name
+      };
+      data[idx].updatedAt = new Date().toISOString().split("T")[0];
+    }
+  });
+
+  localData = data;
+  saveToCloud(data);
+  applyFilters();
+  closeProfileEdit();
+  showToast(`Profile updated across ${records.length} record(s)!`);
 }
 
 // ── Hover tooltip ──────────────────────────────────
