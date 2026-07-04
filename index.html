@@ -4836,9 +4836,9 @@ function saveEntry() {
   const officialName = [firstName, middleName, lastName].filter(Boolean).join(" ");
   const phone       = document.getElementById("fPhone").value.trim();
   const email       = document.getElementById("fEmail").value.trim();
-  const guarantor   = document.getElementById("fGuarantor").value.trim();
-  const guarantorRelation = document.getElementById("fGuarantorRelation").value.trim();
-  const fatherName  = document.getElementById("fFatherName").value.trim();
+  const guarantor   = capitalizeWords(document.getElementById("fGuarantor").value.trim());
+  const guarantorRelation = capitalizeWords(document.getElementById("fGuarantorRelation").value.trim());
+  const fatherName  = capitalizeWords(document.getElementById("fFatherName").value.trim());
   const address     = document.getElementById("fAddress").value.trim();
   const interestOn = document.getElementById("fInterestOn").checked;
   const interestType = document.getElementById("fInterestOn").dataset.itype || 'compound';
@@ -5795,9 +5795,9 @@ function saveProfileEdit() {
   const lastName   = document.getElementById("peLastName").value.trim();
   const phone      = document.getElementById("pePhone").value.trim();
   const email      = document.getElementById("peEmail").value.trim();
-  const fatherName = document.getElementById("peFatherName").value.trim();
-  const guarantor  = document.getElementById("peGuarantor").value.trim();
-  const guarantorRelation = document.getElementById("peGuarantorRelation").value.trim();
+  const fatherName = capitalizeWords(document.getElementById("peFatherName").value.trim());
+  const guarantor  = capitalizeWords(document.getElementById("peGuarantor").value.trim());
+  const guarantorRelation = capitalizeWords(document.getElementById("peGuarantorRelation").value.trim());
   const address    = document.getElementById("peAddress").value.trim();
 
   if (!firstName || !lastName) { showToast("First and last name are required"); return; }
@@ -6450,7 +6450,7 @@ function executeSendEmail() {
 
 // Trigger: New Loan created (interest must be on)
 function triggerNewLoanEmail(r) {
-  if (!r.interestOn || !r.profile?.email) return;
+  if (!r.interestOn || !r.profile?.email) return; // uses profile.email for all comms
   const emi = getScheduledEMI(r);
   const totalPayable = emi ? fmt(Math.round(emi * (r.loanSetup?.tenure || 0))) : "—";
   confirmSendEmail({
@@ -6545,6 +6545,13 @@ function resendNewLoanEmail() {
   const r = localData.find(x => x.id === paymentsRecordId);
   if (!r) return;
   triggerNewLoanEmail(r);
+}
+
+
+// Capitalize first letter of each word
+function capitalizeWords(str) {
+  if (!str) return "";
+  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
 
 // ── Backup & Restore ─────────────────────────────────────────────────────
