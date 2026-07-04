@@ -4341,14 +4341,17 @@ function calcInterest(r) {
   if (now.getDate() < start.getDate()) months = Math.max(0, months - 1);
   if (months === 0) return 0;
 
-  // Use reducing balance — current outstanding principal after all payments
-  const totalPaid   = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
-  const originalBase = parseFloat(r.interestBase) || r.lent;
-  // Principal portion paid = total paid minus interest that has already accrued on original base
-  // For simplicity: use current outstanding (lent - returned) as the reducing base
+  // Convert rate to monthly based on ratePeriod
+  const ratePeriod = r.loanSetup?.ratePeriod || r.interestPeriod || 'yearly';
+  let monthlyRate;
+  if (ratePeriod === 'monthly')     monthlyRate = rate / 100;
+  else if (ratePeriod === 'quarterly') monthlyRate = rate / 100 / 3;
+  else                              monthlyRate = rate / 100 / 12; // yearly (default)
+
+  // Use reducing balance — current outstanding after all payments
   const currentBase = Math.max(0, r.lent - r.returned);
 
-  return Math.round(currentBase * (rate / 100) * months);
+  return Math.round(currentBase * monthlyRate * months);
 }
 
 function renderSummary(data) {
@@ -4418,7 +4421,7 @@ function renderTable(data) {
       </td>
       <td>
         ${r.interestOn
-          ? `<span class="amt-interest">${fmt(interest)}</span><div class="interest-meta">${r.interestType==="fixed" ? "Fixed amount" : `${rate}% × ${Math.max(0,((new Date()-new Date(r.interestStartDate||r.date))/(1000*60*60*24*30.44))|0)} mo`}</div>`
+          ? `<span class="amt-interest">${fmt(interest)}</span><div class="interest-meta">${r.interestType==="fixed" ? "Fixed amount" : `${rate}% × ${(()=>{ const s=new Date(r.interestStartDate||r.date),n=new Date(); let m=(n.getFullYear()-s.getFullYear())*12+(n.getMonth()-s.getMonth()); if(n.getDate()<s.getDate()) m=Math.max(0,m-1); return m; })()} mo`}</div>`
           : `<span class="amt-interest-na">—</span>`}
       </td>
       <td>
