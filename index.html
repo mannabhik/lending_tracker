@@ -3007,7 +3007,11 @@
   <div class="modal" style="max-width:480px">
     <div class="modal-hd">
       <span class="modal-title" id="paymentsTitle">💳 Payment History</span>
-      <button class="close-btn" onclick="closePayments()">✕</button>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button id="resendPaymentBtn" onclick="resendLastPaymentEmail()" title="Resend last payment email" style="display:none;background:var(--green);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation">📧 Resend Payment</button>
+        <button id="resendLoanBtn" onclick="resendNewLoanEmail()" title="Resend new loan email" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation">📧 Resend Loan</button>
+        <button class="close-btn" onclick="closePayments()">✕</button>
+      </div>
     </div>
     <!-- Remarks Log -->
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
@@ -6407,6 +6411,20 @@ function triggerPaymentEmail(r, paymentAmount) {
   });
 }
 
+// ── Resend Email Functions ─────────────────────────────────────────────────
+function resendLastPaymentEmail() {
+  const r = localData.find(x => x.id === paymentsRecordId);
+  if (!r || !r.payments?.length) return;
+  const lastPayment = r.payments[r.payments.length - 1];
+  triggerPaymentEmail(r, lastPayment.amount);
+}
+
+function resendNewLoanEmail() {
+  const r = localData.find(x => x.id === paymentsRecordId);
+  if (!r) return;
+  triggerNewLoanEmail(r);
+}
+
 // ── Backup & Restore ─────────────────────────────────────────────────────
 function exportBackup() {
   const backup = {
@@ -6872,6 +6890,16 @@ function openPayments(id) {
     document.getElementById("payAmt").value = "";
     document.getElementById("payNote").value = "";
     renderPaymentsList(r);
+    // Show resend buttons only for interest-enabled records with email
+    const resendPayBtn  = document.getElementById("resendPaymentBtn");
+    const resendLoanBtn = document.getElementById("resendLoanBtn");
+    if (r.interestOn && r.profile?.email) {
+      resendPayBtn.style.display  = r.payments?.length ? "inline-block" : "none";
+      resendLoanBtn.style.display = "inline-block";
+    } else {
+      resendPayBtn.style.display  = "none";
+      resendLoanBtn.style.display = "none";
+    }
     document.getElementById("paymentsOverlay").classList.add("open");
   });
 }
