@@ -2443,12 +2443,11 @@
           <th style="width:32px"><input type="checkbox" class="row-check" id="selectAll" onclick="toggleSelectAll()" title="Select all"></th>
           <th class="sortable" onclick="sortBy('date')">Date</th>
           <th class="sortable" onclick="sortBy('name')">Borrower</th>
-          <th class="sortable" onclick="sortBy('lent')">Lent</th>
-          <th class="sortable" onclick="sortBy('returned')">Returned</th>
-          <th class="sortable" onclick="sortBy('pending')">Pending</th>
-          <th class="sortable" onclick="sortBy('overdue')">Overdue</th>
+          <th class="sortable" onclick="sortBy('lent')">Loan Amount</th>
+          <th class="sortable" onclick="sortBy('returned')">Paid So Far</th>
+          <th class="sortable" onclick="sortBy('totaldue')">Total Payable</th>
+          <th class="sortable" onclick="sortBy('pending')">Remaining</th>
           <th>Interest (to date)</th>
-          <th class="sortable" onclick="sortBy('totaldue')">Total Due</th>
           <th>Sched. EMI</th>
           <th class="sortable" onclick="sortBy('status')">Status</th>
           <th class="sortable" onclick="sortBy('updated')">Last Updated</th>
@@ -4379,8 +4378,18 @@ function renderTable(data) {
     const pending = isOverdue ? 0 : r.lent - r.returned;
     const interest = calcInterest(r);
     const totalDue = pending + interest;
+    // Total payable = EMI × tenure (includes all interest)
+    const emi = getScheduledEMI(r);
+    const totalPayable = r.interestOn && r.loanSetup && emi
+      ? Math.round(emi * (r.loanSetup?.tenure || 0))
+      : r.lent;
+    // Remaining = total payable - total paid so far
+    const totalPaidSoFar = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    const remaining = r.interestOn && r.loanSetup
+      ? Math.max(0, totalPayable - totalPaidSoFar)
+      : Math.max(0, r.lent - r.returned);
     const rate = r.interestOn ? (parseFloat(r.interestRate)||9) : null;
-    const pct = r.lent > 0 ? Math.min(100, Math.round((r.returned / r.lent) * 100)) : 0;
+    const pct = totalPayable > 0 ? Math.min(100, Math.round((totalPaidSoFar / totalPayable) * 100)) : 0;
     const barColor = pct === 100 ? "var(--green)" : pct >= 50 ? "var(--amber)" : "var(--accent)";
     return `<tr>
       <td><input type="checkbox" class="row-check" data-id="${r.id}" onclick="toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""}></td>
@@ -4397,20 +4406,19 @@ function renderTable(data) {
       <td class="amt-lent">${fmt(r.lent)}</td>
       <td class="amt-ret">${fmt(r.returned)}</td>
       <td>
+        ${r.interestOn && r.loanSetup
+          ? `<span class="amt-pend ${totalPayable>0?"has-pending":"no-pending"}" style="font-size:12px;font-weight:700">${fmt(totalPayable)}</span>`
+          : `<span class="amt-lent">${fmt(r.lent)}</span>`}
+      </td>
+      <td>
         <div class="pend-wrap">
-          <span class="amt-pend ${pending>0?"has-pending":"no-pending"}">${fmt(pending)}</span>
-          ${!isOverdue ? `<div class="pend-bar-bg"><div class="pend-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>` : ""}
+          <span class="amt-pend ${remaining>0?"has-pending":"no-pending"}">${fmt(remaining)}</span>
+          ${remaining > 0 ? `<div class="pend-bar-bg"><div class="pend-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>` : ""}
         </div>
       </td>
-      <td>${isOverdue ? `<span class="amt-overdue">${fmt(overdueAmt)}</span>` : `<span class="amt-overdue-empty">—</span>`}</td>
       <td>
         ${r.interestOn
           ? `<span class="amt-interest">${fmt(interest)}</span><div class="interest-meta">${r.interestType==="fixed" ? "Fixed amount" : `${rate}% × ${Math.max(0,((new Date()-new Date(r.interestStartDate||r.date))/(1000*60*60*24*30.44))|0)} mo`}</div>`
-          : `<span class="amt-interest-na">—</span>`}
-      </td>
-      <td>
-        ${r.interestOn
-          ? `<span class="amt-pend ${totalDue>0?"has-pending":"no-pending"}" style="font-size:12px;font-weight:700">${fmt(totalDue)}</span>`
           : `<span class="amt-interest-na">—</span>`}
       </td>
       <td>
@@ -4438,6 +4446,15 @@ function renderTable(data) {
     const interest = calcInterest(r);
     const ds       = getDueStatus(r);
     const statusCls = r.status.toLowerCase();
+    // Total payable and remaining — same logic as desktop
+    const emi = getScheduledEMI(r);
+    const mTotalPayable = r.interestOn && r.loanSetup && emi
+      ? Math.round(emi * (r.loanSetup?.tenure || 0))
+      : r.lent;
+    const mTotalPaid = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    const mRemaining = r.interestOn && r.loanSetup
+      ? Math.max(0, mTotalPayable - mTotalPaid)
+      : Math.max(0, r.lent - r.returned);
     return `<div class="swipe-card status-${statusCls}" id="swipe-${r.id}">
       <!-- Hidden action buttons -->
       <div class="swipe-actions">
@@ -4476,20 +4493,20 @@ function renderTable(data) {
         </div>
         <div class="swipe-amounts">
           <div class="swipe-amt">
-            <div class="swipe-amt-lbl">Lent</div>
+            <div class="swipe-amt-lbl">Loan Amt</div>
             <div class="swipe-amt-val" style="color:var(--text)">${fmt(r.lent)}</div>
           </div>
           <div class="swipe-amt">
-            <div class="swipe-amt-lbl">Returned</div>
+            <div class="swipe-amt-lbl">Paid</div>
             <div class="swipe-amt-val" style="color:var(--green)">${fmt(r.returned)}</div>
           </div>
           <div class="swipe-amt">
-            <div class="swipe-amt-lbl">${overdue > 0 ? "Overdue" : "Pending"}</div>
-            <div class="swipe-amt-val" style="color:${overdue>0?"var(--purple)":pending>0?"var(--red)":"var(--text3)"}">${fmt(overdue>0?overdue:pending)}</div>
+            <div class="swipe-amt-lbl">Remaining</div>
+            <div class="swipe-amt-val" style="color:${mRemaining>0?"var(--red)":"var(--text3)"}">${fmt(mRemaining)}</div>
           </div>
           ${r.interestOn && r.loanSetup ? `<div class="swipe-amt">
-            <div class="swipe-amt-lbl">Sched. EMI</div>
-            <div class="swipe-amt-val" style="color:var(--accent)">${getScheduledEMI(r) ? fmt(getScheduledEMI(r)) : "—"}</div>
+            <div class="swipe-amt-lbl">Total Payable</div>
+            <div class="swipe-amt-val" style="color:var(--accent)">${fmt(mTotalPayable)}</div>
           </div>` : ""}
         </div>
         <div class="swipe-row3">
@@ -6306,6 +6323,7 @@ function executeSendEmail() {
 function triggerNewLoanEmail(r) {
   if (!r.interestOn || !r.profile?.email) return;
   const emi = getScheduledEMI(r);
+  const totalPayable = emi ? fmt(Math.round(emi * (r.loanSetup?.tenure || 0))) : "—";
   confirmSendEmail({
     type: "newloan",
     record: r,
@@ -6314,7 +6332,8 @@ function triggerNewLoanEmail(r) {
       "Principal": fmt(r.lent),
       "Interest Rate": formatRate(r.loanSetup),
       "Tenure": formatTenure(r.loanSetup),
-      "EMI": emi ? fmt(emi) : "—"
+      "EMI": emi ? fmt(emi) : "—",
+      "Total Payable": totalPayable
     },
     templateParams: {
       to_name: r.profile.officialName || r.name,
@@ -6323,6 +6342,7 @@ function triggerNewLoanEmail(r) {
       interest_rate: formatRate(r.loanSetup),
       tenure: formatTenure(r.loanSetup),
       emi: emi ? fmt(emi) : "—",
+      total_payable: totalPayable,
       event_date: fmtEventDate()
     }
   });
@@ -6358,20 +6378,27 @@ function triggerTopupEmail(r, topupAmount) {
 // Trigger: Payment received (interest must be on)
 function triggerPaymentEmail(r, paymentAmount) {
   if (!r.interestOn || !r.profile?.email) return;
-  const pending = Math.max(0, r.lent - r.returned);
+  const emi = getScheduledEMI(r);
+  const totalPayable = emi ? Math.round(emi * (r.loanSetup?.tenure || 0)) : 0;
+  const totalPaid = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+  const remaining = Math.max(0, totalPayable - totalPaid);
   confirmSendEmail({
     type: "payment",
     record: r,
     templateId: EMAILJS_TPL_PAYMENT,
     previewFields: {
       "Amount Paid": fmt(paymentAmount),
-      "Remaining Pending": fmt(pending)
+      "Total Loan": fmt(r.lent),
+      "Total Payable": fmt(totalPayable),
+      "Remaining (incl. interest)": fmt(remaining)
     },
     templateParams: {
       to_name: r.profile.officialName || r.name,
       to_email: r.profile.email,
       payment_amount: fmt(paymentAmount),
-      pending: fmt(pending),
+      lent: fmt(r.lent),
+      total_payable: fmt(totalPayable),
+      pending: fmt(remaining),
       event_date: fmtEventDate()
     }
   });
