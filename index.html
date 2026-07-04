@@ -4642,11 +4642,8 @@ function confirmDelete() {
   }
   saveToCloud(data);
   localData = data;
-  const visible = data.filter(r => !r.archived);
-  renderSummary(visible);
-  renderTable(visible);
-  renderCharts(visible);
   closeConfirm();
+  applyFilters();
   showToast("Entry archived — restore from Archive tab");
 }
 
