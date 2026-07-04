@@ -2575,17 +2575,17 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label>PAN Number <span style="color:var(--red)">*</span></label>
+          <label>PAN Number <span style="color:var(--text3);font-weight:400">(optional)</span></label>
           <input id="fPan" type="text" placeholder="e.g. ABCDE1234F" maxlength="10" style="text-transform:uppercase">
         </div>
         <div class="field">
-          <label>Aadhaar Number <span style="color:var(--red)">*</span></label>
+          <label>Aadhaar Number <span style="color:var(--text3);font-weight:400">(optional)</span></label>
           <input id="fAadhaar" type="text" placeholder="12-digit Aadhaar" maxlength="14">
         </div>
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Email Address <span style="color:var(--red)">*</span></label>
+          <label>Email Address <span style="color:var(--text3);font-weight:400">(optional)</span></label>
           <input id="fEmail" type="email" placeholder="borrower@email.com">
         </div>
         <div class="field">
@@ -2595,11 +2595,11 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Guarantor <span style="color:var(--red)">*</span></label>
+          <label>Guarantor <span style="color:var(--text3);font-weight:400">(optional)</span></label>
           <input id="fGuarantor" type="text" placeholder="Witness / guarantor name">
         </div>
         <div class="field">
-          <label>Guarantor Relation <span style="color:var(--red)">*</span></label>
+          <label>Guarantor Relation <span style="color:var(--text3);font-weight:400">(optional)</span></label>
           <input id="fGuarantorRelation" type="text" placeholder="e.g. Friend, Brother">
         </div>
       </div>
@@ -4731,6 +4731,22 @@ function toggleInterestField() {
   const on = document.getElementById("fInterestOn").checked;
   document.getElementById("interestRateField").classList.toggle("visible", on);
   if (on) setInterestType('compound');
+
+  // Update required/optional indicators for interest-dependent fields
+  const reqSpan  = `<span style="color:var(--red)">*</span>`;
+  const optSpan  = `<span style="color:var(--text3);font-weight:400">(optional)</span>`;
+  [
+    ["fEmail",            "Email Address"],
+    ["fPan",              "PAN Number"],
+    ["fAadhaar",          "Aadhaar Number"],
+    ["fGuarantor",        "Guarantor"],
+    ["fGuarantorRelation","Guarantor Relation"],
+  ].forEach(([id, labelText]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const lbl = el.closest(".field")?.querySelector("label");
+    if (lbl) lbl.innerHTML = labelText + " " + (on ? reqSpan : optSpan);
+  });
 }
 
 function setInterestType(type) {
@@ -4883,11 +4899,14 @@ async function saveEntry() {
   if (!lastName) { showToast("Please enter last name"); return; }
   if (!phone) { showToast("Please enter phone number"); return; }
   if (!normalizePhone(phone)) { showToast("Invalid phone number format"); return; }
-  if (!email) { showToast("Please enter email address"); return; }
-  if (!pan || pan.length !== 10) { showToast("Please enter a valid 10-character PAN number"); return; }
-  if (!aadhaar || aadhaar.length !== 12) { showToast("Please enter a valid 12-digit Aadhaar number"); return; }
-  if (!guarantor) { showToast("Please enter guarantor name"); return; }
-  if (!guarantorRelation) { showToast("Please enter guarantor's relation"); return; }
+  // Fields mandatory only for interest-enabled loans
+  if (interestOn) {
+    if (!email) { showToast("Email is required for interest-enabled loans"); return; }
+    if (!pan || pan.length !== 10) { showToast("PAN is required for interest-enabled loans"); return; }
+    if (!aadhaar || aadhaar.length !== 12) { showToast("Aadhaar is required for interest-enabled loans"); return; }
+    if (!guarantor) { showToast("Guarantor is required for interest-enabled loans"); return; }
+    if (!guarantorRelation) { showToast("Guarantor relation is required for interest-enabled loans"); return; }
+  }
   // Auto-set status based on amounts
   const status = returned > lent ? "OVERDUE" : returned === lent ? "RETURNED" : "PENDING";
   document.getElementById("fStatus").value = status;
