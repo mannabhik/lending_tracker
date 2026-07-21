@@ -4372,13 +4372,52 @@ function openProfileByRecord(id, el) {
     }
     return;
   }
-  // Phone may be encrypted — use raw value for key building
-  const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
-  if (key) openProfilePopup(key, el);
+  if (r.profileId) openProfilePopup(r.profileId, el);
+}
+
+// ── Migrate legacy records to a stable profileId ────────────────────────────
+// Older records grouped people by a key derived from the phone ciphertext, which
+// breaks the moment a record is re-encrypted (AES-GCM uses a fresh random IV on
+// every encryption, so the same phone produces a different ENC:: string each save).
+// This runs once per legacy record: it decrypts name+phone, matches it against any
+// person already assigned an id in this same pass, and assigns a permanent profileId
+// — so all of a person's records group together no matter how many times any one of
+// their records gets re-saved afterward.
+async function migrateProfileIds() {
+  const phoneCache = new Map();
+  const phoneOf = async (r) => {
+    if (!phoneCache.has(r.id)) {
+      phoneCache.set(r.id, normalizePhone(await decryptField(r.profile?.phone || "")) || "");
+    }
+    return phoneCache.get(r.id);
+  };
+
+  let changed = false;
+  for (const r of localData) {
+    if (r.profileId || !r.profile?.officialName) continue;
+    const name = r.profile.officialName.trim().toUpperCase().replace(/\s+/g," ");
+    const phone = await phoneOf(r);
+    let matchId = null;
+    if (phone) {
+      for (const other of localData) {
+        if (other === r || !other.profileId || !other.profile?.officialName) continue;
+        const otherName = other.profile.officialName.trim().toUpperCase().replace(/\s+/g," ");
+        if (otherName !== name) continue;
+        if ((await phoneOf(other)) === phone) { matchId = other.profileId; break; }
+      }
+    }
+    r.profileId = matchId || genProfileId();
+    changed = true;
+  }
+  if (changed) {
+    saveToCloud(localData);
+    console.log("Migrated records to stable profileId");
+  }
 }
 
 async function render() {
   const data = await loadFromCloud();
+  await migrateProfileIds(); // one-time backfill for records saved before profileId existed
   loadCurrency();
   applyFilters(); // respects active filter + search
   renderCharts(data.filter(r => !r.archived));
@@ -4932,7 +4971,11 @@ async function saveEntry() {
       const interestBase = interestJustEnabled ? Math.max(0, lent - returned) : (prev.interestBase ?? Math.max(0, prev.lent - prev.returned));
       const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, nickname: name };
       const encProfile = await encryptProfile(profile);
-    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, interestOn, interestType, interestRate, interestFixed, loanSetup,
+      // Reuse another person's profileId if name+phone now matches them (merge on edit);
+      // otherwise keep this record's own id; only generate new if it never had one.
+      const matchedId = await resolveProfileId(officialName, phone, prev.id);
+      const profileId = matchedId || prev.profileId || genProfileId();
+    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
       };
@@ -4945,7 +4988,9 @@ async function saveEntry() {
   } else {
     const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, nickname: name };
     const encProfileData = await encryptProfile(profileData);
-    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
+    // Same person as an existing record? Reuse their profileId so all their loans group together.
+    const profileId = (await resolveProfileId(officialName, phone, null)) || genProfileId();
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
     data.push(newRecord);
     localData = data;
     saveToCloud(data);
@@ -5610,43 +5655,57 @@ function validatePhone(input) {
   }
 }
 
-// Generate profile key from official name + phone
+// Generate profile key from official name + phone (plaintext only — used for live
+// typeahead/duplicate-warning before the record is encrypted)
 function profileKey(officialName, phone) {
   const norm = normalizePhone(phone);
   if (!norm) return null;
   return officialName.trim().toUpperCase().replace(/\s+/g," ") + "|" + norm;
 }
 
-// Like profileKey but works even when phone is encrypted (ENC::...)
-// Uses the raw phone value as-is so encrypted records still match each other
-function profileKeyRaw(officialName, phone) {
-  if (!officialName || !phone) return null;
-  const raw = phone.trim();
-  // If encrypted, use the ENC string directly as key suffix
-  const suffix = raw.startsWith("ENC::") ? raw.slice(-16) : (normalizePhone(raw) || raw);
-  return officialName.trim().toUpperCase().replace(/\s+/g," ") + "|" + suffix;
+// Stable per-person identifier — generated once per person and stored on every one of
+// their records (r.profileId, plaintext, never derived from encrypted data). This is
+// what actually groups a person's records. It survives re-encryption: AES-GCM uses a
+// random IV each time, so encrypting the same phone twice yields two different ENC::
+// strings — a ciphertext-derived key (the old profileKeyRaw approach) breaks grouping
+// the moment a record is re-saved. A stable id doesn't have that problem.
+function genProfileId() {
+  if (window.crypto?.randomUUID) return "p_" + crypto.randomUUID();
+  return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
 }
 
-// Get all profiles from localData
+// Find the profileId of an existing person matching this official name + phone, by
+// decrypting each candidate's phone and comparing plaintext. excludeId skips a record
+// (e.g. the one currently being edited) so editing doesn't just match itself.
+async function resolveProfileId(officialName, phone, excludeId) {
+  const norm = normalizePhone(phone);
+  if (!norm || !officialName) return null;
+  const upperName = officialName.trim().toUpperCase().replace(/\s+/g," ");
+  for (const r of localData) {
+    if (excludeId != null && r.id === excludeId) continue;
+    if (!r.profileId || !r.profile?.officialName) continue;
+    const rName = r.profile.officialName.trim().toUpperCase().replace(/\s+/g," ");
+    if (rName !== upperName) continue;
+    const rPhone = await decryptField(r.profile.phone || "");
+    if (normalizePhone(rPhone) === norm) return r.profileId;
+  }
+  return null;
+}
+
+// Get all profiles from localData, grouped by stable profileId
 function getProfiles() {
   const map = {};
   localData.forEach(r => {
-    if (r.profile && r.profile.officialName && r.profile.phone) {
-      const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
-      if (key && !map[key]) {
-        map[key] = { ...r.profile, key };
-      }
+    if (r.profile && r.profile.officialName && r.profileId && !map[r.profileId]) {
+      map[r.profileId] = { ...r.profile, key: r.profileId };
     }
   });
   return map;
 }
 
-// Get records for a profile key
-function getProfileRecords(key) {
-  return localData.filter(r => {
-    if (!r.profile?.officialName || !r.profile?.phone) return false;
-    return profileKeyRaw(r.profile.officialName, r.profile.phone) === key;
-  });
+// Get records for a profileId
+function getProfileRecords(profileId) {
+  return localData.filter(r => r.profileId === profileId);
 }
 
 // Auto-suggest profiles on name input
@@ -5716,8 +5775,8 @@ function selectProfile(key) {
   document.getElementById("fPhoneError").style.display = "none";
 }
 
-// Check if profile key already exists (warn on new loan)
-function checkProfileMatch() {
+// Check if a profile already exists for this name+phone (warn on new loan)
+async function checkProfileMatch() {
   const officialName = buildOfficialName();
   const phone = document.getElementById("fPhone").value.trim();
   const editId = parseInt(document.getElementById("fEditId").value) || 0;
@@ -5727,13 +5786,8 @@ function checkProfileMatch() {
   const norm = normalizePhone(phone);
   if (!norm) { banner.style.display = "none"; return; }
 
-  const key = profileKey(officialName, phone);
-  const existing = localData.filter(r => {
-    if (r.id === editId) return false;
-    if (!r.profile?.officialName || !r.profile?.phone) return false;
-    // Case insensitive match — both keys normalized via profileKey
-    return profileKey(r.profile.officialName, r.profile.phone) === key;
-  });
+  const profileId = await resolveProfileId(officialName, phone, editId || null);
+  const existing = profileId ? getProfileRecords(profileId).filter(r => r.id !== editId) : [];
 
   if (existing.length > 0) {
     banner.innerHTML = `⚠️ <strong>${existing[0].name}</strong> already has ${existing.length} loan record(s) with this profile. Adding a new loan for the same person.`;
@@ -5905,9 +5959,8 @@ async function saveProfileEdit() {
 let tooltipTimeout;
 function showNameTooltipById(id, event) {
   const r = localData.find(x => x.id === id);
-  if (!r?.profile?.officialName) return;
-  const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
-  if (key) showNameTooltip(key, event);
+  if (!r?.profile?.officialName || !r.profileId) return;
+  showNameTooltip(r.profileId, event);
 }
 
 function showNameTooltip(key, event) {
