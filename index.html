@@ -4289,6 +4289,7 @@ async function saveToCloud(data) {
   isSyncing = true;
   setSyncStatus("syncing");
   localData = data;
+  await refreshDecryptedProfiles();
   // Refresh widgets whenever data changes
   renderRightPanel(data);
   try {
@@ -4418,6 +4419,7 @@ async function migrateProfileIds() {
 async function render() {
   const data = await loadFromCloud();
   await migrateProfileIds(); // one-time backfill for records saved before profileId existed
+  await refreshDecryptedProfiles();
   loadCurrency();
   applyFilters(); // respects active filter + search
   renderCharts(data.filter(r => !r.archived));
@@ -5082,17 +5084,19 @@ document.addEventListener("keydown", e => {
   if ((e.metaKey||e.ctrlKey) && e.key==="k") { e.preventDefault(); openModal(); }
 });
 
-// Load password from JSONBin — render only if password exists
-// (first-time setup will call render() itself after password is set)
+// Load password from JSONBin FIRST — it's fetched automatically (no typing required
+// for read access; typing is only required later for write actions via
+// requirePassword()). Decryption must not run before the real key is available, or
+// every ENC:: field silently decrypts with the wrong fallback key and profile data
+// for the same person can appear to differ between records.
 loadTheme();
 loadCurrency();
-// Skeleton shown via HTML default, hidden by setLoading when data loads
-// Load data immediately — don't wait for password
-render().then(() => {
+(async () => {
+  await loadPassword();
+  await render();
   checkAutoSync();
-  // Load password in parallel for write protection
-  loadPassword();
-});
+})();
+
 
 // Live EMI preview on input change
 ['fLent','fInterestRate','fTenure','fRatePeriod','fTenureUnit','fPayoutFreq','fCustomDays'].forEach(id => {
@@ -5697,7 +5701,8 @@ function getProfiles() {
   const map = {};
   localData.forEach(r => {
     if (r.profile && r.profile.officialName && r.profileId && !map[r.profileId]) {
-      map[r.profileId] = { ...r.profile, key: r.profileId };
+      const dec = decryptedProfileCache[r.profileId];
+      map[r.profileId] = dec ? { ...r.profile, ...dec, key: r.profileId } : { ...r.profile, key: r.profileId };
     }
   });
   return map;
@@ -6571,6 +6576,25 @@ async function decryptProfile(profile) {
   p.pan      = await decryptField(p.pan      || "");
   p.aadhaar  = await decryptField(p.aadhaar  || "");
   return p;
+}
+
+// ── Decrypted profile cache ─────────────────────────────────────────────────
+// The profile popup, hover tooltip, and auto-suggest must show real masked values
+// (last 4 digits of the actual phone), not raw ciphertext. AES-GCM re-encrypts the
+// same phone to a different-looking ENC:: string every time it's saved, so masking
+// ciphertext directly is meaningless — and made two records of the same person look
+// like they belonged to different people. This decrypts each person's profile once
+// (keyed by their stable profileId) and keeps plaintext in memory only — never
+// written back to storage. Refreshed whenever data loads or changes.
+let decryptedProfileCache = {};
+async function refreshDecryptedProfiles() {
+  const cache = {};
+  for (const r of localData) {
+    if (!r.profileId || !r.profile) continue;
+    if (cache[r.profileId]) continue; // one decrypt per person is enough
+    cache[r.profileId] = await decryptProfile(r.profile);
+  }
+  decryptedProfileCache = cache;
 }
 
 // ── Email Notification System ─────────────────────────────────────────────
