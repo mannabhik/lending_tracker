@@ -4346,14 +4346,18 @@ const fmt = n => {
 };
 const fmtDate = (d, twoLine=false, showTime=false) => {
   if (!d) return "—";
-  const dt = new Date(d);
+  // If date-only string (no T), parse as local date to avoid UTC shift
+  const dt = d.includes("T") ? new Date(d) : new Date(d + "T00:00:00");
   if (isNaN(dt.getTime())) return "—";
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const day = dt.getDate();
   const sfx = day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th";
   const y = dt.getFullYear();
   const mon = months[dt.getMonth()];
-  const timeStr = showTime ? ` ${dt.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true})}` : "";
+  // Only show time if the input had a real time component
+  const timeStr = (showTime && d.includes("T"))
+    ? ` ${dt.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true})}`
+    : "";
   if (twoLine) return `<span style="display:block;font-weight:600">${day}<sup>${sfx}</sup> ${mon}</span><span style="display:block;font-size:10px;color:var(--text3);margin-top:1px">${y}${timeStr}</span>`;
   return `${day} ${mon} ${y}${timeStr}`;
 };
@@ -4368,7 +4372,8 @@ function openProfileByRecord(id, el) {
     }
     return;
   }
-  const key = profileKey(r.profile.officialName, r.profile.phone);
+  // Phone may be encrypted — use raw value for key building
+  const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
   if (key) openProfilePopup(key, el);
 }
 
@@ -5609,8 +5614,17 @@ function validatePhone(input) {
 function profileKey(officialName, phone) {
   const norm = normalizePhone(phone);
   if (!norm) return null;
-  // Case insensitive — always normalize to uppercase then lowercase for key
   return officialName.trim().toUpperCase().replace(/\s+/g," ") + "|" + norm;
+}
+
+// Like profileKey but works even when phone is encrypted (ENC::...)
+// Uses the raw phone value as-is so encrypted records still match each other
+function profileKeyRaw(officialName, phone) {
+  if (!officialName || !phone) return null;
+  const raw = phone.trim();
+  // If encrypted, use the ENC string directly as key suffix
+  const suffix = raw.startsWith("ENC::") ? raw.slice(-16) : (normalizePhone(raw) || raw);
+  return officialName.trim().toUpperCase().replace(/\s+/g," ") + "|" + suffix;
 }
 
 // Get all profiles from localData
@@ -5618,7 +5632,7 @@ function getProfiles() {
   const map = {};
   localData.forEach(r => {
     if (r.profile && r.profile.officialName && r.profile.phone) {
-      const key = profileKey(r.profile.officialName, r.profile.phone);
+      const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
       if (key && !map[key]) {
         map[key] = { ...r.profile, key };
       }
@@ -5631,8 +5645,7 @@ function getProfiles() {
 function getProfileRecords(key) {
   return localData.filter(r => {
     if (!r.profile?.officialName || !r.profile?.phone) return false;
-    // Case insensitive — profileKey normalizes to uppercase
-    return profileKey(r.profile.officialName, r.profile.phone) === key;
+    return profileKeyRaw(r.profile.officialName, r.profile.phone) === key;
   });
 }
 
@@ -5893,7 +5906,7 @@ let tooltipTimeout;
 function showNameTooltipById(id, event) {
   const r = localData.find(x => x.id === id);
   if (!r?.profile?.officialName) return;
-  const key = profileKey(r.profile.officialName, r.profile.phone);
+  const key = profileKeyRaw(r.profile.officialName, r.profile.phone);
   if (key) showNameTooltip(key, event);
 }
 
@@ -6088,40 +6101,43 @@ function renderActivityWidget(data) {
     const displayName = r.profile?.officialName || r.name;
     // Record creation — use createdAt if available for precise ordering
     events.push({
-      type: "add", name: displayName, date: r.date,
+      type: "add", name: displayName, date: r.createdAt || r.date,
       sub: `Lent ${fmt(r.lent)}`,
-      ts: new Date(r.createdAt || r.date).getTime()
+      ts: r.createdAt ? new Date(r.createdAt).getTime() : new Date(r.date + "T00:00:00").getTime()
     });
     // Payments — use createdAt for precise ordering within same day
     (r.payments||[]).forEach(p => {
       events.push({
-        type: "pay", name: displayName, date: p.date,
+        type: "pay", name: displayName, date: p.createdAt || p.date,
         sub: `Paid ${fmt(p.amount)}${p.note?" — "+p.note:""}`,
-        ts: new Date(p.createdAt || p.date).getTime()
+        ts: p.createdAt ? new Date(p.createdAt).getTime() : new Date(p.date + "T00:00:00").getTime()
       });
     });
     // Closed/archived
     if (r.archived && r.archivedAt) {
       events.push({
         type: "close", name: displayName, date: r.archivedAt,
-        sub: `Loan fully settled`, ts: new Date(r.archivedAt).getTime()
+        sub: `Loan fully settled`,
+        ts: r.archivedAt.includes("T") ? new Date(r.archivedAt).getTime() : new Date(r.archivedAt + "T00:00:00").getTime()
       });
     }
     // Overdue
     if (r.status === "OVERDUE") {
+      const od = r.updatedAt || r.date;
       events.push({
-        type: "overdue", name: displayName, date: r.updatedAt||r.date,
-        sub: `Marked overdue`, ts: new Date(r.updatedAt||r.date).getTime()
+        type: "overdue", name: displayName, date: od,
+        sub: `Marked overdue`,
+        ts: od.includes("T") ? new Date(od).getTime() : new Date(od + "T00:00:00").getTime()
       });
     }
     // Edit/update
     if (r.updatedAt && r.updatedAt !== r.date && r.status !== "OVERDUE" && !r.archived) {
-      const sameDayPayment = (r.payments||[]).some(p => p.date === r.updatedAt);
+      const sameDayPayment = (r.payments||[]).some(p => (p.date||"").slice(0,10) === r.updatedAt.slice(0,10));
       if (!sameDayPayment) {
         events.push({
           type: "edit", name: displayName, date: r.updatedAt,
           sub: `Record updated`,
-          ts: new Date(r.updatedAt).getTime()
+          ts: r.updatedAt.includes("T") ? new Date(r.updatedAt).getTime() : new Date(r.updatedAt + "T00:00:00").getTime()
         });
       }
     }
@@ -6138,17 +6154,30 @@ function renderActivityWidget(data) {
   }
 
   el.innerHTML = show.map(ev => {
-    const d = new Date(ev.ts || ev.date);
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const timeStr = d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
-    const dateStr = `${d.getDate()} ${months[d.getMonth()]} · ${timeStr}`;
+    const hasTime = ev.ts && String(ev.ts).length > 10 && (
+      (ev.type === "pay" && ev.date && ev.date.includes("T")) ||
+      (ev.type === "add" && ev.date && ev.date.includes("T")) ||
+      ev.ts > 1000000000000
+    );
+    // Use ts for display if it came from a real ISO timestamp (not a date-only fallback)
+    const srcDate = new Date(ev.ts);
+    const d = new Date(ev.date);
+    // Detect if ev.date is date-only (no time component)
+    const isDateOnly = !ev.date.includes("T");
+    const displayDate = isDateOnly ? d : srcDate;
+    const dateStr = `${displayDate.getDate()} ${months[displayDate.getMonth()]}`;
+    // Only show time if we have a real timestamp (createdAt with T)
+    const timeStr = !isDateOnly
+      ? ` · ${srcDate.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true})}`
+      : "";
     return `<div class="activity-item">
       <div class="activity-dot ${ev.type}">${icons[ev.type]||"•"}</div>
       <div class="activity-text">
         <div class="activity-name">${ev.name}</div>
         <div class="activity-sub">${ev.sub}</div>
       </div>
-      <span class="activity-time">${dateStr}</span>
+      <span class="activity-time">${dateStr}${timeStr}</span>
     </div>`;
   }).join("");
 }
