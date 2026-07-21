@@ -3661,7 +3661,7 @@ function renderScheduleModal(r) {
 function openPrepayForm() {
   const r = localData.find(x => x.id === scheduleRecordId);
   const ls = r && r.loanSetup ? r.loanSetup : {};
-  document.getElementById('prepayDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('prepayDate').value = new Date().toISOString();
   document.getElementById('prepayAmt').value = '';
   document.getElementById('prepayRenegotiate').checked = false;
   document.getElementById('prepayRenegotiateFields').style.display = 'none';
@@ -3755,7 +3755,7 @@ function applyPrepayment() {
     };
   }
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = new Date().toISOString();
   data[idx].updatedAt = todayStr;
   localData = data; saveToCloud(data);
   renderScheduleModal(data[idx]);
@@ -3765,7 +3765,7 @@ function applyPrepayment() {
 }
 
 function openTopupForm() {
-  document.getElementById('topupDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('topupDate').value = new Date().toISOString();
   document.getElementById('topupAmt').value = '';
   const r = localData.find(x => x.id === scheduleRecordId);
   if (r && r.loanSetup) {
@@ -3893,7 +3893,7 @@ function addDocument() {
   const idx = data.findIndex(r => r.id === docsRecordId);
   if (idx === -1) return;
   if (!data[idx].docs) data[idx].docs = [];
-  data[idx].docs.push({ name, link, addedAt: new Date().toISOString().split('T')[0] });
+  data[idx].docs.push({ name, link, addedAt: new Date().toISOString() });
   localData = data;
   saveToCloud(data);
   renderDocList(data[idx]);
@@ -3925,7 +3925,7 @@ function quickTopup(id) {
     const r = localData.find(x => x.id === id);
     if (!r) return;
     document.getElementById('quickTopupTitle').textContent = `Log Top-up — ${r.name}`;
-    document.getElementById('qtDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('qtDate').value = new Date().toISOString();
     document.getElementById('qtAmount').value = '';
     document.getElementById('qtTenure').value = '';
     // Pre-fill rate from existing loan setup if available
@@ -4006,7 +4006,7 @@ function applyQuickTopup() {
     data[idx].interestOn = true;
   }
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = new Date().toISOString();
   data[idx].updatedAt = todayStr;
   data[idx].status = 'PENDING';
 
@@ -4344,14 +4344,18 @@ const fmt = n => {
   const cur = CURRENCIES[activeCurrency] || CURRENCIES["INR"];
   return cur.symbol + Number(n).toLocaleString(cur.locale);
 };
-const fmtDate = (d, twoLine=false) => {
+const fmtDate = (d, twoLine=false, showTime=false) => {
   if (!d) return "—";
-  const [y,m,dd] = d.split("-");
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return "—";
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const day = parseInt(dd);
-  const sfx = ["th","st","nd","rd"][day<=3&&day>=1?day:(day<=20||day>23)?0:day-20] || "th";
-  if (twoLine) return `<span style="display:block;font-weight:600">${day}<sup>${sfx}</sup> ${months[parseInt(m)-1]}</span><span style="display:block;font-size:10px;color:var(--text3);margin-top:1px">${y}</span>`;
-  return `${day} ${months[parseInt(m)-1]} ${y}`;
+  const day = dt.getDate();
+  const sfx = day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th";
+  const y = dt.getFullYear();
+  const mon = months[dt.getMonth()];
+  const timeStr = showTime ? ` ${dt.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true})}` : "";
+  if (twoLine) return `<span style="display:block;font-weight:600">${day}<sup>${sfx}</sup> ${mon}</span><span style="display:block;font-size:10px;color:var(--text3);margin-top:1px">${y}${timeStr}</span>`;
+  return `${day} ${mon} ${y}${timeStr}`;
 };
 
 function openProfileByRecord(id, el) {
@@ -4489,7 +4493,7 @@ function renderTable(data) {
         ${r.interestOn && r.loanSetup ? `<span class="amt-interest">${fmt(getScheduledEMI(r))}</span><br><span class="schedule-link" onclick="openSchedule(${r.id})">View schedule →</span>` : `<span class="amt-interest-na">—</span>`}
       </td>
       <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
-      <td><span class="date-pill updated" style="min-width:unset">${r.updatedAt ? fmtDate(r.updatedAt, true) : "—"}</span></td>
+      <td><span class="date-pill updated" style="min-width:unset">${r.updatedAt ? fmtDate(r.updatedAt, true, true) : "—"}</span></td>
       <td><div class="row-actions">
         <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
         <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
@@ -4695,7 +4699,7 @@ function confirmDelete() {
   const idx = data.findIndex(r => r.id === pendingDeleteId);
   if (idx !== -1) {
     data[idx].archived = true;
-    data[idx].archivedAt = new Date().toISOString().split("T")[0];
+    data[idx].archivedAt = new Date().toISOString();
   }
   saveToCloud(data);
   localData = data;
@@ -4764,7 +4768,7 @@ function openModal() {
   requirePassword(_openModal);
 }
 function _openModal() {
-  document.getElementById("fDate").value = new Date().toISOString().split("T")[0];
+  document.getElementById("fDate").value = new Date().toISOString();
   document.getElementById("fName").value = "";
   document.getElementById("fLent").value = "";
   document.getElementById("fReturned").value = "";
@@ -4911,7 +4915,7 @@ async function saveEntry() {
   const status = returned > lent ? "OVERDUE" : returned === lent ? "RETURNED" : "PENDING";
   document.getElementById("fStatus").value = status;
   const data = [...localData];
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString();
   if (editId) {
     const idx = data.findIndex(r => r.id === parseInt(editId));
     if (idx !== -1) {
@@ -4936,7 +4940,7 @@ async function saveEntry() {
   } else {
     const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, nickname: name };
     const encProfileData = await encryptProfile(profileData);
-    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr };
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
     data.push(newRecord);
     localData = data;
     saveToCloud(data);
@@ -5075,7 +5079,7 @@ function exportExcel() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "lendlog-export-" + new Date().toISOString().split("T")[0] + ".csv";
+  a.download = "lendlog-export-" + new Date().toISOString() + ".csv";
   a.click();
   URL.revokeObjectURL(url);
   showToast("Excel/CSV exported!");
@@ -5873,7 +5877,7 @@ async function saveProfileEdit() {
         nickname: data[idx].profile?.nickname || data[idx].name
       };
       data[idx].profile = await encryptProfile(rawProfile);
-      data[idx].updatedAt = new Date().toISOString().split("T")[0];
+      data[idx].updatedAt = new Date().toISOString();
     }
   }));
 
@@ -6081,18 +6085,19 @@ function renderActivityWidget(data) {
 
   const events = [];
   [...data].forEach(r => {
-    // Record creation
     const displayName = r.profile?.officialName || r.name;
+    // Record creation — use createdAt if available for precise ordering
     events.push({
       type: "add", name: displayName, date: r.date,
-      sub: `Lent ${fmt(r.lent)}`, ts: new Date(r.date).getTime()
+      sub: `Lent ${fmt(r.lent)}`,
+      ts: new Date(r.createdAt || r.date).getTime()
     });
-    // Payments
+    // Payments — use createdAt for precise ordering within same day
     (r.payments||[]).forEach(p => {
       events.push({
         type: "pay", name: displayName, date: p.date,
         sub: `Paid ${fmt(p.amount)}${p.note?" — "+p.note:""}`,
-        ts: new Date(p.date).getTime()
+        ts: new Date(p.createdAt || p.date).getTime()
       });
     });
     // Closed/archived
@@ -6111,13 +6116,12 @@ function renderActivityWidget(data) {
     }
     // Edit/update
     if (r.updatedAt && r.updatedAt !== r.date && r.status !== "OVERDUE" && !r.archived) {
-      const updTs = new Date(r.updatedAt).getTime();
       const sameDayPayment = (r.payments||[]).some(p => p.date === r.updatedAt);
       if (!sameDayPayment) {
         events.push({
           type: "edit", name: displayName, date: r.updatedAt,
           sub: `Record updated`,
-          ts: updTs
+          ts: new Date(r.updatedAt).getTime()
         });
       }
     }
@@ -6127,7 +6131,6 @@ function renderActivityWidget(data) {
   const show = events.slice(0, 8);
 
   const icons = { add:"➕", pay:"💳", edit:"✏️", close:"✅", overdue:"⚠️" };
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   if (!show.length) {
     el.innerHTML = `<div class="no-upcoming">No activity yet</div>`;
@@ -6135,15 +6138,17 @@ function renderActivityWidget(data) {
   }
 
   el.innerHTML = show.map(ev => {
-    const d = new Date(ev.date);
-    const timeStr = `${d.getDate()} ${months[d.getMonth()]}`;
+    const d = new Date(ev.ts || ev.date);
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const timeStr = d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
+    const dateStr = `${d.getDate()} ${months[d.getMonth()]} · ${timeStr}`;
     return `<div class="activity-item">
       <div class="activity-dot ${ev.type}">${icons[ev.type]||"•"}</div>
       <div class="activity-text">
         <div class="activity-name">${ev.name}</div>
         <div class="activity-sub">${ev.sub}</div>
       </div>
-      <span class="activity-time">${timeStr}</span>
+      <span class="activity-time">${dateStr}</span>
     </div>`;
   }).join("");
 }
@@ -6304,7 +6309,7 @@ function addNoteLog() {
   const data = [...localData];
   if (!data[idx].noteLog) data[idx].noteLog = [];
   data[idx].noteLog.push({ date: new Date().toISOString(), text });
-  data[idx].updatedAt = new Date().toISOString().split("T")[0];
+  data[idx].updatedAt = new Date().toISOString();
   input.value = "";
   localData = data;
   saveToCloud(data);
@@ -6683,7 +6688,7 @@ function exportBackup() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "lendlog-backup-" + new Date().toISOString().split("T")[0] + ".json";
+  a.download = "lendlog-backup-" + new Date().toISOString() + ".json";
   a.click();
   URL.revokeObjectURL(url);
   showToast("Backup downloaded!");
@@ -6780,7 +6785,7 @@ function autoArchiveClosed(data, celebrate = false) {
     if (!r.archived && r.status === "RETURNED" && r.returned >= r.lent) {
       if (celebrate && !justClosed) justClosed = r; // show celebration for first newly closed
       r.archived = true;
-      r.archivedAt = r.archivedAt || new Date().toISOString().split("T")[0];
+      r.archivedAt = r.archivedAt || new Date().toISOString();
       changed = true;
     }
   });
@@ -6941,7 +6946,7 @@ function bulkMarkReturned() {
       if (idx !== -1) {
         data[idx].returned = data[idx].lent;
         data[idx].status = "RETURNED";
-        data[idx].updatedAt = new Date().toISOString().split("T")[0];
+        data[idx].updatedAt = new Date().toISOString();
       }
     });
     autoArchiveClosed(data, true);
@@ -6962,7 +6967,7 @@ function bulkArchive() {
       const idx = data.findIndex(r => r.id === id);
       if (idx !== -1) {
         data[idx].archived = true;
-        data[idx].archivedAt = new Date().toISOString().split("T")[0];
+        data[idx].archivedAt = new Date().toISOString();
       }
     });
     localData = data; saveToCloud(data);
@@ -7132,7 +7137,7 @@ function openPayments(id) {
     const r = localData.find(x => x.id === id);
     if (!r) return;
     document.getElementById("paymentsTitle").textContent = "💳 Payments — " + r.name;
-    document.getElementById("payDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("payDate").value = new Date().toISOString();
     document.getElementById("payAmt").value = "";
     document.getElementById("payNote").value = "";
     renderPaymentsList(r);
@@ -7197,11 +7202,11 @@ function addPayment() {
   const idx = data.findIndex(r => r.id === paymentsRecordId);
   if (idx === -1) return;
   if (!data[idx].payments) data[idx].payments = [];
-  data[idx].payments.push({ date, amount, note });
+  data[idx].payments.push({ date, amount, note, createdAt: new Date().toISOString() });
 
   // Update returned amount and auto-status
   data[idx].returned = (data[idx].returned || 0) + amount;
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString();
   data[idx].status = data[idx].returned > data[idx].lent ? "OVERDUE" : data[idx].returned === data[idx].lent ? "RETURNED" : "PENDING";
   data[idx].updatedAt = todayStr;
 
@@ -7260,7 +7265,7 @@ function quickRenego(id) {
 function openRenegotiateForm() {
   const r = localData.find(x => x.id === scheduleRecordId);
   const ls = r && r.loanSetup ? r.loanSetup : {};
-  document.getElementById('renego_date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('renego_date').value = new Date().toISOString();
   document.getElementById('renego_rate').value = ls.rate || '';
   document.getElementById('renego_ratePeriod').value = ls.ratePeriod || 'yearly';
   document.getElementById('renego_tenure').value = ls.tenure || '';
@@ -7332,7 +7337,7 @@ function applyRenegotiation() {
     tenure: newTenure, tenureUnit: newTenureUnit,
     payoutFreq: newPayoutFreq,
   };
-  data[idx].updatedAt = new Date().toISOString().split('T')[0];
+  data[idx].updatedAt = new Date().toISOString();
   localData = data;
   saveToCloud(data);
   renderScheduleModal(data[idx]);
