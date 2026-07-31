@@ -1185,6 +1185,7 @@
   .schedule-table tr:last-child td { border-bottom: none; }
   .schedule-table tr.paid td { background: rgba(0,212,170,0.05); color: var(--text2); }
   .schedule-table tr.partial td { background: rgba(232,184,75,0.08); }
+  .schedule-table tr.overdue td { background: rgba(255,92,125,0.10); font-weight: 600; }
   .schedule-table tr.current td { background: rgba(108,99,255,0.08); font-weight: 600; }
   .schedule-table tr.future td { background: var(--surface); }
   .schedule-table tr.event-row td {
@@ -1269,6 +1270,7 @@
 
   body.light .schedule-table tr.paid    td { background: rgba(45,138,94,0.05); }
   body.light .schedule-table tr.partial td { background: rgba(232,184,75,0.10); }
+  body.light .schedule-table tr.overdue td { background: rgba(214,48,80,0.08); font-weight: 600; }
   body.light .schedule-table tr.current td { background: rgba(91,82,232,0.06); }
   body.light .schedule-table tr.event-row td { background: rgba(123,79,204,0.06); }
 
@@ -3626,7 +3628,7 @@ function buildSchedule(r) {
     let status;
     if (appliedToThisPeriod >= actualEmi - 0.5) status = 'paid';
     else if (appliedToThisPeriod > 0.5) status = 'partial';
-    else if (dateIsPast) status = 'paid'; // legacy assumption: no logged shortfall + date passed = treated as settled
+    else if (dateIsPast) status = 'overdue'; // due date passed with NO payment applied — genuinely overdue, never silently "paid"
     else if (dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear()) status = 'current';
     else status = 'future';
 
@@ -3689,9 +3691,11 @@ function renderScheduleModal(r) {
     if (row.event) return `<tr class="event-row"><td colspan="8">📌 ${fmtDate(row.date)} — ${row.label}</td></tr>`;
     const statusLabel = row.status === 'paid' ? '✓ Paid'
       : row.status === 'partial' ? `◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`
+      : row.status === 'overdue' ? '⚠ Overdue'
       : row.status === 'current' ? '● Due Now' : '○ Upcoming';
     const statusColor = row.status === 'paid' ? 'var(--green)'
       : row.status === 'partial' ? 'var(--amber)'
+      : row.status === 'overdue' ? 'var(--red)'
       : row.status === 'current' ? 'var(--accent)' : 'var(--text3)';
     return `<tr class="${row.status}">
       <td>${row.num}</td>
@@ -5772,11 +5776,11 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
 <table>
   <thead><tr><th>#</th><th>Due Date</th><th>Opening Bal</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing Bal</th><th>Status</th></tr></thead>
   <tbody>
-    ${schedRows.map(row=>`<tr style="${row.status==="paid"?"background:#E8F5E9":row.status==="partial"?"background:#FFF3E0":row.status==="current"?"background:#FFF8E1":""}">
+    ${schedRows.map(row=>`<tr style="${row.status==="paid"?"background:#E8F5E9":row.status==="partial"?"background:#FFF3E0":row.status==="overdue"?"background:#FDE2E7":row.status==="current"?"background:#FFF8E1":""}">
       <td>${row.num}</td><td>${fmtDate(row.date)}</td><td>${fmt(row.openBal)}</td>
       <td style="font-weight:bold">${fmt(row.emi)}</td><td style="color:#2D8A5E">${fmt(row.principal)}</td>
       <td style="color:#0369a1">${fmt(row.interest)}</td><td style="color:#9A6200">${fmt(row.closeBal)}</td>
-      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="partial"?`◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`:row.status==="current"?"● Due":"○ Upcoming"}</td>
+      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="partial"?`◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`:row.status==="overdue"?"⚠ Overdue":row.status==="current"?"● Due":"○ Upcoming"}</td>
     </tr>`).join("")}
   </tbody>
 </table>` : ""}
@@ -6807,7 +6811,7 @@ function fmtEventDate() {
 
 // Show confirmation popup before sending — returns nothing, user decides via buttons
 function confirmSendEmail(opts) {
-  // opts: { type: 'newloan'|'topup'|'payment'|'reminder', record, templateParams, templateId }
+  // opts: { type: 'newloan'|'topup'|'payment'|'reminder', record, templateParams, templateId, warning? }
   const r = opts.record;
   const toEmail = r._decryptedEmail || r.profile?.email;
   if (!toEmail) {
@@ -6828,6 +6832,7 @@ function confirmSendEmail(opts) {
   popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;display:flex;align-items:center;justify-content:center;padding:16px";
   popup.innerHTML = `
     <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
+      ${opts.warning ? `<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:10px 12px;margin-bottom:16px;font-size:12px;color:var(--amber);line-height:1.5">⚠️ ${opts.warning}</div>` : ""}
       <div style="font-size:34px;text-align:center;margin-bottom:8px">${meta.icon}</div>
       <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:6px">${meta.title}</div>
       <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px">
@@ -6848,6 +6853,7 @@ function confirmSendEmail(opts) {
   // Stash the pending send so the Send button can trigger it
   window._pendingEmailSend = opts;
 }
+
 
 function executeSendEmail() {
   const opts = window._pendingEmailSend;
@@ -7002,22 +7008,22 @@ function triggerReminderEmail(id) {
   if (!r) return;
   if (!r.profile?.email) { showToast("No email on file for this borrower — skipping notification"); return; }
 
-  // Schedule-aware check: is there actually an installment due (past its grace
-  // period) or overdue? Uses the real amortization schedule (same logic as
-  // buildSchedule/calcInterest) plus this loan's own Grace Days setting — an
-  // early/ahead-of-schedule payment (e.g. EMI 2 paid same month as EMI 1) correctly
-  // counts as covering the next period, and a loan started mid-month is checked
-  // against its own due date, not a shared calendar checkpoint. Same logic the
-  // automated daily reminder uses, so manual and automatic sends never disagree.
+  // Schedule-aware check (same logic as the automated daily reminder): is there
+  // actually an installment due, or has this borrower fully paid off / paid ahead
+  // of schedule? This is now a WARNING shown inside the confirmation popup, not a
+  // hard block — you can still choose to send anyway.
+  let warning = null;
   if (r.interestOn && r.loanSetup) {
     const next = getNextUnpaidInstallment(r);
-    if (!next) { showToast(`${r.name} has fully paid off this loan — no reminder needed`); return; }
-    const today = new Date(); today.setHours(0,0,0,0);
-    const graceDate = new Date(next.date);
-    graceDate.setDate(graceDate.getDate() + (r.graceDays ?? 1));
-    if (today < graceDate) {
-      showToast(`${r.name}'s next installment isn't due until ${fmtDate(next.date)} — no reminder needed yet`);
-      return;
+    if (!next) {
+      warning = `${r.name} has fully paid off this loan — sending a reminder may not be necessary.`;
+    } else {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const graceDate = new Date(next.date);
+      graceDate.setDate(graceDate.getDate() + (r.graceDays ?? 1));
+      if (today < graceDate) {
+        warning = `${r.name}'s next installment isn't due until ${fmtDate(next.date)} — sending now would be early.`;
+      }
     }
   }
 
@@ -7040,6 +7046,7 @@ function triggerReminderEmail(id) {
       type: "reminder",
       record: {...r, _decryptedEmail: email},
       templateId: EMAILJS_TPL_REMINDER,
+      warning,
       previewFields: {
         "Pending Amount": fmt(pending),
         "Interest (to date)": interest > 0 ? fmt(interest) : "—",
