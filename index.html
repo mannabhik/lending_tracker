@@ -1169,6 +1169,7 @@
   }
   .schedule-table tr:last-child td { border-bottom: none; }
   .schedule-table tr.paid td { background: rgba(0,212,170,0.05); color: var(--text2); }
+  .schedule-table tr.partial td { background: rgba(232,184,75,0.08); }
   .schedule-table tr.current td { background: rgba(108,99,255,0.08); font-weight: 600; }
   .schedule-table tr.future td { background: var(--surface); }
   .schedule-table tr.event-row td {
@@ -1252,6 +1253,7 @@
   body.light tbody tr:hover td { background: rgba(91,82,232,0.05) !important; }
 
   body.light .schedule-table tr.paid    td { background: rgba(45,138,94,0.05); }
+  body.light .schedule-table tr.partial td { background: rgba(232,184,75,0.10); }
   body.light .schedule-table tr.current td { background: rgba(91,82,232,0.06); }
   body.light .schedule-table tr.event-row td { background: rgba(123,79,204,0.06); }
 
@@ -3516,6 +3518,9 @@ function buildSchedule(r) {
 
   let eventIdx = 0;
   let periodNum = 0;
+  const totalPaidSoFar = (r.payments||[]).reduce((s,p) => s + (p.amount||0), 0);
+  let cumulativeEmiRunning = 0; // running total of EMI due through the end of the previous period — tracked incrementally (not periodNum × emi) so it stays correct even if the EMI amount changes mid-loan via a top-up/renegotiation event
+  const today = new Date();
 
   for (let i = 0; i < numPeriods && currentBalance > 0.5; i++) {
     periodNum++;
@@ -3580,17 +3585,28 @@ function buildSchedule(r) {
     const principalComp = Math.max(0, actualEmi - interestComp);
     currentBalance = Math.max(0, openBal - principalComp);
 
-    const today = new Date();
-    // Mark as paid if: enough cumulative payments received to cover this EMI slot
-    const totalPaidSoFar = (r.payments||[]).reduce((s,p) => s + (p.amount||0), 0);
-    const cumulativeEmiDue = periodNum * actualEmi;
-    const paidByPayments = totalPaidSoFar >= cumulativeEmiDue;
+    // Allocate what's actually been paid to this period, sequentially — whatever's
+    // left of totalPaidSoFar after fully covering every prior period's EMI is what's
+    // available here. This is what lets an underpayment (e.g. ₹10,000 against a
+    // ₹12,123 EMI) show up as a genuine partial credit instead of vanishing into a
+    // "waiting pool" that only becomes visible once the full EMI threshold is crossed.
+    const paidBeforeThisPeriod = cumulativeEmiRunning;
+    cumulativeEmiRunning += actualEmi;
+    const appliedToThisPeriod = Math.max(0, Math.min(actualEmi, totalPaidSoFar - paidBeforeThisPeriod));
     const dateIsPast = dueDate < today;
-    const status = paidByPayments ? 'paid' : (dateIsPast ? 'paid' : (dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear()) ? 'current' : 'future');
-    schedule.push({ num: periodNum, date: dueDateStr, openBal, emi: actualEmi, principal: principalComp, interest: interestComp, closeBal: currentBalance, status });
+
+    let status;
+    if (appliedToThisPeriod >= actualEmi - 0.5) status = 'paid';
+    else if (appliedToThisPeriod > 0.5) status = 'partial';
+    else if (dateIsPast) status = 'paid'; // legacy assumption: no logged shortfall + date passed = treated as settled
+    else if (dueDate.getMonth() === today.getMonth() && dueDate.getFullYear() === today.getFullYear()) status = 'current';
+    else status = 'future';
+
+    schedule.push({ num: periodNum, date: dueDateStr, openBal, emi: actualEmi, principal: principalComp, interest: interestComp, closeBal: currentBalance, status, paidAmount: appliedToThisPeriod });
   }
   return schedule;
 }
+
 
 // ── Schedule Modal ───────────────────────────────────────────────────────
 let scheduleRecordId = null;
@@ -3643,8 +3659,12 @@ function renderScheduleModal(r) {
 
   document.getElementById('scheduleTableBody').innerHTML = schedule.map(row => {
     if (row.event) return `<tr class="event-row"><td colspan="8">📌 ${fmtDate(row.date)} — ${row.label}</td></tr>`;
-    const statusLabel = row.status === 'paid' ? '✓ Paid' : row.status === 'current' ? '● Due Now' : '○ Upcoming';
-    const statusColor = row.status === 'paid' ? 'var(--green)' : row.status === 'current' ? 'var(--accent)' : 'var(--text3)';
+    const statusLabel = row.status === 'paid' ? '✓ Paid'
+      : row.status === 'partial' ? `◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`
+      : row.status === 'current' ? '● Due Now' : '○ Upcoming';
+    const statusColor = row.status === 'paid' ? 'var(--green)'
+      : row.status === 'partial' ? 'var(--amber)'
+      : row.status === 'current' ? 'var(--accent)' : 'var(--text3)';
     return `<tr class="${row.status}">
       <td>${row.num}</td>
       <td>${fmtDate(row.date)}</td>
@@ -4445,15 +4465,19 @@ function calcInterest(r) {
 
   // Use the SAME amortization schedule the Loan Schedule modal shows (buildSchedule),
   // so "Interest (to date)" here always matches what that modal displays. Sum the
-  // interest component of every installment actually paid so far. Previously this used
-  // a separate, disconnected reducing-balance estimate off the current outstanding
-  // balance — that formula doesn't know about individual EMI splits, top-ups,
-  // prepayments, or renegotiations, so it drifted from the real schedule.
+  // interest component of every fully-paid installment, plus interest-first credit on
+  // any partially-paid one (a payment satisfies the interest portion before principal —
+  // standard convention — so a partial EMI that at least covers the interest component
+  // still counts as interest paid, even though principal is under-covered).
   if (r.loanSetup) {
     const schedule = buildSchedule(r);
     const paidInterest = schedule
-      .filter(row => !row.event && row.status === 'paid')
-      .reduce((s, row) => s + (row.interest || 0), 0);
+      .filter(row => !row.event)
+      .reduce((s, row) => {
+        if (row.status === 'paid') return s + (row.interest || 0);
+        if (row.status === 'partial') return s + Math.min(row.interest || 0, row.paidAmount || 0);
+        return s;
+      }, 0);
     return Math.round(paidInterest);
   }
 
@@ -5649,11 +5673,11 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
 <table>
   <thead><tr><th>#</th><th>Due Date</th><th>Opening Bal</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing Bal</th><th>Status</th></tr></thead>
   <tbody>
-    ${schedRows.map(row=>`<tr style="${row.status==="paid"?"background:#E8F5E9":row.status==="current"?"background:#FFF8E1":""}">
+    ${schedRows.map(row=>`<tr style="${row.status==="paid"?"background:#E8F5E9":row.status==="partial"?"background:#FFF3E0":row.status==="current"?"background:#FFF8E1":""}">
       <td>${row.num}</td><td>${fmtDate(row.date)}</td><td>${fmt(row.openBal)}</td>
       <td style="font-weight:bold">${fmt(row.emi)}</td><td style="color:#2D8A5E">${fmt(row.principal)}</td>
       <td style="color:#0369a1">${fmt(row.interest)}</td><td style="color:#9A6200">${fmt(row.closeBal)}</td>
-      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="current"?"● Due":"○ Upcoming"}</td>
+      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="partial"?`◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`:row.status==="current"?"● Due":"○ Upcoming"}</td>
     </tr>`).join("")}
   </tbody>
 </table>` : ""}
@@ -7404,6 +7428,8 @@ function openPayments(id) {
     document.getElementById("paymentsTitle").textContent = "💳 Payments — " + r.name;
     document.getElementById("payDate").value = new Date().toISOString();
     document.getElementById("payAmt").value = "";
+    const emi = r.interestOn && r.loanSetup ? getScheduledEMI(r) : null;
+    document.getElementById("payAmt").placeholder = emi ? `Amount received (EMI: ${fmt(emi)})` : "Amount received";
     document.getElementById("payNote").value = "";
     renderPaymentsList(r);
     // Show resend buttons only for interest-enabled records with email
@@ -7433,11 +7459,13 @@ function renderPaymentsList(r) {
   const payments = r.payments || [];
   const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
   const pending = Math.max(0, r.lent - r.returned);
+  const emi = r.interestOn && r.loanSetup ? getScheduledEMI(r) : null;
 
   document.getElementById("paymentsTotals").innerHTML = `
     <div class="payment-total-item"><div class="payment-total-label">Lent</div><div class="payment-total-val">${fmt(r.lent)}</div></div>
     <div class="payment-total-item"><div class="payment-total-label">Logged Payments</div><div class="payment-total-val" style="color:var(--green)">${fmt(totalPaid)}</div></div>
     <div class="payment-total-item"><div class="payment-total-label">Pending</div><div class="payment-total-val" style="color:var(--red)">${fmt(pending)}</div></div>
+    <div class="payment-total-item"><div class="payment-total-label">Sched. EMI</div><div class="payment-total-val" style="color:var(--accent)">${emi ? fmt(emi) : "—"}</div></div>
     <div class="payment-total-item"><div class="payment-total-label">Count</div><div class="payment-total-val">${payments.length}</div></div>
   `;
 
