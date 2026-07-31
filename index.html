@@ -2753,6 +2753,19 @@
           ℹ️ For fixed interest loans — you set the payout amount manually. Prepayments and top-ups just log amounts; no recalculation is done.
         </div>
       </div>
+
+      <!-- Grace Days — universal to all interest types, controls the auto-reminder timing -->
+      <div class="loan-section">
+        <div class="field-2col">
+          <div class="field" style="margin-bottom:0">
+            <label>Reminder Grace Days</label>
+            <input id="fGraceDays" type="number" placeholder="1" min="0" max="30" value="1">
+          </div>
+          <div class="field" style="margin-bottom:0;display:flex;align-items:center;font-size:11px;color:var(--text3);padding-top:18px">
+            Days after an installment's due date before the auto-reminder email is sent
+          </div>
+        </div>
+      </div>
     </div>
     <button class="modal-save" id="saveBtn" onclick="saveEntry()">Save entry</button>
   </div>
@@ -4913,6 +4926,7 @@ function _openModal() {
   document.getElementById("fRatePeriod").value = "yearly";
   document.getElementById("fTenureUnit").value = "months";
   document.getElementById("fPayoutFreq").value = "monthly";
+  document.getElementById("fGraceDays").value = "1";
   document.getElementById("emiPreview").style.display = "none";
   document.getElementById("interestRateField").classList.remove("visible");
   setInterestType('compound');
@@ -4964,6 +4978,7 @@ async function _editRow(id) {
   document.getElementById("fTenure").value = ls.tenure || "";
   document.getElementById("fTenureUnit").value = ls.tenureUnit || "months";
   document.getElementById("fPayoutFreq").value = ls.payoutFreq || "monthly";
+  document.getElementById("fGraceDays").value = (r.graceDays ?? 1);
   document.getElementById("interestRateField").classList.toggle("visible", !!r.interestOn);
   setInterestType(ls.interestType || r.interestType || 'compound');
   document.getElementById("modalTitle").textContent = "Edit entry";
@@ -4998,6 +5013,8 @@ async function saveEntry() {
   const interestType = document.getElementById("fInterestOn").dataset.itype || 'compound';
   const interestRate = interestOn ? (parseFloat(document.getElementById("fInterestRate").value) || 9) : null;
   const interestFixed = interestOn && interestType === 'fixed' ? (parseFloat(document.getElementById("fInterestFixed").value) || 0) : null;
+  const graceDaysRaw = parseInt(document.getElementById("fGraceDays").value);
+  const graceDays = Math.max(0, isNaN(graceDaysRaw) ? 1 : graceDaysRaw);
   const isFixed = interestType === 'fixed';
   const loanSetup = interestOn ? {
     interestType,
@@ -5044,7 +5061,7 @@ async function saveEntry() {
       // otherwise keep this record's own id; only generate new if it never had one.
       const matchedId = await resolveProfileId(officialName, phone, prev.id);
       const profileId = matchedId || prev.profileId || genProfileId();
-    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup,
+    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
       };
@@ -5059,7 +5076,7 @@ async function saveEntry() {
     const encProfileData = await encryptProfile(profileData);
     // Same person as an existing record? Reuse their profileId so all their loans group together.
     const profileId = (await resolveProfileId(officialName, phone, null)) || genProfileId();
-    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
     data.push(newRecord);
     localData = data;
     saveToCloud(data);
@@ -5457,8 +5474,43 @@ async function syncToSheets(manual = true) {
       };
     });
 
+    // Minimal, deliberate exception to "profile fields stay encrypted": Apps Script's
+    // monthly auto-reminder trigger runs unattended with no access to your app
+    // password, so it can't decrypt AES-GCM fields itself — reimplementing AES-GCM in
+    // Apps Script from scratch would be real cryptographic code with no way to
+    // thoroughly verify it, which is worse than this narrow, explicit exposure.
+    // Only name + email + next-due-date + amount are included here — phone, PAN, and
+    // Aadhaar are never touched by this queue. Only interest-bearing loans with an
+    // unpaid installment are included; fully-paid and paid-ahead-of-schedule loans
+    // are correctly left out (same schedule logic as the in-app reminder button).
+    const reminderQueue = [];
+    for (const r of localData) {
+      if (r.archived || !r.interestOn || !r.loanSetup || !r.profile?.email) continue;
+      const next = getNextUnpaidInstallment(r);
+      if (!next) continue; // fully paid off
+      const email = await decryptField(r.profile.email);
+      if (!email) continue;
+      const pending = Math.max(0, r.lent - r.returned);
+      const interest = calcInterest(r);
+      reminderQueue.push({
+        id: r.id,
+        name: r.profile.officialName || r.name,
+        email,
+        nextDueDate: next.date,
+        installmentDue: Math.round(next.emi - (next.paidAmount || 0)),
+        pending,
+        interestToDate: interest,
+        totalDueNow: pending + interest,
+        schedEmi: next.emi,
+        lent: r.lent,
+        returnedAmt: r.returned,
+        graceDays: r.graceDays ?? 1,
+      });
+    }
+
     const payload = {
       records:  syncRecords,
+      reminderQueue,
       currency: activeCurrency,
       syncedAt: new Date().toISOString(),
     };
@@ -6930,18 +6982,21 @@ function triggerReminderEmail(id) {
   if (!r) return;
   if (!r.profile?.email) { showToast("No email on file for this borrower — skipping notification"); return; }
 
-  // Schedule-aware check: is there actually an installment due this month or overdue?
-  // Uses the real amortization schedule (same logic as buildSchedule/calcInterest), so
-  // an early/ahead-of-schedule payment (e.g. EMI 2 paid same month as EMI 1) correctly
-  // counts as covering the next period — no reminder gets sent for a period that's
-  // already settled, even if its calendar due date hasn't arrived yet.
+  // Schedule-aware check: is there actually an installment due (past its grace
+  // period) or overdue? Uses the real amortization schedule (same logic as
+  // buildSchedule/calcInterest) plus this loan's own Grace Days setting — an
+  // early/ahead-of-schedule payment (e.g. EMI 2 paid same month as EMI 1) correctly
+  // counts as covering the next period, and a loan started mid-month is checked
+  // against its own due date, not a shared calendar checkpoint. Same logic the
+  // automated daily reminder uses, so manual and automatic sends never disagree.
   if (r.interestOn && r.loanSetup) {
     const next = getNextUnpaidInstallment(r);
     if (!next) { showToast(`${r.name} has fully paid off this loan — no reminder needed`); return; }
     const today = new Date(); today.setHours(0,0,0,0);
-    const dueThisOrEarlierMonth = (new Date(next.date).getFullYear()*12 + new Date(next.date).getMonth()) <= (today.getFullYear()*12 + today.getMonth());
-    if (!dueThisOrEarlierMonth) {
-      showToast(`${r.name} is paid up ahead of schedule — next installment isn't due until ${fmtDate(next.date)}`);
+    const graceDate = new Date(next.date);
+    graceDate.setDate(graceDate.getDate() + (r.graceDays ?? 1));
+    if (today < graceDate) {
+      showToast(`${r.name}'s next installment isn't due until ${fmtDate(next.date)} — no reminder needed yet`);
       return;
     }
   }
@@ -7554,7 +7609,13 @@ function addPayment() {
   document.getElementById("payAmt").value = "";
   document.getElementById("payNote").value = "";
   showToast(fmt(amount) + " payment logged!");
-  if (data[idx].interestOn) triggerPaymentEmail(data[idx], amount);
+  if (data[idx].interestOn) {
+    triggerPaymentEmail(data[idx], amount);
+    // Keep the reminder queue fresh — the daily auto-reminder check in Apps Script
+    // depends on this being current, not stale by up to a week (the normal auto-sync
+    // interval). Silent/non-blocking; doesn't affect the payment that was just logged.
+    syncToSheets(false);
+  }
 }
 
 function removePayment(payIndex) {
@@ -7571,6 +7632,7 @@ function removePayment(payIndex) {
   renderPaymentsList(data[idx]);
   renderSummary(data); renderTable(data); renderCharts(data);
   showToast("Payment removed");
+  if (data[idx].interestOn) syncToSheets(false);
 }
 
 // ── Quick Prepay & Renegotiate from main table ───────────────────────────
