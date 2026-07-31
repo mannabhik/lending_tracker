@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="icons/icon_frosted_glass.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F1117">
+<!-- iOS home-screen support (Safari doesn't read the manifest for these) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LendingState">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -1358,7 +1365,12 @@
 
   /* ── Mobile swipe cards ─────────────────────────────────────────── */
   .mobile-cards { display: none; flex-direction: column; gap: 0; }
-  .swipe-card { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .swipe-card { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: pointer; transition: background 0.15s; }
+  .swipe-card:active { background: var(--surface2); }
+  .swipe-card.expanded { background: var(--surface2); }
+  .swipe-card.expanded .expand-chevron { transform: rotate(180deg); color: var(--accent); }
+  .mobile-actions-panel { padding: 0 14px 14px; border-bottom: 1px solid var(--border); }
+  .mobile-actions-panel .actions-panel { margin-top: 12px; }
   .swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; z-index: 1; }
   .swipe-action-btn { width: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 600; color: #fff; transition: opacity 0.15s; }
   .swipe-action-btn:active { opacity: 0.8; }
@@ -4714,30 +4726,8 @@ function renderTable(data) {
     const mRemaining = r.interestOn && r.loanSetup
       ? Math.max(0, mTotalPayable - mTotalPaid)
       : Math.max(0, r.lent - r.returned);
-    return `<div class="swipe-card status-${statusCls}" id="swipe-${r.id}">
-      <!-- Hidden action buttons -->
-      <div class="swipe-actions">
-        <button class="swipe-action-btn edit"  onclick="closeSwipe(${r.id});editRow(${r.id})">
-          <span class="icon">✎</span>Edit
-        </button>
-        <button class="swipe-action-btn pay"   onclick="closeSwipe(${r.id});openPayments(${r.id})">
-          <span class="icon">💳</span>Pay
-        </button>
-        <button class="swipe-action-btn topup" onclick="closeSwipe(${r.id});quickTopup(${r.id})">
-          <span class="icon">＋</span>Top-up
-        </button>
-        <button class="swipe-action-btn docs"  onclick="closeSwipe(${r.id});openDocs(${r.id})">
-          <span class="icon">📎</span>Docs
-        </button>
-        <button class="swipe-action-btn" style="background:#25D366;width:64px" onclick="closeSwipe(${r.id});openWhatsAppReminder(${r.id})">
-          <span class="icon">💬</span>Remind
-        </button>
-        <button class="swipe-action-btn del"   onclick="closeSwipe(${r.id});askDelete(${r.id})">
-          <span class="icon">✕</span>Delete
-        </button>
-      </div>
-      <!-- Front face -->
-      <div class="swipe-front" ontouchstart="swipeTouchStart(event,${r.id})" ontouchmove="swipeTouchMove(event,${r.id})" ontouchend="swipeTouchEnd(event,${r.id})" onclick="swipeClick(${r.id})">
+    return `<div class="swipe-card status-${statusCls}" id="mcard-${r.id}" onclick="toggleMobileActions(event, ${r.id})">
+      <div class="swipe-front">
         <div class="swipe-row1">
           <div style="display:flex;align-items:flex-start;gap:10px">
             <input type="checkbox" class="row-check" data-id="${r.id}" onclick="event.stopPropagation();toggleRowSelect(${r.id})" ${selectedIds.has(r.id)?"checked":""} style="margin-top:3px;flex-shrink:0;width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
@@ -4773,15 +4763,30 @@ function renderTable(data) {
             ${r.updatedAt ? "Updated " + fmtDate(r.updatedAt) : ""}
             ${interest>0 ? ` · Interest: ${fmt(interest)}` : ""}
           </div>
-          <div class="swipe-hint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-            swipe
-          </div>
+          <span class="expand-chevron">▾</span>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-actions-panel" id="mobileActionsRow-${r.id}" style="display:none">
+      <div class="actions-panel">
+        <div class="actions-panel-connector"></div>
+        <div class="actions-panel-label">Actions for <strong>${r.name}</strong></div>
+        <div class="row-actions">
+          <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
+          ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px">⏰</button>` : ""}
+          <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
+          <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
+          <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
+          <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History">💳${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
+          <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up">＋</button>
+          ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" title="Log Prepayment">↩</button>` : ""}
+          ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" title="Renegotiate Terms">⇄</button>` : ""}
+          <button class="doc-btn" onclick="openDocs(${r.id})" title="Documents">📎${r.docs&&r.docs.length?`<span class='doc-badge'>${r.docs.length}</span>`:""}</button>
+          ${r.archived ? `<button class="filter-btn" onclick="restoreEntry(${r.id})" style="font-size:11px;padding:3px 8px;color:var(--green);border-color:var(--green)">Restore</button><button class="del-btn" onclick="permanentDelete(${r.id})" title="Permanently delete" style="color:var(--red)">🗑</button>` : `<button class="del-btn" onclick="askDelete(${r.id})" title="Archive">✕</button>`}
         </div>
       </div>
     </div>`;
   }).join("");
-  initSwipeCards();
 }
 
 function renderCharts(data) {
@@ -7260,89 +7265,23 @@ function closeCelebration() {
 }
 
 
-// ── Mobile Swipe Cards ───────────────────────────────────────────────────
-let swipeState = {};   // { id: { startX, currentX, swiped } }
-let openSwipeId = null;
-
-function initSwipeCards() {
-  // nothing extra needed — touch handlers are inline
-}
-
-function closeSwipe(id) {
-  const card = document.getElementById("swipe-" + id);
-  if (card) {
-    card.classList.remove("swiped");
-    const front = card.querySelector(".swipe-front");
-    if (front) front.style.transform = "";
-  }
-  if (openSwipeId === id) openSwipeId = null;
-}
-
-function closeAllSwipes() {
-  if (openSwipeId !== null) closeSwipe(openSwipeId);
-}
-
-function swipeTouchStart(e, id) {
-  // If tap is on a name link, don't start swipe tracking
-  let el = e.target;
-  while (el && el !== document) {
-    if (el.classList && el.classList.contains("borrower-name-link")) return;
+// ── Mobile/Tablet Card Actions (click-to-expand, same pattern as desktop) ──
+function toggleMobileActions(event, id) {
+  // Ignore clicks on interactive elements within the card — they have their
+  // own handlers (checkbox select, open profile) and shouldn't also toggle.
+  let el = event.target;
+  while (el && !el.classList.contains('swipe-card')) {
+    if (el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.tagName === 'A') return;
+    if (el.classList && el.classList.contains('borrower-name-link')) return;
     el = el.parentElement;
   }
-  closeAllSwipes();
-  swipeState[id] = {
-    startX: e.touches[0].clientX,
-    startY: e.touches[0].clientY,
-    currentX: 0,
-    moved: false,
-  };
+  const panel = document.getElementById('mobileActionsRow-' + id);
+  const card = document.getElementById('mcard-' + id);
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (card) card.classList.toggle('expanded', !isOpen);
 }
-
-function swipeTouchMove(e, id) {
-  const st = swipeState[id];
-  if (!st) return;
-  const dx = e.touches[0].clientX - st.startX;
-  const dy = e.touches[0].clientY - st.startY;
-  if (!st.moved && Math.abs(dy) > Math.abs(dx)) {
-    delete swipeState[id]; return; // vertical scroll — ignore
-  }
-  st.moved = true;
-  if (dx > 0) return; // only left swipe
-  e.preventDefault();
-  const maxSwipe = -320;
-  st.currentX = Math.max(maxSwipe, Math.min(0, dx));
-  const front = document.querySelector("#swipe-" + id + " .swipe-front");
-  if (front) front.style.transition = "none";
-  if (front) front.style.transform = "translateX(" + st.currentX + "px)";
-}
-
-function swipeTouchEnd(e, id) {
-  const st = swipeState[id];
-  if (!st || !st.moved) return;
-  const front = document.querySelector("#swipe-" + id + " .swipe-front");
-  if (front) front.style.transition = "";
-  if (st.currentX < -80) {
-    // Snap open
-    const card = document.getElementById("swipe-" + id);
-    if (card) card.classList.add("swiped");
-    if (front) front.style.transform = "";
-    openSwipeId = id;
-  } else {
-    // Snap closed
-    closeSwipe(id);
-  }
-  delete swipeState[id];
-}
-
-function swipeClick(id) {
-  if (openSwipeId === id) {
-    closeSwipe(id);
-  }
-}
-
-// Close swipe on scroll
-document.addEventListener("scroll", closeAllSwipes, true);
-
 
 // ── Sort state ───────────────────────────────────────────────────────────
 let sortCol = "date";
@@ -7868,6 +7807,65 @@ window.addEventListener("resize", () => {
     renderCharts(localData);
   }, 200);
 });
+
+// ── PWA: service worker + install prompt ────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+
+// Android/Chrome: capture the browser's install prompt so we can trigger it
+// from our own button instead of relying on the user finding it in a menu.
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallButton();
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallButton();
+});
+
+function showInstallButton() {
+  if (document.getElementById('pwaInstallBtn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'pwaInstallBtn';
+  btn.innerHTML = '📲 Install App';
+  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:500;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:600;font-family:"Outfit",sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(108,99,255,0.4);touch-action:manipulation';
+  btn.onclick = async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    hideInstallButton();
+  };
+  document.body.appendChild(btn);
+}
+function hideInstallButton() {
+  document.getElementById('pwaInstallBtn')?.remove();
+}
+
+// iOS Safari never fires beforeinstallprompt — show a one-time manual hint
+// instead, since "Add to Home Screen" there only lives inside the Share sheet.
+(function iosInstallHint() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const alreadyDismissed = localStorage.getItem('lendlog_ios_install_hint_dismissed');
+  if (!isIOS || isStandalone || alreadyDismissed) return;
+  setTimeout(() => {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--surface);border-top:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2);box-shadow:0 -4px 20px rgba(0,0,0,0.3)';
+    banner.innerHTML = `
+      <span style="flex:1">📲 Install LendingState: tap <strong style="color:var(--text)">Share</strong> then <strong style="color:var(--text)">"Add to Home Screen"</strong></span>
+      <button onclick="localStorage.setItem('lendlog_ios_install_hint_dismissed','1');this.parentElement.remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 8px">✕</button>
+    `;
+    document.body.appendChild(banner);
+  }, 2000);
+})();
 </script>
 </body>
 </html>
