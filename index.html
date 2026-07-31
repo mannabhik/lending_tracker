@@ -5365,14 +5365,23 @@ async function syncToSheets(manual = true) {
 
   try {
     // Apps Script can't run the app's amortization logic (calcEMI/buildSchedule), so
-    // compute EMI, interest-to-date, and total-due here — using the exact same
-    // functions the app itself displays — and send the results directly. This keeps
-    // the sheet numbers guaranteed-consistent with the app instead of Apps Script
-    // trying to (incorrectly) re-derive them from raw loanSetup.
+    // compute EMI, interest-to-date, total-due, total-payable and remaining here —
+    // using the exact same functions the app itself displays — and send the results
+    // directly. This keeps the sheet numbers guaranteed-consistent with the app
+    // instead of Apps Script trying to (incorrectly) re-derive them from raw loanSetup.
     const syncRecords = localData.map(r => {
       const isOverdue = r.returned > r.lent;
       const pending = isOverdue ? 0 : r.lent - r.returned;
-      const interest = calcInterest(r);
+      const interest = calcInterest(r); // interest actually accrued to date
+      const emi = getScheduledEMI(r);
+      // Full lifetime payable = EMI × tenure (principal + ALL interest over the whole loan)
+      const totalPayable = r.interestOn && r.loanSetup && emi
+        ? Math.round(emi * (r.loanSetup?.tenure || 0))
+        : r.lent;
+      const totalPaidSoFar = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+      const remaining = r.interestOn && r.loanSetup
+        ? Math.max(0, totalPayable - totalPaidSoFar)
+        : Math.max(0, r.lent - r.returned);
       return {
         date: r.date,
         name: r.name,
@@ -5384,8 +5393,12 @@ async function syncToSheets(manual = true) {
         interestType: r.interestOn ? (r.interestType || "compound") : "",
         interestRate: r.interestOn ? (r.interestRate ?? "") : "",
         ratePeriod: r.loanSetup?.ratePeriod || "yearly",
-        schedEmi: getScheduledEMI(r) || 0,
-        totalDue: pending + interest,
+        tenure: r.loanSetup?.tenure ? `${r.loanSetup.tenure} ${r.loanSetup.tenureUnit || "months"}` : "",
+        schedEmi: emi || 0,
+        interestToDate: interest,
+        totalDueNow: pending + interest,
+        totalPayable: totalPayable,
+        remaining: remaining,
         notes: r.notes || "",
         updatedAt: r.updatedAt || "",
         archived: !!r.archived,
