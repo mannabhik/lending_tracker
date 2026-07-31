@@ -4458,6 +4458,33 @@ function getDueStatus(r) {
   return { label: `Due ${fmtDate(r.dueDate)}`, cls: "due-ok" };
 }
 
+// Finds the first installment in the REAL amortization schedule that isn't fully
+// paid yet (status 'partial', 'current', or 'future') — i.e. what the borrower
+// genuinely still owes next, based on actual cumulative payments, not a manually-set
+// date field. Paying an installment early (e.g. EMI 2 paid same month as EMI 1)
+// correctly advances this past that period, same as buildSchedule/calcInterest.
+function getNextUnpaidInstallment(r) {
+  if (!r.interestOn || !r.loanSetup) return null;
+  const schedule = buildSchedule(r).filter(row => !row.event);
+  return schedule.find(row => row.status !== 'paid') || null; // null = fully paid off
+}
+
+// Schedule-aware due status for interest-bearing loans — falls back to the manual
+// r.dueDate field only for plain (non-interest) loans, which have no amortization
+// schedule to derive a real due date from.
+function getEmiDueStatus(r) {
+  if (!r.interestOn || !r.loanSetup) return getDueStatus(r);
+  const next = getNextUnpaidInstallment(r);
+  if (!next) return { label: "Fully paid — no installment due", cls: "due-ok", settled: true };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(next.date);
+  const diffDays = Math.round((due - today) / (1000*60*60*24));
+  const partialNote = next.status === 'partial' ? ` (₹${Math.round(next.emi - next.paidAmount).toLocaleString('en-IN')} remaining of this installment)` : "";
+  if (diffDays < 0)  return { label: `Overdue by ${Math.abs(diffDays)}d${partialNote}`, cls: "overdue-due", installment: next };
+  if (diffDays <= 7) return { label: `Due in ${diffDays}d${partialNote}`, cls: "due-soon", installment: next };
+  return { label: `Next due ${fmtDate(next.date)}${partialNote}`, cls: "due-ok", installment: next };
+}
+
 // Calculate interest on reducing balance — accounts for payments made
 function calcInterest(r) {
   if (!r.interestOn) return 0;
@@ -6902,13 +6929,30 @@ function triggerReminderEmail(id) {
   const r = localData.find(x => x.id === id);
   if (!r) return;
   if (!r.profile?.email) { showToast("No email on file for this borrower — skipping notification"); return; }
+
+  // Schedule-aware check: is there actually an installment due this month or overdue?
+  // Uses the real amortization schedule (same logic as buildSchedule/calcInterest), so
+  // an early/ahead-of-schedule payment (e.g. EMI 2 paid same month as EMI 1) correctly
+  // counts as covering the next period — no reminder gets sent for a period that's
+  // already settled, even if its calendar due date hasn't arrived yet.
+  if (r.interestOn && r.loanSetup) {
+    const next = getNextUnpaidInstallment(r);
+    if (!next) { showToast(`${r.name} has fully paid off this loan — no reminder needed`); return; }
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dueThisOrEarlierMonth = (new Date(next.date).getFullYear()*12 + new Date(next.date).getMonth()) <= (today.getFullYear()*12 + today.getMonth());
+    if (!dueThisOrEarlierMonth) {
+      showToast(`${r.name} is paid up ahead of schedule — next installment isn't due until ${fmtDate(next.date)}`);
+      return;
+    }
+  }
+
   decryptField(r.profile.email).then(email => {
     if (!email) return;
     const pending  = Math.max(0, r.lent - r.returned);
     const interest = calcInterest(r);
     const totalDue = pending + interest;
     const emi      = getScheduledEMI(r);
-    const due      = getDueStatus(r);
+    const due      = getEmiDueStatus(r);
     const rowParams = buildEmailRows([
       { label: "Pending Amount",     value: fmt(pending),              color: "#FF6B4A", bg: "#2A1414" },
       { label: "Interest (To Date)", value: fmt(interest) },
@@ -6936,7 +6980,7 @@ function triggerReminderEmail(id) {
         callout_style: "",
         callout_text: "⏰ " + (due ? due.label : "No due date set"),
         closing_style: "",
-        closing_note: "Kindly arrange payment at your earliest convenience. If you've already made a recent payment, please disregard this reminder.",
+        closing_note: "Kindly arrange payment at your earliest convenience. If you've already paid this month's installment, please disregard this email.",
         ...rowParams,
         event_date: fmtEventDate()
       }
