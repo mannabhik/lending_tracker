@@ -4557,6 +4557,7 @@ function renderTable(data) {
       <td><span class="date-pill updated" style="min-width:unset">${r.updatedAt ? fmtDate(r.updatedAt, true, true) : "—"}</span></td>
       <td><div class="row-actions">
         <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
+        ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px">⏰</button>` : ""}
         <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
         <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
         <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
@@ -6532,8 +6533,13 @@ function copyWAMessage(i) {
 // ── EmailJS Configuration ─────────────────────────────────────────────────
 const EMAILJS_PUBLIC_KEY   = "jMOeZIeBbVUmbpORT";
 const EMAILJS_SERVICE_ID   = "service_ypku4fw";
-const EMAILJS_TPL_NEWLOAN  = "template_dqbokzt"; // also used for top-ups
+// EmailJS's free plan caps templates at 2. "New loan" (template_dqbokzt) is now a fully
+// generic/parameterized "Universal Notification" template — headline, intro text, which
+// detail rows show, and their colors are all sent from here as templateParams — so it
+// can render New Loan, Top-up, AND Payment Reminder emails without needing a 3rd slot.
+const EMAILJS_TPL_NEWLOAN  = "template_dqbokzt"; // universal: new loan, top-up, reminder
 const EMAILJS_TPL_PAYMENT  = "template_cfuicbp";
+const EMAILJS_TPL_REMINDER = EMAILJS_TPL_NEWLOAN; // shares the universal template above
 
 (function initEmailJS() {
   function tryInit() {
@@ -6678,18 +6684,19 @@ function fmtEventDate() {
 
 // Show confirmation popup before sending — returns nothing, user decides via buttons
 function confirmSendEmail(opts) {
-  // opts: { type: 'newloan'|'topup'|'payment', record, templateParams, templateId }
+  // opts: { type: 'newloan'|'topup'|'payment'|'reminder', record, templateParams, templateId }
   const r = opts.record;
-  const toEmail = r.profile?.email;
+  const toEmail = r._decryptedEmail || r.profile?.email;
   if (!toEmail) {
     showToast("No email on file for this borrower — skipping notification");
     return;
   }
 
   const typeLabels = {
-    newloan: { icon: "🎉", title: "Send New Loan Email?", color: "var(--accent)" },
-    topup:   { icon: "💰", title: "Send Top-up Email?",   color: "var(--accent)" },
-    payment: { icon: "✅", title: "Send Payment Receipt?", color: "var(--green)" }
+    newloan:  { icon: "🎉", title: "Send New Loan Email?",     color: "var(--accent)" },
+    topup:    { icon: "💰", title: "Send Top-up Email?",       color: "var(--accent)" },
+    payment:  { icon: "✅", title: "Send Payment Receipt?",    color: "var(--green)" },
+    reminder: { icon: "⏰", title: "Send Payment Reminder?",   color: "var(--amber)" }
   };
   const meta = typeLabels[opts.type] || typeLabels.newloan;
 
@@ -6753,12 +6760,38 @@ function executeSendEmail() {
   }
 }
 
+// ── Universal template row builder ──────────────────────────────────────────
+// The universal template (EMAILJS_TPL_NEWLOAN) has 6 generic label/value rows.
+// Each trigger below fills as many as it needs and hides the rest via
+// display:none on that row — this is what lets one template serve New Loan,
+// Top-up, and Reminder emails without needing 3 separate EmailJS templates.
+function buildEmailRows(rows) {
+  const params = {};
+  for (let i = 0; i < 6; i++) {
+    const row = rows[i];
+    const n = i + 1;
+    params[`row${n}_style`] = row ? "" : "display:none;";
+    params[`row${n}_label`] = row ? row.label : "";
+    params[`row${n}_value`] = row ? row.value : "";
+    params[`row${n}_color`] = row ? (row.color || "#F0F1F5") : "#F0F1F5";
+  }
+  params.row1_bg = rows[0]?.bg || "#161A28";
+  return params;
+}
+
 function triggerNewLoanEmail(r) {
   if (!r.interestOn || !r.profile?.email) return; // uses profile.email for all comms
   decryptField(r.profile.email).then(email => {
     if (!email) return;
     const emi = getScheduledEMI(r);
     const totalPayable = emi ? fmt(Math.round(emi * (r.loanSetup?.tenure || 0))) : "—";
+    const rowParams = buildEmailRows([
+      { label: "Loan Amount",    value: fmt(r.lent),               color: "#5CA3F5", bg: "#12233F" },
+      { label: "Interest Rate",  value: formatRate(r.loanSetup) },
+      { label: "Tenure",         value: formatTenure(r.loanSetup) },
+      { label: "Scheduled EMI",  value: emi ? fmt(emi) : "—" },
+      { label: "Total Payable",  value: totalPayable,              color: "#E0B84A" },
+    ]);
     confirmSendEmail({
       type: "newloan",
       record: {...r, _decryptedEmail: email},
@@ -6773,18 +6806,20 @@ function triggerNewLoanEmail(r) {
       templateParams: {
         to_name: r.profile.officialName || r.name,
         to_email: email,
-        lent: fmt(r.lent),
-        interest_rate: formatRate(r.loanSetup),
-        tenure: formatTenure(r.loanSetup),
-        emi: emi ? fmt(emi) : "—",
-        total_payable: totalPayable,
+        headline: "🎉 New Loan Confirmed",
+        intro: "LendingState confirms the following loan details:",
+        callout_style: "display:none;",
+        callout_text: "",
+        closing_style: "display:none;",
+        closing_note: "",
+        ...rowParams,
         event_date: fmtEventDate()
       }
     });
   });
 }
 
-// Trigger: Top-up applied (interest must be on) — reuses New Loan template
+// Trigger: Top-up applied (interest must be on) — reuses the universal template
 function triggerTopupEmail(r, topupAmount) {
   if (!r.interestOn || !r.profile?.email) return;
   decryptField(r.profile.email).then(email => {
@@ -6792,15 +6827,33 @@ function triggerTopupEmail(r, topupAmount) {
     const emi = getScheduledEMI(r);
     const pending = Math.max(0, r.lent - r.returned);
     const totalPayable = emi ? fmt(Math.round(emi * (r.loanSetup?.tenure || 0))) : "—";
+    const rowParams = buildEmailRows([
+      { label: "Loan Amount",    value: fmt(r.lent) + " (Top-up: " + fmt(topupAmount) + ")", color: "#5CA3F5", bg: "#12233F" },
+      { label: "Interest Rate",  value: formatRate(r.loanSetup) },
+      { label: "Tenure",         value: formatTenure(r.loanSetup) },
+      { label: "Updated EMI",    value: emi ? fmt(emi) : "—" },
+      { label: "Total Payable",  value: totalPayable,              color: "#E0B84A" },
+    ]);
     confirmSendEmail({
-      type: "topup", record: r, templateId: EMAILJS_TPL_NEWLOAN,
+      type: "topup", record: {...r, _decryptedEmail: email}, templateId: EMAILJS_TPL_NEWLOAN,
       previewFields: { "Top-up Amount": fmt(topupAmount), "New Principal": fmt(r.lent), "Pending": fmt(pending), "Updated EMI": emi ? fmt(emi) : "—" },
-      templateParams: { to_name: r.profile.officialName || r.name, to_email: email, lent: fmt(r.lent) + " (Top-up: " + fmt(topupAmount) + ")", interest_rate: formatRate(r.loanSetup), tenure: formatTenure(r.loanSetup), emi: emi ? fmt(emi) : "—", total_payable: totalPayable, event_date: fmtEventDate() }
+      templateParams: {
+        to_name: r.profile.officialName || r.name,
+        to_email: email,
+        headline: "💰 Top-up Applied",
+        intro: "LendingState confirms the following updated loan details:",
+        callout_style: "display:none;",
+        callout_text: "",
+        closing_style: "display:none;",
+        closing_note: "",
+        ...rowParams,
+        event_date: fmtEventDate()
+      }
     });
   });
 }
 
-// Trigger: Payment received (interest must be on)
+// Trigger: Payment received (interest must be on) — separate dedicated template
 function triggerPaymentEmail(r, paymentAmount) {
   if (!r.interestOn || !r.profile?.email) return;
   decryptField(r.profile.email).then(email => {
@@ -6810,9 +6863,59 @@ function triggerPaymentEmail(r, paymentAmount) {
     const totalPaid = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
     const remaining = Math.max(0, totalPayable - totalPaid);
     confirmSendEmail({
-      type: "payment", record: r, templateId: EMAILJS_TPL_PAYMENT,
+      type: "payment", record: {...r, _decryptedEmail: email}, templateId: EMAILJS_TPL_PAYMENT,
       previewFields: { "Amount Paid": fmt(paymentAmount), "Total Loan": fmt(r.lent), "Total Payable": fmt(totalPayable), "Remaining (incl. interest)": fmt(remaining) },
+      // fmt() already includes the currency symbol — don't prefix it again in the template
       templateParams: { to_name: r.profile.officialName || r.name, to_email: email, payment_amount: fmt(paymentAmount), lent: fmt(r.lent), total_payable: fmt(totalPayable), pending: fmt(remaining), event_date: fmtEventDate() }
+    });
+  });
+}
+
+// Trigger: Manual payment reminder — available for any loan with an email on file,
+// not gated on interestOn, since plain (no-interest) loans need reminders too.
+// Reuses the universal template (see EMAILJS_TPL_NEWLOAN comment above).
+function triggerReminderEmail(id) {
+  const r = localData.find(x => x.id === id);
+  if (!r) return;
+  if (!r.profile?.email) { showToast("No email on file for this borrower — skipping notification"); return; }
+  decryptField(r.profile.email).then(email => {
+    if (!email) return;
+    const pending  = Math.max(0, r.lent - r.returned);
+    const interest = calcInterest(r);
+    const totalDue = pending + interest;
+    const emi      = getScheduledEMI(r);
+    const due      = getDueStatus(r);
+    const rowParams = buildEmailRows([
+      { label: "Pending Amount",     value: fmt(pending),              color: "#FF6B4A", bg: "#2A1414" },
+      { label: "Interest (To Date)", value: fmt(interest) },
+      { label: "Total Due Now",      value: fmt(totalDue),             color: "#E0B84A" },
+      { label: "Scheduled EMI",      value: emi ? fmt(emi) : "—" },
+      { label: "Loan Amount",        value: fmt(r.lent) },
+      { label: "Paid So Far",        value: fmt(r.returned) },
+    ]);
+    confirmSendEmail({
+      type: "reminder",
+      record: {...r, _decryptedEmail: email},
+      templateId: EMAILJS_TPL_REMINDER,
+      previewFields: {
+        "Pending Amount": fmt(pending),
+        "Interest (to date)": interest > 0 ? fmt(interest) : "—",
+        "Total Due": fmt(totalDue),
+        "Sched. EMI": emi ? fmt(emi) : "—",
+        "Due Status": due ? due.label : "—"
+      },
+      templateParams: {
+        to_name: r.profile.officialName || r.name,
+        to_email: email,
+        headline: "⏰ Payment Reminder",
+        intro: "This is a friendly reminder that the following amount is currently outstanding on your loan with LendingState:",
+        callout_style: "",
+        callout_text: "⏰ " + (due ? due.label : "No due date set"),
+        closing_style: "",
+        closing_note: "Kindly arrange payment at your earliest convenience. If you've already made a recent payment, please disregard this reminder.",
+        ...rowParams,
+        event_date: fmtEventDate()
+      }
     });
   });
 }
