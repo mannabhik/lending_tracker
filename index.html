@@ -5364,8 +5364,36 @@ async function syncToSheets(manual = true) {
   if (btn) { btn.textContent = "⟳ Syncing…"; btn.classList.add("syncing"); btn.disabled = true; }
 
   try {
+    // Apps Script can't run the app's amortization logic (calcEMI/buildSchedule), so
+    // compute EMI, interest-to-date, and total-due here — using the exact same
+    // functions the app itself displays — and send the results directly. This keeps
+    // the sheet numbers guaranteed-consistent with the app instead of Apps Script
+    // trying to (incorrectly) re-derive them from raw loanSetup.
+    const syncRecords = localData.map(r => {
+      const isOverdue = r.returned > r.lent;
+      const pending = isOverdue ? 0 : r.lent - r.returned;
+      const interest = calcInterest(r);
+      return {
+        date: r.date,
+        name: r.name,
+        lent: r.lent,
+        returned: r.returned,
+        status: r.status,
+        dueDate: r.dueDate || "",
+        interestOn: !!r.interestOn,
+        interestType: r.interestOn ? (r.interestType || "compound") : "",
+        interestRate: r.interestOn ? (r.interestRate ?? "") : "",
+        ratePeriod: r.loanSetup?.ratePeriod || "yearly",
+        schedEmi: getScheduledEMI(r) || 0,
+        totalDue: pending + interest,
+        notes: r.notes || "",
+        updatedAt: r.updatedAt || "",
+        archived: !!r.archived,
+      };
+    });
+
     const payload = {
-      records:  localData,
+      records:  syncRecords,
       currency: activeCurrency,
       syncedAt: new Date().toISOString(),
     };
