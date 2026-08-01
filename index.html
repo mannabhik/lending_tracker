@@ -8335,7 +8335,21 @@ function applyFilters() {
   searchQuery = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
   updateToggleCounts();
   const filtered = localData.filter(r => {
-    // If searching with 2+ chars — search ALL records including archived
+    // View filter (3-way toggle)
+    if (activeView === "archived") {
+      if (!r.archived) return false;
+    } else {
+      if (activeView !== "all" && r.archived) return false;
+      if (activeView === "active" && (r.status === "RETURNED" || r.archived)) return false;
+      // Status sub-filter (not applied in archived view, same as before)
+      if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
+      if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
+      if (activeFilter === "returned" && r.status !== "RETURNED") return false;
+    }
+    // Search narrows further within whatever the view/status filters above already
+    // allowed, rather than bypassing them — typing a name should shrink your
+    // current filtered list, not silently search the entire dataset regardless
+    // of which tabs are selected.
     if (searchQuery && searchQuery.length >= 2) {
       const hay = [
         r.name, r.notes||"", String(r.lent), String(r.returned),
@@ -8344,17 +8358,8 @@ function applyFilters() {
         r.profile?.lastName||"", r.profile?.phone||"",
         r.profile?.email||""
       ].join(" ").toLowerCase();
-      return hay.includes(searchQuery);
+      if (!hay.includes(searchQuery)) return false;
     }
-    // View filter (3-way toggle)
-    if (activeView === "archived") return !!r.archived;
-    if (activeView !== "all" && r.archived) return false;
-    if (activeView === "active" && (r.status === "RETURNED" || r.archived)) return false;
-    // Status sub-filter
-    if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
-    if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
-    if (activeFilter === "returned" && r.status !== "RETURNED") return false;
-    // Search (less than 2 chars — no search applied)
     return true;
   });
   renderTable(filtered);
