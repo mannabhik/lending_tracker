@@ -3252,6 +3252,10 @@
     <div style="font-size:12px;color:var(--text3);margin-bottom:14px">
       Changes will apply to <strong id="profileEditCount" style="color:var(--accent)"></strong> record(s) for this person.
     </div>
+    <div class="field">
+      <label>Borrower Name (display) <span style="color:var(--red)">*</span></label>
+      <input id="peName" type="text" placeholder="e.g. Sagar">
+    </div>
     <div class="field-row">
       <div class="field"><label>First Name <span style="color:var(--red)">*</span></label><input type="text" id="peFirstName" placeholder="First name" oninput="updatePeOfficialName()"></div>
       <div class="field"><label>Middle Name</label><input type="text" id="peMiddleName" placeholder="Optional" oninput="updatePeOfficialName()"></div>
@@ -6559,6 +6563,7 @@ async function editProfileKey(key) {
   editingProfileKey = key;
   editingProfileHasInterest = records.some(r => r.interestOn);
 
+  document.getElementById("peName").value        = records[0].name || profile.nickname || profile.officialName || "";
   document.getElementById("peFirstName").value   = profile.firstName  || "";
   document.getElementById("peMiddleName").value  = profile.middleName || "";
   document.getElementById("peLastName").value    = profile.lastName   || "";
@@ -6621,6 +6626,7 @@ function closeProfileEdit() {
 }
 
 async function saveProfileEdit() {
+  const displayName = document.getElementById("peName").value.trim();
   const firstName  = document.getElementById("peFirstName").value.trim();
   const middleName = document.getElementById("peMiddleName").value.trim();
   const lastName   = document.getElementById("peLastName").value.trim();
@@ -6635,6 +6641,7 @@ async function saveProfileEdit() {
   const photoLink  = document.getElementById("pePhotoLink").value.trim();
   const photoData  = window._pePhotoData || null;
 
+  if (!displayName) { showToast("Borrower name (display) is required"); return; }
   if (!firstName || !lastName) { showToast("First and last name are required"); return; }
   if (!phone)  { showToast("Phone number is required"); return; }
   // PAN/Aadhaar/Guarantor are only mandatory for people who have an interest-
@@ -6672,9 +6679,10 @@ async function saveProfileEdit() {
         ...data[idx].profile,
         firstName, middleName, lastName, officialName,
         phone: normalizedPhone, email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, photoLink, photoData,
-        nickname: data[idx].profile?.nickname || data[idx].name
+        nickname: displayName
       };
       data[idx].profile = await encryptProfile(rawProfile);
+      data[idx].name = displayName;
       data[idx].emailVerified = emailVerified;
       data[idx].updatedAt = new Date().toISOString();
     }
