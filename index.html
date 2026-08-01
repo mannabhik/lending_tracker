@@ -363,8 +363,8 @@
   th:nth-child(8)  { width: 70px; }   /* Interest (to date) */
   th:nth-child(9)  { width: 70px; }   /* Sched. EMI */
   th:nth-child(10) { width: 70px; }   /* Status */
-  th:nth-child(11) { width: 64px; }   /* Last Updated */
-  th:nth-child(12) { width: 26px; }   /* expand chevron */
+  th:nth-child(11) { width: 60px; }   /* Last Updated */
+  th:nth-child(12) { width: 32px; }   /* expand chevron */
 
   td {
     padding: 10px 6px;
@@ -609,8 +609,9 @@
   tr.data-row:hover td { background: var(--surface2); }
   tr.data-row.expanded td { background: var(--surface2); }
   .expand-toggle-cell { text-align: center; width: 32px; }
-  .expand-chevron { display: inline-block; color: var(--text3); font-size: 13px; transition: transform 0.15s; }
+  .expand-chevron { display: inline-block; color: var(--text2); font-size: 20px; font-weight: 700; line-height: 1; transition: transform 0.15s, color 0.15s; }
   tr.data-row.expanded .expand-chevron { transform: rotate(180deg); color: var(--accent); }
+  tr.data-row:hover .expand-chevron { color: var(--accent); }
   tr.actions-row td { padding: 0 16px 16px 16px; background: transparent; border-bottom: 1px solid var(--border); }
   tr.actions-row { animation: expandRow 0.18s ease; }
   @keyframes expandRow { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
