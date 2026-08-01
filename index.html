@@ -418,6 +418,27 @@
   .badge-overdue  { background: var(--purple-light); color: var(--purple); border: 1px solid rgba(185,127,255,0.2); }
   .badge-overdue::before  { background: var(--purple); box-shadow: 0 0 4px var(--purple); }
 
+  /* Borrowers List status "bulb" — pulsing glow, priority: blue (unpaid interest
+     loan) > red (any unpaid money) > green (fully settled). */
+  .borrower-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; animation: borrower-dot-pulse 1.8s ease-in-out infinite; }
+  .borrower-dot.red   { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+  .borrower-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .borrower-dot.blue  { background: #4A9EFF;      box-shadow: 0 0 6px #4A9EFF; }
+  @keyframes borrower-dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.45; transform: scale(0.8); }
+  }
+  .borrower-list-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .borrower-list-info { flex: 1; min-width: 0; }
+  .borrower-list-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .borrower-list-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .borrower-list-stats { display: flex; gap: 16px; font-size: 11px; color: var(--text2); margin-top: 6px; flex-wrap: wrap; }
+  .borrower-list-stats strong { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
   .del-btn, .edit-btn {
     background: none; border: none; cursor: pointer;
     color: var(--text3);
@@ -2393,6 +2414,10 @@
         </select>
       </div>
       <div class="menu-separator"></div>
+      <button class="menu-item" onclick="openBorrowersList();closeHamburger()">
+        <span class="menu-icon">👥</span> Borrowers List
+      </button>
+      <div class="menu-separator"></div>
       <button class="menu-item" onclick="syncToSheets();closeHamburger()">
         <span class="menu-icon">📊</span> Sync to Google Sheet
       </button>
@@ -2578,6 +2603,15 @@
       <div class="widget-body" id="upcomingWidget"></div>
     </div>
 
+    <!-- Widget: At Risk (overdue borrowers) -->
+    <div class="widget-card widget-upcoming">
+      <div class="widget-hd">
+        <span class="widget-title">⚠️ At Risk</span>
+        <span style="font-size:10px;color:var(--text3)">Overdue borrowers</span>
+      </div>
+      <div class="widget-body" id="atRiskWidget"></div>
+    </div>
+
     <!-- Widget 2: Quick Stats -->
     <div class="widget-card widget-stats">
       <div class="widget-hd"><span class="widget-title">📊 Quick Stats</span></div>
@@ -2652,7 +2686,16 @@
       <div class="field-row">
         <div class="field">
           <label>Email Address <span style="color:var(--text3);font-weight:400">(optional)</span></label>
-          <input id="fEmail" type="email" placeholder="borrower@email.com">
+          <div style="display:flex;gap:8px">
+            <input id="fEmail" type="email" placeholder="borrower@email.com" style="flex:1" oninput="onEmailFieldInput()">
+            <button type="button" id="verifyEmailBtn" onclick="sendEmailVerification()" style="display:none;white-space:nowrap;padding:0 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Validate</button>
+          </div>
+          <div id="emailVerifyStatus" style="display:none;margin-top:6px;font-size:12px"></div>
+          <div id="emailVerifyCodeWrap" style="display:none;margin-top:8px">
+            <label style="font-size:10px">9-character code sent to this email</label>
+            <input id="fEmailVerifyCode" type="text" maxlength="9" placeholder="ABC123456" style="text-transform:uppercase;letter-spacing:0.15em;font-family:'JetBrains Mono',monospace" oninput="checkVerificationCode()">
+            <div id="emailVerifyCodeResult" style="display:none;margin-top:6px;font-size:12px"></div>
+          </div>
         </div>
         <div class="field">
           <label>Father's Name <span style="color:var(--text3);font-weight:400">(optional)</span></label>
@@ -2672,6 +2715,18 @@
       <div class="field">
         <label>Home Address <span style="color:var(--text3);font-weight:400">(optional)</span></label>
         <input id="fAddress" type="text" placeholder="Full address">
+      </div>
+      <div class="field">
+        <label>Photo Link <span style="color:var(--text3);font-weight:400">(optional — Google Drive share link to an image)</span></label>
+        <input id="fPhotoLink" type="url" placeholder="Paste a shareable Google Drive image link here" oninput="clearUploadedPhoto('f')">
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <label style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">
+            📷 Or upload directly
+            <input type="file" accept="image/*" id="fPhotoUpload" style="display:none" onchange="handlePhotoUpload(event,'f')">
+          </label>
+          <img id="fPhotoPreview" style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border2)">
+          <button type="button" id="fPhotoRemoveBtn" onclick="clearUploadedPhoto('f')" style="display:none;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline">Remove</button>
+        </div>
       </div>
       <div id="profileMatchBanner" style="display:none;margin-top:8px;padding:10px 12px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);border-radius:var(--radius);font-size:12px;color:var(--accent)"></div>
     </div>
@@ -3171,7 +3226,19 @@
     </div>
     <div class="field"><label>Phone Number <span style="color:var(--red)">*</span></label><input type="text" id="pePhone" placeholder="10-digit number"></div>
     <div class="field-row">
-      <div class="field"><label>Email Address</label><input type="email" id="peEmail" placeholder="email@example.com"></div>
+      <div class="field">
+        <label>Email Address</label>
+        <div style="display:flex;gap:8px">
+          <input type="email" id="peEmail" placeholder="email@example.com" style="flex:1" oninput="onPeEmailFieldInput()">
+          <button type="button" id="peVerifyEmailBtn" onclick="sendPeEmailVerification()" style="display:none;white-space:nowrap;padding:0 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Validate</button>
+        </div>
+        <div id="peEmailVerifyStatus" style="display:none;margin-top:6px;font-size:12px"></div>
+        <div id="peEmailVerifyCodeWrap" style="display:none;margin-top:8px">
+          <label style="font-size:10px">9-character code sent to this email</label>
+          <input id="peEmailVerifyCode" type="text" maxlength="9" placeholder="ABC123456" style="text-transform:uppercase;letter-spacing:0.15em;font-family:'JetBrains Mono',monospace" oninput="checkPeVerificationCode()">
+          <div id="peEmailVerifyCodeResult" style="display:none;margin-top:6px;font-size:12px"></div>
+        </div>
+      </div>
       <div class="field"><label>Father's Name <span style="color:var(--text3);font-weight:400">(optional)</span></label><input type="text" id="peFatherName" placeholder="Father's full name"></div>
     </div>
     <div class="field-row">
@@ -3183,6 +3250,18 @@
       <div class="field"><label>Guarantor Relation <span style="color:var(--red)">*</span></label><input type="text" id="peGuarantorRelation" placeholder="e.g. Friend, Brother"></div>
     </div>
     <div class="field"><label>Home Address</label><input type="text" id="peAddress" placeholder="Full address (optional)"></div>
+    <div class="field">
+      <label>Photo Link <span style="color:var(--text3);font-weight:400">(optional — Google Drive share link to an image)</span></label>
+      <input type="url" id="pePhotoLink" placeholder="Paste a shareable Google Drive image link here" oninput="clearUploadedPhoto('pe')">
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+        <label style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">
+          📷 Or upload directly
+          <input type="file" accept="image/*" id="pePhotoUpload" style="display:none" onchange="handlePhotoUpload(event,'pe')">
+        </label>
+        <img id="pePhotoPreview" style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border2)">
+        <button type="button" id="pePhotoRemoveBtn" onclick="clearUploadedPhoto('pe')" style="display:none;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline">Remove</button>
+      </div>
+    </div>
     <button class="modal-save" onclick="saveProfileEdit()" style="margin-top:16px;width:100%">Save Profile</button>
   </div>
 </div>
@@ -3488,6 +3567,18 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Borrowers List -->
+<div class="overlay" id="borrowersListOverlay" onclick="borrowersListBgClick(event)">
+  <div class="modal" style="max-width:640px;max-height:85vh;display:flex;flex-direction:column">
+    <div class="modal-hd">
+      <span class="modal-title">👥 Borrowers List</span>
+      <button class="close-btn" onclick="closeBorrowersList()">✕</button>
+    </div>
+    <input id="borrowersListSearch" type="text" placeholder="Search by name, phone, email…" oninput="renderBorrowersList()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;font-family:'Outfit',sans-serif;margin-bottom:14px">
+    <div id="borrowersListBody" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
 
 <script>
 
@@ -4368,12 +4459,59 @@ function setSyncStatus(state) {
   else if (state === "err") { el.textContent = "⚠ Offline";  el.style.color = "#E8965A"; }
 }
 
+// ── Multi-device write safety ────────────────────────────────────────────
+// This app has no real-time sync or merge logic — saving is simply "whoever
+// writes last wins." Without any check, saving from one device/tab could
+// silently discard changes made from another in between, with zero warning.
+// This adds a cheap "has the remote data changed since I last knew about it?"
+// check before every write, so that scenario at least surfaces a warning
+// instead of silently overwriting someone's (possibly your own, from another
+// tab) work.
+let _lastKnownRemoteFingerprint = null;
+
+function computeDataFingerprint(records) {
+  // Not cryptographic — just needs to change whenever the dataset changes.
+  // id+updatedAt+lent+returned covers new/deleted/edited records; sorted so
+  // record order doesn't affect the result.
+  const sig = (records || [])
+    .map(r => `${r.id}:${r.updatedAt || ""}:${r.lent}:${r.returned}`)
+    .sort()
+    .join("|");
+  let hash = 0;
+  for (let i = 0; i < sig.length; i++) hash = (hash * 31 + sig.charCodeAt(i)) | 0;
+  return hash + ":" + (records ? records.length : 0);
+}
+
+function showConflictWarning() {
+  return new Promise((resolve) => {
+    const popup = document.createElement("div");
+    popup.id = "conflictWarningPopup";
+    popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px";
+    popup.innerHTML = `
+      <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
+        <div style="font-size:34px;text-align:center;margin-bottom:8px">⚠️</div>
+        <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:8px">Data changed elsewhere</div>
+        <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px;line-height:1.6">
+          This data was changed from another device or tab since you loaded it here. Saving now could overwrite those changes.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button id="conflictReloadBtn" style="padding:12px;background:var(--accent);border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;color:#fff;font-family:'Outfit',sans-serif">Reload Now (recommended)</button>
+          <button id="conflictSaveAnywayBtn" style="padding:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);font-family:'Outfit',sans-serif">Save Anyway (may overwrite changes)</button>
+        </div>
+      </div>`;
+    document.body.appendChild(popup);
+    document.getElementById("conflictReloadBtn").onclick = () => { location.reload(); };
+    document.getElementById("conflictSaveAnywayBtn").onclick = () => { popup.remove(); resolve(true); };
+  });
+}
+
 async function loadFromCloud() {
   setLoading(true);
   try {
     const res = await fetch(BIN_URL + "/latest", { headers: HEADERS });
     const json = await res.json();
     localData = json.record?.records || [];
+    _lastKnownRemoteFingerprint = computeDataFingerprint(localData);
     setLoading(false);
     return localData;
   } catch(e) {
@@ -4387,6 +4525,27 @@ async function saveToCloud(data) {
   if (isSyncing) return;
   isSyncing = true;
   setSyncStatus("syncing");
+
+  // Check whether the remote data has changed since we last knew about it —
+  // e.g. edited from another device/tab in the meantime — before writing over
+  // it. See the "Multi-device write safety" comment above for why this exists.
+  try {
+    const checkRes = await fetch(BIN_URL + "/latest", { headers: HEADERS });
+    const checkJson = await checkRes.json();
+    const remoteFingerprint = computeDataFingerprint(checkJson.record?.records || []);
+    if (_lastKnownRemoteFingerprint !== null && remoteFingerprint !== _lastKnownRemoteFingerprint) {
+      isSyncing = false;
+      setSyncStatus("err");
+      const proceedAnyway = await showConflictWarning();
+      if (!proceedAnyway) { return; }
+      isSyncing = true;
+      setSyncStatus("syncing");
+    }
+  } catch (e) {
+    // Conflict check itself failed (e.g. offline) — don't block the save on
+    // that; fall through and let the normal save attempt below fail/retry.
+  }
+
   localData = data;
   await refreshDecryptedProfiles();
   // Refresh widgets whenever data changes
@@ -4400,6 +4559,7 @@ async function saveToCloud(data) {
       headers: HEADERS,
       body: JSON.stringify(payload)
     });
+    _lastKnownRemoteFingerprint = computeDataFingerprint(data);
     setSyncStatus("ok");
   } catch(e) {
     setSyncStatus("err");
@@ -4947,6 +5107,8 @@ function toggleInterestField() {
     const lbl = el.closest(".field")?.querySelector("label");
     if (lbl) lbl.innerHTML = labelText + " " + (on ? reqSpan : optSpan);
   });
+
+  renderEmailVerificationUI();
 }
 
 function setInterestType(type) {
@@ -4983,6 +5145,8 @@ function _openModal() {
   document.getElementById("fGuarantorRelation").value = "";
   document.getElementById("fFatherName").value = "";
   document.getElementById("fAddress").value = "";
+  document.getElementById("fPhotoLink").value = "";
+  clearUploadedPhoto("f");
   document.getElementById("profileSuggest").style.display = "none";
   document.getElementById("profileMatchBanner").style.display = "none";
   document.getElementById("fPhoneError").style.display = "none";
@@ -5000,6 +5164,7 @@ function _openModal() {
   document.getElementById("emiPreview").style.display = "none";
   document.getElementById("interestRateField").classList.remove("visible");
   setInterestType('compound');
+  resetEmailVerification("");
   document.getElementById("modalTitle").textContent = "New lending entry";
   document.getElementById("saveBtn").textContent = "Save entry";
   document.getElementById("overlay").classList.add("open");
@@ -5035,6 +5200,15 @@ async function _editRow(id) {
   document.getElementById("fGuarantorRelation").value = rp.guarantorRelation || "";
   document.getElementById("fFatherName").value = rp.fatherName || "";
   document.getElementById("fAddress").value = rp.address || "";
+  document.getElementById("fPhotoLink").value = rp.photoLink || "";
+  window._fPhotoData = rp.photoData || null;
+  if (rp.photoData) {
+    document.getElementById("fPhotoPreview").src = rp.photoData;
+    document.getElementById("fPhotoPreview").style.display = "inline-block";
+    document.getElementById("fPhotoRemoveBtn").style.display = "inline-block";
+  } else {
+    clearUploadedPhoto("f");
+  }
   document.getElementById("profileSuggest").style.display = "none";
   document.getElementById("profileMatchBanner").style.display = "none";
   document.getElementById("fPhoneError").style.display = "none";
@@ -5051,6 +5225,7 @@ async function _editRow(id) {
   document.getElementById("fGraceDays").value = (r.graceDays ?? 1);
   document.getElementById("interestRateField").classList.toggle("visible", !!r.interestOn);
   setInterestType(ls.interestType || r.interestType || 'compound');
+  resetEmailVerification(r.emailVerified ? rp.email : "");
   document.getElementById("modalTitle").textContent = "Edit entry";
   document.getElementById("saveBtn").textContent = "Update entry";
   document.getElementById("overlay").classList.add("open");
@@ -5079,6 +5254,8 @@ async function saveEntry() {
   const guarantorRelation = capitalizeWords(document.getElementById("fGuarantorRelation").value.trim());
   const fatherName  = capitalizeWords(document.getElementById("fFatherName").value.trim());
   const address     = document.getElementById("fAddress").value.trim();
+  const photoLink   = document.getElementById("fPhotoLink").value.trim();
+  const photoData   = window._fPhotoData || null;
   const interestOn = document.getElementById("fInterestOn").checked;
   const interestType = document.getElementById("fInterestOn").dataset.itype || 'compound';
   const interestRate = interestOn ? (parseFloat(document.getElementById("fInterestRate").value) || 9) : null;
@@ -5106,11 +5283,17 @@ async function saveEntry() {
   // Fields mandatory only for interest-enabled loans
   if (interestOn) {
     if (!email) { showToast("Email is required for interest-enabled loans"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("Please enter a valid email address"); return; }
+    const emailIsVerified = emailVerifier.state.verified && emailVerifier.state.verifiedEmail === email.toLowerCase();
+    if (!emailIsVerified) { showToast("Please validate the email address before saving"); return; }
     if (!pan || pan.length !== 10) { showToast("PAN is required for interest-enabled loans"); return; }
     if (!aadhaar || aadhaar.length !== 12) { showToast("Aadhaar is required for interest-enabled loans"); return; }
     if (!guarantor) { showToast("Guarantor is required for interest-enabled loans"); return; }
     if (!guarantorRelation) { showToast("Guarantor relation is required for interest-enabled loans"); return; }
   }
+  const emailVerified = interestOn
+    ? (emailVerifier.state.verified && emailVerifier.state.verifiedEmail === email.toLowerCase())
+    : false;
   // Auto-set status based on amounts
   const status = returned > lent ? "OVERDUE" : returned === lent ? "RETURNED" : "PENDING";
   document.getElementById("fStatus").value = status;
@@ -5125,13 +5308,13 @@ async function saveEntry() {
       const interestJustEnabled = interestOn && !prev.interestOn;
       const interestStartDate = interestJustEnabled ? todayStr : (prev.interestStartDate || prev.date);
       const interestBase = interestJustEnabled ? Math.max(0, lent - returned) : (prev.interestBase ?? Math.max(0, prev.lent - prev.returned));
-      const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, nickname: name };
+      const profile = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, photoLink, photoData, nickname: name };
       const encProfile = await encryptProfile(profile);
       // Reuse another person's profileId if name+phone now matches them (merge on edit);
       // otherwise keep this record's own id; only generate new if it never had one.
       const matchedId = await resolveProfileId(officialName, phone, prev.id);
       const profileId = matchedId || prev.profileId || genProfileId();
-    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays,
+    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, emailVerified,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
       };
@@ -5142,11 +5325,11 @@ async function saveEntry() {
     closeModal();
     showToast("Entry updated!");
   } else {
-    const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, nickname: name };
+    const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, photoLink, photoData, nickname: name };
     const encProfileData = await encryptProfile(profileData);
     // Same person as an existing record? Reuse their profileId so all their loans group together.
     const profileId = (await resolveProfileId(officialName, phone, null)) || genProfileId();
-    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, emailVerified, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
     data.push(newRecord);
     localData = data;
     saveToCloud(data);
@@ -6035,6 +6218,230 @@ async function checkProfileMatch() {
 // ── Profile popup ─────────────────────────────────
 let profilePopupOpen = false;
 
+// ── Profile Photo (from a pasted document link, not an upload) ──────────────
+// Documents in this app are just name+link pairs (e.g. a Google Drive share
+// URL) — there's no server here and no image-recognition step, so this can't
+// "find a photo inside a document" automatically. What it CAN do: take a link
+// the user explicitly marks as the photo and, if it's a Google Drive share
+// link, convert it into the URL format Drive actually needs for hotlinking
+// (share links don't work directly in <img> tags). Google's older
+// uc?export=view format was deprecated in 2024 (returns 403 now) — the
+// /thumbnail endpoint is the current working approach.
+function extractDriveFileId(url) {
+  if (!url) return null;
+  let m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  return null;
+}
+
+function resolvePhotoUrl(rawLink) {
+  if (!rawLink) return null;
+  const trimmed = rawLink.trim();
+  if (!trimmed) return null;
+  if (trimmed.includes("drive.google.com") || trimmed.includes("googleusercontent.com")) {
+    const fileId = extractDriveFileId(trimmed);
+    if (fileId) return `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
+  }
+  return trimmed; // not a Drive link — assume it's already a direct image URL
+}
+
+// Called via onerror on the <img> — Drive hotlinking is known to be flaky
+// (rate limits under load, format changes over time), so if the image fails
+// to load, fall back to the plain initials circle instead of a broken-image icon.
+function handleAvatarImgError(imgEl) {
+  const div = document.createElement("div");
+  div.className = "profile-avatar";
+  div.style.width = imgEl.dataset.size + "px";
+  div.style.height = imgEl.dataset.size + "px";
+  div.style.fontSize = Math.round(imgEl.dataset.size * 0.4) + "px";
+  div.textContent = imgEl.dataset.initial || "?";
+  imgEl.replaceWith(div);
+}
+
+// Shared avatar renderer — profile popup, name-hover tooltip, and Borrowers
+// List all call this so a photo (or its absence) looks and behaves identically
+// everywhere. `p` is a profile object (has officialName/nickname/photoLink,
+// and optionally photoData — an uploaded base64 image, which takes priority
+// over the Drive link since it's self-contained and never depends on Drive's
+// hotlinking behavior staying up).
+function renderAvatarHtml(p, size) {
+  size = size || 44;
+  const initial = ((p.officialName || p.nickname || "?")[0] || "?").toUpperCase();
+  const photoUrl = p.photoData || resolvePhotoUrl(p.photoLink);
+  if (photoUrl) {
+    return `<img src="${photoUrl}" alt="" data-initial="${initial}" data-size="${size}" onerror="handleAvatarImgError(this)" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--surface2)">`;
+  }
+  return `<div class="profile-avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.4)}px">${initial}</div>`;
+}
+
+// ── Direct photo upload (alternative to a Drive link) ───────────────────────
+// Resized/compressed client-side before storing — this app has no server, so
+// the image ends up base64-encoded directly in the record and synced through
+// the same JSONBin bin as everything else. Kept deliberately small (128×128,
+// compressed JPEG, typically a few KB) since JSONBin's storage limits are
+// already a known constraint for this app — a handful of small avatars is
+// fine, but this isn't a substitute for real file storage if used heavily.
+const PHOTO_UPLOAD_SIZE = 128;
+const PHOTO_UPLOAD_QUALITY = 0.65;
+
+function handlePhotoUpload(event, prefix) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) { showToast("Please select an image file"); event.target.value = ""; return; }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const size = PHOTO_UPLOAD_SIZE;
+      const canvas = document.createElement("canvas");
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      // Center-crop to square so avatars look consistent regardless of the
+      // original photo's aspect ratio.
+      const minDim = Math.min(img.width, img.height);
+      const sx = (img.width - minDim) / 2;
+      const sy = (img.height - minDim) / 2;
+      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+      const dataUrl = canvas.toDataURL("image/jpeg", PHOTO_UPLOAD_QUALITY);
+
+      window["_" + prefix + "PhotoData"] = dataUrl;
+      const linkInput = document.getElementById(prefix + "PhotoLink");
+      if (linkInput) linkInput.value = ""; // upload and link are alternatives, not both at once
+
+      const preview = document.getElementById(prefix + "PhotoPreview");
+      preview.src = dataUrl;
+      preview.style.display = "inline-block";
+      document.getElementById(prefix + "PhotoRemoveBtn").style.display = "inline-block";
+      showToast("Photo attached — will be saved with this profile");
+    };
+    img.onerror = () => showToast("⚠ Could not read that image file");
+    img.src = e.target.result;
+  };
+  reader.onerror = () => showToast("⚠ Failed to read file");
+  reader.readAsDataURL(file);
+  event.target.value = ""; // allow re-selecting the same file later
+}
+
+function clearUploadedPhoto(prefix) {
+  window["_" + prefix + "PhotoData"] = null;
+  const preview = document.getElementById(prefix + "PhotoPreview");
+  if (preview) { preview.style.display = "none"; preview.src = ""; }
+  const removeBtn = document.getElementById(prefix + "PhotoRemoveBtn");
+  if (removeBtn) removeBtn.style.display = "none";
+}
+
+// ── Borrowers List ───────────────────────────────────────────────────────
+// "Remaining" for an interest-bearing loan means the FULL amount owed —
+// principal + all interest over the loan's tenure — not just the principal.
+// This is the exact same formula the main table's "Remaining" column uses, so
+// the bulb color can never disagree with what's shown there. A ₹20,000
+// interest loan isn't "settled" just because ₹20,000 has been paid back if
+// the interest on top of that hasn't been paid too.
+function getLoanRemaining(r) {
+  if (r.interestOn && r.loanSetup) {
+    const emi = getScheduledEMI(r);
+    const totalPayable = emi ? Math.round(emi * (r.loanSetup.tenure || 0)) : r.lent;
+    const totalPaidSoFar = (r.payments || []).reduce((s, p) => s + (p.amount || 0), 0);
+    return Math.max(0, totalPayable - totalPaidSoFar);
+  }
+  return Math.max(0, r.lent - r.returned);
+}
+
+// Status "bulb" color, in priority order:
+//   blue  — any interest-bearing loan for this person still has money pending
+//           (principal + interest, not just principal — takes priority even
+//           if non-interest loans are also unpaid)
+//   red   — no pending interest loan, but SOME money overall is still unpaid
+//   green — everything (interest and non-interest) fully returned
+function getBorrowerStatusColor(records) {
+  const active = records.filter(r => !r.archived);
+  const hasInterestPending = active.some(r => r.interestOn && getLoanRemaining(r) > 0);
+  if (hasInterestPending) return "blue";
+  const hasAnyPending = active.some(r => getLoanRemaining(r) > 0);
+  if (hasAnyPending) return "red";
+  return "green";
+}
+
+function openBorrowersList() {
+  document.getElementById("borrowersListSearch").value = "";
+  renderBorrowersList();
+  document.getElementById("borrowersListOverlay").classList.add("open");
+}
+
+function closeBorrowersList() {
+  document.getElementById("borrowersListOverlay").classList.remove("open");
+}
+
+function borrowersListBgClick(e) {
+  if (e.target === document.getElementById("borrowersListOverlay")) closeBorrowersList();
+}
+
+function renderBorrowersList() {
+  const search = (document.getElementById("borrowersListSearch")?.value || "").trim().toLowerCase();
+  const profiles = getProfiles();
+  const body = document.getElementById("borrowersListBody");
+
+  // One row per person (profileId) — combines every loan they've taken, e.g.
+  // Sagar's ₹10,000 and ₹20,000 loans show as a single aggregated entry.
+  let rows = Object.values(profiles).map(p => {
+    const records = getProfileRecords(p.key);
+    const active = records.filter(r => !r.archived);
+    const totalLent = active.reduce((s, r) => s + r.lent, 0);
+    const totalReturned = active.reduce((s, r) => s + r.returned, 0);
+    const totalPending = active.reduce((s, r) => s + getLoanRemaining(r), 0);
+    return {
+      profileId: p.key,
+      name: p.nickname || p.officialName,
+      officialName: p.officialName,
+      phone: p.phone,
+      email: p.email,
+      photoLink: p.photoLink,
+      photoData: p.photoData,
+      loanCount: active.length,
+      totalLent, totalReturned, totalPending,
+      statusColor: getBorrowerStatusColor(records),
+    };
+  });
+
+  if (search) {
+    rows = rows.filter(r =>
+      (r.name || "").toLowerCase().includes(search) ||
+      (r.officialName || "").toLowerCase().includes(search) ||
+      (r.phone || "").includes(search) ||
+      (r.email || "").toLowerCase().includes(search)
+    );
+  }
+
+  rows.sort((a, b) => b.totalPending - a.totalPending);
+
+  if (!rows.length) {
+    body.innerHTML = `<div class="empty-state">No borrowers found.</div>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r => `
+    <div class="borrower-list-row">
+      <span class="borrower-dot ${r.statusColor}" title="${r.statusColor === 'blue' ? 'Interest loan pending' : r.statusColor === 'red' ? 'Money pending' : 'Fully settled'}"></span>
+      ${renderAvatarHtml({ officialName: r.officialName, nickname: r.name, photoLink: r.photoLink, photoData: r.photoData }, 36)}
+      <div class="borrower-list-info">
+        <div class="borrower-list-name">${r.name}</div>
+        <div class="borrower-list-meta">${r.phone ? maskField(r.phone, "phone") : "No phone"}${r.email ? " · " + maskField(r.email, "email") : ""} · ${r.loanCount} loan${r.loanCount === 1 ? "" : "s"}</div>
+        <div class="borrower-list-stats">
+          <span>Lent: <strong style="color:var(--text)">${fmt(r.totalLent)}</strong></span>
+          <span>Returned: <strong style="color:var(--green)">${fmt(r.totalReturned)}</strong></span>
+          <span>Pending: <strong style="color:${r.totalPending > 0 ? 'var(--red)' : 'var(--text3)'}">${fmt(r.totalPending)}</strong></span>
+        </div>
+      </div>
+      <button class="edit-btn" onclick="openProfilePopup('${r.profileId}', this)" title="Edit borrower profile">✎</button>
+    </div>
+  `).join("");
+}
+
 function openProfilePopup(key, anchorEl) {
   const profiles = getProfiles();
   const p = profiles[key];
@@ -6050,7 +6457,7 @@ function openProfilePopup(key, anchorEl) {
   popup.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
       <div class="profile-popup-hd" style="margin-bottom:0">
-        <div class="profile-avatar">${p.officialName[0].toUpperCase()}</div>
+        ${renderAvatarHtml(p, 44)}
         <div>
           <div class="profile-popup-name">${p.nickname || p.officialName}</div>
           <div class="profile-popup-key">${p.firstName || ""}${p.middleName ? " "+p.middleName : ""} ${p.lastName || ""}</div>
@@ -6107,12 +6514,14 @@ function closeProfilePopup() {
 }
 
 let editingProfileKey = null;
+let editingProfileHasInterest = false;
 
 async function editProfileKey(key) {
   const records = getProfileRecords(key);
   if (!records.length) return;
   const profile = await decryptProfile(records[0].profile || {});
   editingProfileKey = key;
+  editingProfileHasInterest = records.some(r => r.interestOn);
 
   document.getElementById("peFirstName").value   = profile.firstName  || "";
   document.getElementById("peMiddleName").value  = profile.middleName || "";
@@ -6125,9 +6534,40 @@ async function editProfileKey(key) {
   document.getElementById("peGuarantor").value   = profile.guarantor  || "";
   document.getElementById("peGuarantorRelation").value = profile.guarantorRelation || "";
   document.getElementById("peAddress").value     = profile.address    || "";
+  document.getElementById("pePhotoLink").value   = profile.photoLink  || "";
+  window._pePhotoData = profile.photoData || null;
+  if (profile.photoData) {
+    document.getElementById("pePhotoPreview").src = profile.photoData;
+    document.getElementById("pePhotoPreview").style.display = "inline-block";
+    document.getElementById("pePhotoRemoveBtn").style.display = "inline-block";
+  } else {
+    clearUploadedPhoto("pe");
+  }
   document.getElementById("profileEditCount").textContent = records.length;
   updatePeOfficialName();
+  updatePeRequiredIndicators();
+  resetPeEmailVerification(records[0].emailVerified ? (profile.email || "") : "");
   document.getElementById("profileEditOverlay").classList.add("open");
+}
+
+// Mirrors toggleInterestField()'s label-rewriting for the main modal — PAN,
+// Aadhaar, and Guarantor are only mandatory for people who actually have an
+// interest-bearing loan. Someone with only simple no-interest loans shouldn't
+// be forced to supply full KYC just to edit their name or phone number.
+function updatePeRequiredIndicators() {
+  const reqSpan = `<span style="color:var(--red)">*</span>`;
+  const optSpan = `<span style="color:var(--text3);font-weight:400">(optional)</span>`;
+  [
+    ["pePan",               "PAN Number"],
+    ["peAadhaar",           "Aadhaar Number"],
+    ["peGuarantor",         "Guarantor"],
+    ["peGuarantorRelation", "Guarantor Relation"],
+  ].forEach(([id, labelText]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const lbl = el.closest(".field")?.querySelector("label");
+    if (lbl) lbl.innerHTML = labelText + " " + (editingProfileHasInterest ? reqSpan : optSpan);
+  });
 }
 
 function updatePeOfficialName() {
@@ -6141,6 +6581,7 @@ function updatePeOfficialName() {
 function closeProfileEdit() {
   document.getElementById("profileEditOverlay").classList.remove("open");
   editingProfileKey = null;
+  editingProfileHasInterest = false;
 }
 
 async function saveProfileEdit() {
@@ -6155,13 +6596,32 @@ async function saveProfileEdit() {
   const guarantor  = capitalizeWords(document.getElementById("peGuarantor").value.trim());
   const guarantorRelation = capitalizeWords(document.getElementById("peGuarantorRelation").value.trim());
   const address    = document.getElementById("peAddress").value.trim();
+  const photoLink  = document.getElementById("pePhotoLink").value.trim();
+  const photoData  = window._pePhotoData || null;
 
   if (!firstName || !lastName) { showToast("First and last name are required"); return; }
   if (!phone)  { showToast("Phone number is required"); return; }
-  if (!pan || pan.length !== 10) { showToast("Please enter a valid 10-character PAN number"); return; }
-  if (!aadhaar || aadhaar.length !== 12) { showToast("Please enter a valid 12-digit Aadhaar number"); return; }
-  if (!guarantor) { showToast("Please enter guarantor name"); return; }
-  if (!guarantorRelation) { showToast("Please enter guarantor's relation"); return; }
+  // PAN/Aadhaar/Guarantor are only mandatory for people who have an interest-
+  // bearing loan — someone with only simple no-interest loans isn't required
+  // to have full KYC on file.
+  if (editingProfileHasInterest) {
+    if (!pan || pan.length !== 10) { showToast("Please enter a valid 10-character PAN number"); return; }
+    if (!aadhaar || aadhaar.length !== 12) { showToast("Please enter a valid 12-digit Aadhaar number"); return; }
+    if (!guarantor) { showToast("Please enter guarantor name"); return; }
+    if (!guarantorRelation) { showToast("Please enter guarantor's relation"); return; }
+  }
+  let emailVerified = false;
+  if (email) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("Please enter a valid email address"); return; }
+    emailVerified = peEmailVerifier.state.verified && peEmailVerifier.state.verifiedEmail === email.toLowerCase();
+    // Verification is only REQUIRED (blocking) for people with an interest-bearing
+    // loan. For everyone else, validating is optional — they can still save with
+    // an unverified email; it just won't be marked verified on the record.
+    if (editingProfileHasInterest && !emailVerified) {
+      showToast("Please validate the email address before saving");
+      return;
+    }
+  }
 
   const officialName = [firstName, middleName, lastName].filter(Boolean).join(" ").toUpperCase();
   const normalizedPhone = normalizePhone(phone);
@@ -6175,10 +6635,11 @@ async function saveProfileEdit() {
       const rawProfile = {
         ...data[idx].profile,
         firstName, middleName, lastName, officialName,
-        phone: normalizedPhone, email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address,
+        phone: normalizedPhone, email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, photoLink, photoData,
         nickname: data[idx].profile?.nickname || data[idx].name
       };
       data[idx].profile = await encryptProfile(rawProfile);
+      data[idx].emailVerified = emailVerified;
       data[idx].updatedAt = new Date().toISOString();
     }
   }));
@@ -6207,6 +6668,10 @@ function showNameTooltip(key, event) {
     if (!p || profilePopupOpen) return;
     const tt = document.getElementById("nameTooltip");
     tt.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        ${renderAvatarHtml(p, 36)}
+        <span style="font-weight:700;font-size:13px">${p.nickname || p.officialName}</span>
+      </div>
       <div class="name-tooltip-row"><span class="name-tooltip-lbl">Official</span><span class="name-tooltip-val">${p.officialName}</span></div>
       <div class="name-tooltip-row"><span class="name-tooltip-lbl">Phone</span><span class="name-tooltip-val">${maskField(p.phone,"phone")}</span></div>
       <div class="name-tooltip-row"><span class="name-tooltip-lbl">Email</span><span class="name-tooltip-val">${maskField(p.email,"email")}</span></div>
@@ -6313,6 +6778,68 @@ function renderUpcomingWidget(data) {
         <div class="upcoming-emi">${isSchedule ? "EMI: " : "Due: "}${amount}</div>
       </div>
       <span class="upcoming-badge ${badgeCls}">${badgeTxt}</span>
+    </div>`;
+  }).join("");
+}
+
+// ── At Risk (overdue borrowers, grouped by person) ───────────────────────
+// Uses the same building blocks as everywhere else in the app: buildSchedule's
+// 'overdue'/'partial' statuses for interest loans (so this can't disagree with
+// the schedule modal or the Borrowers List bulb), and dueDate-based overdue
+// detection for simple loans. Grouped by profileId so a person with two
+// overdue loans shows once, with their worst delay and total amount overdue.
+function getAtRiskBorrowers(data) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const active = data.filter(r => !r.archived);
+  const perLoanOverdue = [];
+
+  active.forEach(r => {
+    if (r.interestOn && r.loanSetup) {
+      const overdueRows = buildSchedule(r).filter(s => !s.event && (s.status === "overdue" || s.status === "partial"));
+      if (overdueRows.length) {
+        const due = new Date(overdueRows[0].date); // schedule rows are chronological — first is the oldest unpaid
+        const days = Math.round((today - due) / (1000 * 60 * 60 * 24));
+        if (days > 0) perLoanOverdue.push({ r, days, amount: getLoanRemaining(r) });
+      }
+    } else if (r.dueDate) {
+      const due = new Date(r.dueDate); due.setHours(0, 0, 0, 0);
+      const days = Math.round((today - due) / (1000 * 60 * 60 * 24));
+      const pending = Math.max(0, r.lent - r.returned);
+      if (days > 0 && pending > 0) perLoanOverdue.push({ r, days, amount: pending });
+    }
+  });
+
+  const byProfile = {};
+  perLoanOverdue.forEach(({ r, days, amount }) => {
+    const key = r.profileId || ("_r" + r.id);
+    if (!byProfile[key]) byProfile[key] = { profileId: r.profileId, name: r.name, maxDays: 0, totalAmount: 0, loanCount: 0 };
+    byProfile[key].maxDays = Math.max(byProfile[key].maxDays, days);
+    byProfile[key].totalAmount += amount;
+    byProfile[key].loanCount += 1;
+  });
+
+  return Object.values(byProfile).sort((a, b) => b.maxDays - a.maxDays);
+}
+
+function renderAtRiskWidget(data) {
+  const el = document.getElementById("atRiskWidget");
+  if (!el) return;
+  const atRisk = getAtRiskBorrowers(data);
+  const show = atRisk.slice(0, 6);
+
+  if (!show.length) {
+    el.innerHTML = `<div class="no-upcoming">✅ No overdue borrowers</div>`;
+    return;
+  }
+
+  el.innerHTML = show.map(b => {
+    const badgeCls = b.maxDays >= 30 ? "overdue" : "soon";
+    return `<div class="upcoming-item" ${b.profileId ? `style="cursor:pointer" onclick="openProfilePopup('${b.profileId}', this)"` : ""}>
+      <div class="upcoming-info" style="flex:1">
+        <div class="upcoming-name">${b.name}${b.loanCount > 1 ? ` <span style="color:var(--text3);font-weight:400">(${b.loanCount} loans)</span>` : ""}</div>
+        <div class="upcoming-emi" style="color:var(--red)">${fmt(b.totalAmount)} overdue</div>
+      </div>
+      <span class="upcoming-badge ${badgeCls}">${b.maxDays}d</span>
     </div>`;
   }).join("");
 }
@@ -6474,6 +7001,7 @@ function renderActivityWidget(data) {
 function renderRightPanel(data) {
   const active = data.filter(r => !r.archived);
   renderUpcomingWidget(active);
+  renderAtRiskWidget(active);
   renderQuickStatsWidget(data);
   renderActivityWidget(data);
 }
@@ -6901,6 +7429,34 @@ function confirmSendEmail(opts) {
 }
 
 
+// Sends via EmailJS directly, no confirmation popup — used for flows like email
+// verification where the send has to happen immediately on user action, not
+// after a separate "are you sure" step. Waits up to 5s for the EmailJS SDK to
+// finish loading if it isn't ready yet.
+function sendEmailJS(templateParams, templateId) {
+  return new Promise((resolve, reject) => {
+    function doSend() {
+      emailjs.send(EMAILJS_SERVICE_ID, templateId, templateParams, { publicKey: EMAILJS_PUBLIC_KEY })
+        .then(resolve).catch(reject);
+    }
+    if (window.emailjs && emailjs.send) {
+      doSend();
+    } else {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (window.emailjs && emailjs.send) {
+          clearInterval(interval);
+          doSend();
+        } else if (attempts > 25) {
+          clearInterval(interval);
+          reject(new Error("Email service unavailable — check internet connection"));
+        }
+      }, 200);
+    }
+  });
+}
+
 function executeSendEmail() {
   const opts = window._pendingEmailSend;
   document.getElementById("emailConfirmPopup")?.remove();
@@ -6953,6 +7509,222 @@ function buildEmailRows(rows) {
   params.row1_bg = rows[0]?.bg || "#161A28";
   return params;
 }
+
+// ── Email Verification (required before saving an interest-bearing loan, and
+// before the Edit Profile bulk-edit form can save an email change) ──────────
+// One factory, two instances — one per modal — so the exact same expiry/resend/
+// case-insensitive-match logic applies everywhere an email gets verified.
+const EMAIL_CODE_TTL_MS = 24 * 60 * 60 * 1000; // codes valid for 24 hours
+const EMAIL_RESEND_COOLDOWN_S = 60;             // resend unlocked 1 minute after sending
+
+function generateVerificationCode() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let code = "";
+  for (let i = 0; i < 3; i++) code += letters[Math.floor(Math.random() * letters.length)];
+  for (let i = 0; i < 6; i++) code += Math.floor(Math.random() * 10);
+  return code;
+}
+
+function createEmailVerifier(ids, opts) {
+  opts = opts || {};
+  const state = { verifiedEmail: "", verified: false, pendingEmail: "", pendingCode: "", sentAt: 0 };
+  let resendTimer = null;
+
+  function isActive() {
+    if (!opts.gateCheckboxId) return true; // e.g. Edit Profile — always active when an email is present
+    return !!document.getElementById(opts.gateCheckboxId)?.checked;
+  }
+
+  function clearCooldown() {
+    if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+  }
+
+  // Called on modal open — seeds with whatever the record/profile already has
+  // (only treated as verified if it genuinely was verified before).
+  function reset(alreadyVerifiedEmail) {
+    const norm = (alreadyVerifiedEmail || "").trim().toLowerCase();
+    state.verifiedEmail = norm; state.verified = !!norm;
+    state.pendingEmail = ""; state.pendingCode = ""; state.sentAt = 0;
+    clearCooldown();
+    const codeInput = document.getElementById(ids.codeInput); if (codeInput) codeInput.value = "";
+    const codeWrap = document.getElementById(ids.codeWrap); if (codeWrap) codeWrap.style.display = "none";
+    const codeResult = document.getElementById(ids.codeResult); if (codeResult) codeResult.style.display = "none";
+    const btn = document.getElementById(ids.btn); if (btn) { btn.disabled = false; btn.textContent = "Validate"; }
+    render();
+  }
+
+  // Re-checks the current email input against verifiedEmail (case-insensitive)
+  // — this is what implements "same email, different case = still verified" and
+  // "changed email = verification resets." Also: if the input no longer matches
+  // whatever address a code was most recently sent to, the cooldown is cleared
+  // — correcting a wrong email to the right one must never be blocked by a
+  // resend timer that belonged to the earlier, wrong address.
+  function onInput() {
+    const current = (document.getElementById(ids.input)?.value || "").trim().toLowerCase();
+    state.verified = !!current && current === state.verifiedEmail;
+    if (current !== state.pendingEmail) {
+      const codeWrap = document.getElementById(ids.codeWrap); if (codeWrap) codeWrap.style.display = "none";
+      const codeResult = document.getElementById(ids.codeResult); if (codeResult) codeResult.style.display = "none";
+      clearCooldown();
+      const btn = document.getElementById(ids.btn); if (btn) { btn.disabled = false; btn.textContent = "Validate"; }
+    }
+    render();
+  }
+
+  function render() {
+    const btn = document.getElementById(ids.btn);
+    const statusEl = document.getElementById(ids.status);
+    if (!btn || !statusEl) return;
+    const email = (document.getElementById(ids.input)?.value || "").trim();
+    if (!isActive() || !email) { btn.style.display = "none"; statusEl.style.display = "none"; return; }
+    if (state.verified) {
+      btn.style.display = "none";
+      statusEl.style.display = "block";
+      statusEl.innerHTML = `<span style="color:var(--green);font-weight:600">✓ Verified</span>`;
+    } else {
+      btn.style.display = "inline-block";
+      statusEl.style.display = "none";
+    }
+  }
+
+  function startCooldown() {
+    const btn = document.getElementById(ids.btn);
+    clearCooldown();
+    let secondsLeft = EMAIL_RESEND_COOLDOWN_S;
+    btn.disabled = true;
+    btn.textContent = `Resend in ${secondsLeft}s`;
+    resendTimer = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        clearCooldown();
+        btn.disabled = false;
+        btn.textContent = "Resend Code";
+      } else {
+        btn.textContent = `Resend in ${secondsLeft}s`;
+      }
+    }, 1000);
+  }
+
+  async function sendCode(getName) {
+    const emailInput = document.getElementById(ids.input);
+    const email = emailInput.value.trim();
+    if (!email) { showToast("Please enter an email address first"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("Please enter a valid email address"); return; }
+
+    const btn = document.getElementById(ids.btn);
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+
+    const code = generateVerificationCode();
+    state.pendingEmail = email.toLowerCase();
+    state.pendingCode = code;
+
+    const name = (typeof getName === "function" ? getName() : getName) || "there";
+    const rowParams = buildEmailRows([
+      { label: "Verification Code", value: code, color: "#E0B84A", bg: "#2A2010" },
+    ]);
+
+    try {
+      await sendEmailJS({
+        to_name: name,
+        to_email: email,
+        headline: "🔐 Verify Your Email",
+        intro: "Please enter this code in LendingState to confirm this is the right email address for your loan communications:",
+        callout_style: "display:none;",
+        callout_text: "",
+        closing_style: "",
+        closing_note: "This code is valid for 24 hours. Didn't request this? You can safely ignore this email — no changes will be made without the code above.",
+        ...rowParams,
+        event_date: fmtEventDate(),
+      }, EMAILJS_TPL_NEWLOAN);
+
+      state.sentAt = Date.now();
+      document.getElementById(ids.codeWrap).style.display = "block";
+      const codeInput = document.getElementById(ids.codeInput);
+      codeInput.value = "";
+      codeInput.focus();
+      document.getElementById(ids.codeResult).style.display = "none";
+      showToast("Verification code sent to " + email);
+      startCooldown();
+    } catch (err) {
+      console.error("Verification email error:", err);
+      showToast("⚠ Failed to send verification email");
+      btn.disabled = false;
+      btn.textContent = "Validate";
+    }
+  }
+
+  function checkCode(getName) {
+    const input = document.getElementById(ids.codeInput);
+    const resultEl = document.getElementById(ids.codeResult);
+    const val = input.value.trim().toUpperCase();
+    input.value = val;
+    if (val.length < 9) { resultEl.style.display = "none"; return; }
+
+    resultEl.style.display = "block";
+    if (Date.now() - state.sentAt > EMAIL_CODE_TTL_MS) {
+      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700">✗ Code expired — tap Resend for a new one</span>`;
+      return;
+    }
+    if (val === state.pendingCode.toUpperCase()) {
+      state.verifiedEmail = state.pendingEmail;
+      state.verified = true;
+      resultEl.innerHTML = `<span style="color:var(--green);font-weight:700">✓ Verified successfully</span>`;
+      document.getElementById(ids.codeWrap).style.display = "none";
+      clearCooldown();
+      render();
+      sendEmailVerifiedConfirmation(state.verifiedEmail, getName);
+    } else {
+      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700">✗ Incorrect code — please check and try again</span>`;
+    }
+  }
+
+  return { state, reset, onInput, render, sendCode, checkCode };
+}
+
+async function sendEmailVerifiedConfirmation(email, getName) {
+  const name = (typeof getName === "function" ? getName() : getName) || "there";
+  const rowParams = buildEmailRows([]);
+  try {
+    await sendEmailJS({
+      to_name: name,
+      to_email: email,
+      headline: "✅ Email Verified",
+      intro: "This email address is now confirmed with LendingState. From here on, everything about your loan — payment confirmations, reminders, and any updates — will be sent to this address.",
+      callout_style: "display:none;",
+      callout_text: "",
+      closing_style: "display:none;",
+      closing_note: "",
+      ...rowParams,
+      event_date: fmtEventDate(),
+    }, EMAILJS_TPL_NEWLOAN);
+  } catch (err) {
+    console.warn("Verified-confirmation email failed to send:", err); // non-critical, don't block the user over this
+  }
+}
+
+// Add/Edit entry modal — verification only required while Interest is toggled on
+const emailVerifier = createEmailVerifier(
+  { input: "fEmail", btn: "verifyEmailBtn", status: "emailVerifyStatus", codeWrap: "emailVerifyCodeWrap", codeInput: "fEmailVerifyCode", codeResult: "emailVerifyCodeResult" },
+  { gateCheckboxId: "fInterestOn" }
+);
+function resetEmailVerification(alreadyVerifiedEmail) { emailVerifier.reset(alreadyVerifiedEmail); }
+function onEmailFieldInput() { emailVerifier.onInput(); }
+function renderEmailVerificationUI() { emailVerifier.render(); }
+function sendEmailVerification() { return emailVerifier.sendCode(() => buildOfficialName() || document.getElementById("fName").value.trim()); }
+function checkVerificationCode() { emailVerifier.checkCode(() => buildOfficialName() || document.getElementById("fName").value.trim()); }
+
+// Edit Profile modal (bulk edit across all of a person's records) — this form
+// already always requires PAN/Aadhaar/Guarantor, so verification is required
+// whenever an email is present here too, not gated on any checkbox.
+const peEmailVerifier = createEmailVerifier(
+  { input: "peEmail", btn: "peVerifyEmailBtn", status: "peEmailVerifyStatus", codeWrap: "peEmailVerifyCodeWrap", codeInput: "peEmailVerifyCode", codeResult: "peEmailVerifyCodeResult" },
+  {}
+);
+function resetPeEmailVerification(alreadyVerifiedEmail) { peEmailVerifier.reset(alreadyVerifiedEmail); }
+function onPeEmailFieldInput() { peEmailVerifier.onInput(); }
+function sendPeEmailVerification() { return peEmailVerifier.sendCode(() => document.getElementById("peOfficialName")?.textContent); }
+function checkPeVerificationCode() { peEmailVerifier.checkCode(() => document.getElementById("peOfficialName")?.textContent); }
 
 function triggerNewLoanEmail(r) {
   if (!r.interestOn || !r.profile?.email) return; // uses profile.email for all comms
