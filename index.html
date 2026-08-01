@@ -8341,11 +8341,11 @@ function applyFilters() {
     } else {
       if (activeView !== "all" && r.archived) return false;
       if (activeView === "active" && (r.status === "RETURNED" || r.archived)) return false;
-      // Status sub-filter (not applied in archived view, same as before)
-      if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
-      if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
-      if (activeFilter === "returned" && r.status !== "RETURNED") return false;
     }
+    // Status sub-filter — applies across all three views, including Archived
+    if (activeFilter === "pending"  && r.status !== "PENDING")  return false;
+    if (activeFilter === "overdue"  && r.status !== "OVERDUE")  return false;
+    if (activeFilter === "returned" && r.status !== "RETURNED") return false;
     // Search narrows further within whatever the view/status filters above already
     // allowed, rather than bypassing them — typing a name should shrink your
     // current filtered list, not silently search the entire dataset regardless
