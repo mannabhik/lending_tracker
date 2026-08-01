@@ -215,9 +215,9 @@
 
 
   /* Share & Statement buttons */
-  .share-btn     { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
+  .share-btn     { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
   .share-btn:hover { background: rgba(162,59,78,0.15); color: var(--accent); transform: scale(1.1); }
-  .stmt-btn      { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
+  .stmt-btn      { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
   .stmt-btn:hover  { background: rgba(107,155,94,0.12); color: var(--green); transform: scale(1.1); }
 
   /* Google Sheets sync */
@@ -460,7 +460,7 @@
 
   .del-btn, .edit-btn {
     background: none; border: none; cursor: pointer;
-    color: var(--text3);
+    color: var(--text2);
     padding: 6px 9px;
     border-radius: 7px;
     transition: background 0.12s, color 0.12s, transform 0.1s;
@@ -470,12 +470,14 @@
 
   .del-btn:hover    { background: var(--red-light); color: var(--red); transform: scale(1.1); }
   .edit-btn:hover   { background: var(--accent-light); color: var(--accent); transform: scale(1.1); box-shadow: 0 0 8px rgba(162,59,78,0.3); }
-  .topup-btn        { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
+  .topup-btn        { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
   .topup-btn:hover  { background: var(--amber-light); color: var(--amber); transform: scale(1.1); }
 
   .share-btn svg, .edit-btn svg, .del-btn svg, .stmt-btn svg, .payment-btn svg,
   .topup-btn svg, .prepay-btn svg, .renego-btn svg, .doc-btn svg {
     vertical-align: middle; display: inline-block;
+    width: 17px !important; height: 17px !important;
+    stroke-width: 2.3 !important;
   }
 
 
@@ -558,7 +560,7 @@
   .filter-count { display: inline-block; background: var(--accent); color: #fff; border-radius: 10px; font-size: 10px; padding: 1px 6px; margin-left: 4px; font-weight: 700; }
 
   /* Payment history modal */
-  .payment-btn       { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 13px; line-height: 1; }
+  .payment-btn       { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 13px; line-height: 1; }
   .payment-btn:hover { background: var(--green-light); color: var(--green); transform: scale(1.1); }
   .payment-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; }
   .payment-item-date { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text3); min-width: 80px; }
@@ -571,11 +573,11 @@
   .payment-total-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
   .payment-total-val { font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
 
-  .doc-btn          { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 14px; line-height: 1; }
+  .doc-btn          { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 14px; line-height: 1; }
   .doc-btn:hover    { background: #E0F0FF; color: #0369a1; transform: scale(1.1); }
-  .prepay-btn       { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
+  .prepay-btn       { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
   .prepay-btn:hover { background: var(--green-light); color: var(--green); transform: scale(1.1); box-shadow: 0 0 8px rgba(107,155,94,0.25); }
-  .renego-btn       { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; }
+  .renego-btn       { background: none; border: none; cursor: pointer; color: var(--text2); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; }
   .renego-btn:hover { background: #E0F0FF; color: #0369a1; transform: scale(1.1); }
   .doc-badge        { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; background: #0369a1; color: #fff; border-radius: 50%; font-size: 9px; font-weight: 700; margin-left: 2px; vertical-align: top; }
 
