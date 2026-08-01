@@ -24,45 +24,47 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0F1117;
-    --surface: #1A1D27;
-    --surface2: #22263A;
-    --surface3: #2A2F45;
-    --border: #2E3450;
-    --border2: #3D4468;
-    --text: #F0F2FF;
-    --text2: #9BA3C8;
-    --text3: #5C6491;
-    --accent: #6C63FF;
-    --accent2: #FF6B9D;
-    --accent-light: rgba(108,99,255,0.15);
-    --accent-dark: #4B44CC;
-    --green: #00D4AA;
-    --green-light: rgba(0,212,170,0.12);
-    --amber: #FFB547;
-    --amber-light: rgba(255,181,71,0.12);
-    --red: #FF5C7D;
-    --red-light: rgba(255,92,125,0.12);
-    --purple: #B97FFF;
-    --purple-light: rgba(185,127,255,0.12);
+    --bg: #14110E;
+    --surface: #1C1815;
+    --surface2: #241E19;
+    --surface3: #2C241D;
+    --border: #362E26;
+    --border2: #4A3D2E;
+    --text: #EDE7DC;
+    --text2: #9C9184;
+    --text3: #6B6255;
+    --accent: #A23B4E;
+    --accent2: #C9A455;
+    --accent-light: rgba(162,59,78,0.15);
+    --accent-dark: #7A2035;
+    --gold: #C9A455;
+    --gold-light: rgba(201,164,85,0.15);
+    --green: #6B9B5E;
+    --green-light: rgba(107,155,94,0.12);
+    --amber: #C99A3E;
+    --amber-light: rgba(201,154,62,0.12);
+    --red: #C0392B;
+    --red-light: rgba(192,57,43,0.12);
+    --purple: #A2542E;
+    --purple-light: rgba(162,84,46,0.12);
     --radius: 12px;
     --radius-lg: 20px;
     --radius-xl: 28px;
     --shadow: 0 4px 24px rgba(0,0,0,0.4);
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.5), 0 16px 48px rgba(0,0,0,0.3);
-    --glow-accent: 0 0 24px rgba(123,114,245,0.3);
-    --state-hover: rgba(123,114,245,0.08);
-    --state-active: rgba(123,114,245,0.14);
-    --glow-accent: 0 0 20px rgba(108,99,255,0.25);
-    --glow-green: 0 0 20px rgba(0,212,170,0.2);
+    --glow-accent: 0 0 24px rgba(162,59,78,0.3);
+    --state-hover: rgba(162,59,78,0.08);
+    --state-active: rgba(162,59,78,0.14);
+    --glow-accent: 0 0 20px rgba(162,59,78,0.25);
+    --glow-green: 0 0 20px rgba(107,155,94,0.2);
   }
 
   body {
     font-family: 'Outfit', sans-serif;
     background: var(--bg);
     background-image:
-      linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(162,59,78,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(162,59,78,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
     color: var(--text);
     min-height: 100vh;
@@ -70,7 +72,7 @@
   }
 
   header {
-    background: linear-gradient(135deg, #13162B 0%, #0F1117 60%, #1A0F2E 100%);
+    background: linear-gradient(135deg, #1E1712 0%, #14110E 60%, #201812 100%);
     border-bottom: 1px solid var(--border);
     padding: 18px 32px;
     display: flex;
@@ -99,14 +101,14 @@
     box-shadow: var(--glow-accent);
   }
 
-  .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: #fff; }
-  .logo-sub { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 300; }
+  .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: #fff; font-family: Georgia, 'Times New Roman', serif; }
+  .logo-sub { font-size: 12px; color: rgba(237,231,220,0.5); font-weight: 300; }
 
   .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .header-utils { display: none !important; } /* all screens use hamburger now */
   .header-date { font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; }
 
-  .main { max-width: 1400px; margin: 0 auto; padding: 32px 40px 80px; }
+  .main { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
 
   .summary-grid {
     display: grid;
@@ -186,7 +188,7 @@
     font-family: 'Outfit', sans-serif;
     transition: all 0.2s;
     letter-spacing: 0.01em;
-    box-shadow: 0 4px 15px rgba(108,99,255,0.3);
+    box-shadow: 0 4px 15px rgba(162,59,78,0.3);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
@@ -214,9 +216,9 @@
 
   /* Share & Statement buttons */
   .share-btn     { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
-  .share-btn:hover { background: rgba(108,99,255,0.15); color: var(--accent); transform: scale(1.1); }
+  .share-btn:hover { background: rgba(162,59,78,0.15); color: var(--accent); transform: scale(1.1); }
   .stmt-btn      { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: all 0.12s; font-size: 14px; line-height: 1; }
-  .stmt-btn:hover  { background: rgba(0,212,170,0.12); color: var(--green); transform: scale(1.1); }
+  .stmt-btn:hover  { background: rgba(107,155,94,0.12); color: var(--green); transform: scale(1.1); }
 
   /* Google Sheets sync */
   .sheets-sync-btn {
@@ -251,7 +253,7 @@
     -webkit-appearance: none;
   }
   .currency-select:hover { background: rgba(255,255,255,0.13); color: #fff; }
-  .currency-select option { background: #1A1D27; color: #F0F2FF; }
+  .currency-select option { background: #1A1D27; color: #EDE7DC; }
 
   .chpw-btn {
     display: flex; align-items: center; gap: 5px;
@@ -279,7 +281,7 @@
     box-sizing: border-box;
   }
   .chpw-input::placeholder { color: var(--text3); }
-  .chpw-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.2); background: var(--surface3); }
+  .chpw-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(162,59,78,0.2); background: var(--surface3); }
   .chpw-strength { height: 3px; border-radius: 99px; margin-top: -8px; margin-bottom: 12px; transition: width 0.3s, background 0.3s; width: 0; }
 
   /* First-time setup overlay — blocks everything until password is set */
@@ -304,7 +306,8 @@
     text-align: center;
     animation: pop 0.25s ease;
   }
-  .setup-icon { font-size: 42px; margin-bottom: 14px; }
+  .setup-icon { margin-bottom: 14px; color: var(--gold); display: flex; justify-content: center; }
+  .setup-icon svg { width: 42px; height: 42px; }
   .setup-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
   .setup-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
   .setup-fields { text-align: left; }
@@ -328,37 +331,49 @@
   }
   .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-  table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
 
   thead { background: var(--surface2); }
 
   th {
-    padding: 11px 12px;
+    padding: 10px 6px;
     text-align: left;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     color: var(--text3);
     text-transform: uppercase;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.07em;
     border-bottom: 1px solid var(--border);
     white-space: nowrap;
   }
 
   th:first-child { border-radius: 0; }
-  th:nth-child(1) { width: 88px; }   /* Date */
-  th:nth-child(2) { width: 140px; }  /* Borrower */
-  th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6) { width: 80px; } /* amounts */
-  th:nth-child(7) { width: 84px; }   /* Status */
-  th:nth-child(8) { width: 88px; }   /* Last Updated */
-  th:nth-child(9) { width: 56px; }   /* Actions */
+  /* Widths matched to the actual current column set — checkbox, Date, Borrower,
+     Loan Amount, Paid So Far, Total Payable, Remaining, Interest, Sched EMI,
+     Status, Last Updated, expand-toggle. Kept compact so the full table fits
+     without horizontal scroll on typical desktop/laptop widths. */
+  th:nth-child(1)  { width: 28px; }   /* checkbox */
+  th:nth-child(2)  { width: 64px; }   /* Date */
+  th:nth-child(3)  { width: 126px; }  /* Borrower */
+  th:nth-child(4)  { width: 72px; }   /* Loan Amount */
+  th:nth-child(5)  { width: 72px; }   /* Paid So Far */
+  th:nth-child(6)  { width: 76px; }   /* Total Payable */
+  th:nth-child(7)  { width: 80px; }   /* Remaining */
+  th:nth-child(8)  { width: 70px; }   /* Interest (to date) */
+  th:nth-child(9)  { width: 70px; }   /* Sched. EMI */
+  th:nth-child(10) { width: 70px; }   /* Status */
+  th:nth-child(11) { width: 64px; }   /* Last Updated */
+  th:nth-child(12) { width: 26px; }   /* expand chevron */
 
   td {
-    padding: 12px 12px;
-    font-size: 13px;
+    padding: 10px 6px;
+    font-size: 12.5px;
     color: var(--text);
     border-bottom: 1px solid var(--border);
     vertical-align: middle;
     transition: background 0.15s;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   tbody tr.data-row.row-last td, tbody tr.actions-row.row-last td { border-bottom: none; }
@@ -374,10 +389,10 @@
     border-bottom-color: #2A2F4A;
   }
   tbody tr.row-odd td:first-child { border-left: 2px solid transparent; }
-  tbody tr.row-even td:first-child { border-left: 2px solid rgba(108,99,255,0.25); }
+  tbody tr.row-even td:first-child { border-left: 2px solid rgba(162,59,78,0.25); }
 
   tbody tr.data-row:hover td {
-    background: rgba(108,99,255,0.12) !important;
+    background: rgba(162,59,78,0.12) !important;
     border-left-color: var(--accent) !important;
   }
 
@@ -391,7 +406,7 @@
   .amt-lent   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text); font-feature-settings: "zero" 1; }
   .amt-overdue { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--purple); font-feature-settings: "zero" 1; }
   .amt-overdue-empty { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text3); font-feature-settings: "zero" 1; }
-  .amt-ret    { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--green); text-shadow: 0 0 8px rgba(0,212,170,0.3); font-feature-settings: "zero" 1; }
+  .amt-ret    { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--green); text-shadow: 0 0 8px rgba(107,155,94,0.3); font-feature-settings: "zero" 1; }
   .amt-pend   { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; font-feature-settings: "zero" 1; }
   .amt-pend.has-pending { color: var(--red); }
   .amt-pend.no-pending  { color: var(--text3); }
@@ -410,13 +425,17 @@
     letter-spacing: 0.04em;
     white-space: nowrap;
   }
-  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-  .badge-returned { background: var(--green-light); color: var(--green); border: 1px solid rgba(0,212,170,0.2); }
-  .badge-returned::before { background: var(--green); box-shadow: 0 0 4px var(--green); }
-  .badge-pending  { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(255,181,71,0.2); }
-  .badge-pending::before  { background: var(--amber); box-shadow: 0 0 4px var(--amber); }
-  .badge-overdue  { background: var(--purple-light); color: var(--purple); border: 1px solid rgba(185,127,255,0.2); }
-  .badge-overdue::before  { background: var(--purple); box-shadow: 0 0 4px var(--purple); }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; animation: badge-breathe 2.4s ease-in-out infinite; }
+  @keyframes badge-breathe {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.72); }
+  }
+  .badge-returned { background: var(--green-light); color: var(--green); border: 1px solid rgba(107,155,94,0.2); }
+  .badge-returned::before { background: var(--green); box-shadow: 0 0 6px var(--green); animation-duration: 3.2s; }
+  .badge-pending  { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(201,154,62,0.2); }
+  .badge-pending::before  { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation-duration: 2s; }
+  .badge-overdue  { background: var(--purple-light); color: var(--purple); border: 1px solid rgba(162,84,46,0.2); }
+  .badge-overdue::before  { background: var(--purple); box-shadow: 0 0 7px var(--purple); animation-duration: 1.3s; }
 
   /* Borrowers List status "bulb" — pulsing glow, priority: blue (unpaid interest
      loan) > red (any unpaid money) > green (fully settled). */
@@ -450,9 +469,14 @@
   }
 
   .del-btn:hover    { background: var(--red-light); color: var(--red); transform: scale(1.1); }
-  .edit-btn:hover   { background: var(--accent-light); color: var(--accent); transform: scale(1.1); box-shadow: 0 0 8px rgba(108,99,255,0.3); }
+  .edit-btn:hover   { background: var(--accent-light); color: var(--accent); transform: scale(1.1); box-shadow: 0 0 8px rgba(162,59,78,0.3); }
   .topup-btn        { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
   .topup-btn:hover  { background: var(--amber-light); color: var(--amber); transform: scale(1.1); }
+
+  .share-btn svg, .edit-btn svg, .del-btn svg, .stmt-btn svg, .payment-btn svg,
+  .topup-btn svg, .prepay-btn svg, .renego-btn svg, .doc-btn svg {
+    vertical-align: middle; display: inline-block;
+  }
 
 
 
@@ -523,7 +547,7 @@
     font-family: 'Outfit', sans-serif; transition: all 0.15s;
   }
   .search-input::placeholder { color: var(--text3); }
-  .search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.2); }
+  .search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(162,59,78,0.2); }
   .filter-btn {
     padding: 9px 14px; border: 1px solid var(--border2); border-radius: var(--radius);
     background: var(--surface2); color: var(--text2); font-size: 12px; font-weight: 600;
@@ -550,7 +574,7 @@
   .doc-btn          { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 14px; line-height: 1; }
   .doc-btn:hover    { background: #E0F0FF; color: #0369a1; transform: scale(1.1); }
   .prepay-btn       { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; font-weight: 700; }
-  .prepay-btn:hover { background: var(--green-light); color: var(--green); transform: scale(1.1); box-shadow: 0 0 8px rgba(0,212,170,0.25); }
+  .prepay-btn:hover { background: var(--green-light); color: var(--green); transform: scale(1.1); box-shadow: 0 0 8px rgba(107,155,94,0.25); }
   .renego-btn       { background: none; border: none; cursor: pointer; color: var(--text3); padding: 6px 9px; border-radius: 7px; transition: background 0.12s, color 0.12s, transform 0.1s; font-size: 13px; line-height: 1; }
   .renego-btn:hover { background: #E0F0FF; color: #0369a1; transform: scale(1.1); }
   .doc-badge        { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; background: #0369a1; color: #fff; border-radius: 50%; font-size: 9px; font-weight: 700; margin-left: 2px; vertical-align: top; }
@@ -560,7 +584,8 @@
   .doc-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
   .doc-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); transition: border-color 0.15s; }
   .doc-item:hover { border-color: var(--accent); }
-  .doc-item-icon { font-size: 20px; flex-shrink: 0; }
+  .doc-item-icon { flex-shrink: 0; color: var(--text3); display: flex; align-items: center; }
+  .doc-item-icon svg { width: 20px; height: 20px; }
   .doc-item-info { flex: 1; min-width: 0; }
   .doc-item-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .doc-item-link { font-size: 11px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -597,7 +622,7 @@
     border-radius: var(--radius);
     padding: 14px 16px 12px;
     margin-top: 10px;
-    box-shadow: 0 6px 20px rgba(108,99,255,0.2), var(--glow-accent);
+    box-shadow: 0 6px 20px rgba(162,59,78,0.2), var(--glow-accent);
   }
   .actions-panel-connector {
     position: absolute;
@@ -629,7 +654,7 @@
     border-radius: var(--radius); font-size: 12px; font-weight: 600; cursor: pointer;
     font-family: 'Outfit', sans-serif; color: var(--text2); transition: all 0.15s; text-align: center;
   }
-  .int-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(108,99,255,0.3); }
+  .int-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(162,59,78,0.3); }
   .int-tab:hover:not(.active) { background: var(--surface2); }
 
   /* Interest toggle */
@@ -657,8 +682,8 @@
   /* Date cell pill */
   .date-pill {
     display: inline-block;
-    background: rgba(108,99,255,0.1);
-    border: 1px solid rgba(108,99,255,0.25);
+    background: rgba(162,59,78,0.1);
+    border: 1px solid rgba(162,59,78,0.25);
     border-radius: 7px;
     padding: 5px 8px;
     font-size: 11.5px;
@@ -669,8 +694,8 @@
     min-width: 68px;
   }
   .date-pill.updated {
-    background: rgba(0,212,170,0.08);
-    border: 1px solid rgba(0,212,170,0.2);
+    background: rgba(107,155,94,0.08);
+    border: 1px solid rgba(107,155,94,0.2);
     color: #5ECFB8;
   }
 
@@ -715,6 +740,14 @@
 
   .overlay.open { display: flex; }
 
+  /* Edit Profile can be opened from inside another still-open overlay (e.g.
+     Borrowers List → profile popup → Edit Profile), and neither overlay closes
+     the other. Both use the base .overlay z-index (200), so which one visually
+     wins was coming down to DOM source order rather than actual navigation
+     order — this pins Edit Profile above both the base overlay layer (200)
+     and the profile popup (500) so it always renders on top regardless. */
+  #profileEditOverlay { z-index: 600; }
+
   .modal {
     background: var(--surface);
     border-radius: var(--radius-lg);
@@ -724,7 +757,7 @@
     max-width: 95vw;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(108,99,255,0.1);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(162,59,78,0.1);
     animation: pop 0.2s ease;
     position: relative;
   }
@@ -776,7 +809,7 @@
   .field input:focus, .field select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.2);
+    box-shadow: 0 0 0 3px rgba(162,59,78,0.2);
     background: var(--surface3);
   }
 
@@ -795,10 +828,10 @@
     font-family: 'Outfit', sans-serif;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 15px rgba(108,99,255,0.3);
+    box-shadow: 0 4px 15px rgba(162,59,78,0.3);
   }
 
-  .modal-save:hover { opacity: 0.9; box-shadow: 0 6px 20px rgba(108,99,255,0.5); transform: translateY(-1px); }
+  .modal-save:hover { opacity: 0.9; box-shadow: 0 6px 20px rgba(162,59,78,0.5); transform: translateY(-1px); }
   .modal-save:active { transform: scale(0.98); }
 
   .toast {
@@ -1015,7 +1048,7 @@
     border-bottom: 1px solid var(--border);
     transition: background 0.15s;
   }
-  .entry-card:hover { background: rgba(108,99,255,0.05); }
+  .entry-card:hover { background: rgba(162,59,78,0.05); }
   .entry-card:last-child { border-bottom: none; }
 
   .entry-card-top {
@@ -1068,11 +1101,12 @@
     padding: 28px;
     width: 360px;
     max-width: 92vw;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,92,125,0.1);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(192,57,43,0.1);
     animation: pop 0.18s ease;
     text-align: center;
   }
-  .confirm-icon { font-size: 32px; margin-bottom: 12px; }
+  .confirm-icon { margin-bottom: 12px; color: var(--red); display: flex; justify-content: center; }
+  .confirm-icon svg { width: 32px; height: 32px; }
   .confirm-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .confirm-msg { font-size: 13px; color: var(--text2); margin-bottom: 22px; line-height: 1.5; }
   .confirm-btns { display: flex; gap: 10px; }
@@ -1113,7 +1147,8 @@
     animation: pop 0.18s ease;
     text-align: center;
   }
-  .pw-icon { font-size: 34px; margin-bottom: 10px; }
+  .pw-icon { margin-bottom: 10px; color: var(--gold); display: flex; justify-content: center; }
+  .pw-icon svg { width: 34px; height: 34px; }
   .pw-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
   .pw-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
   .pw-input {
@@ -1210,7 +1245,7 @@
     background: var(--surface); color: var(--text2); transition: all 0.15s;
   }
   .sched-btn:hover { background: var(--surface2); }
-  .sched-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(108,99,255,0.3); }
+  .sched-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(162,59,78,0.3); }
   .sched-btn.primary:hover { opacity: 0.9; }
   .sched-btn.green { background: var(--green-light); color: var(--green); border-color: var(--green); }
   .sched-btn.amber { background: var(--amber-light); color: var(--amber); border-color: var(--amber); }
@@ -1246,13 +1281,13 @@
     font-family: 'JetBrains Mono', monospace; font-size: 12px; vertical-align: middle;
   }
   .schedule-table tr:last-child td { border-bottom: none; }
-  .schedule-table tr.paid td { background: rgba(0,212,170,0.05); color: var(--text2); }
+  .schedule-table tr.paid td { background: rgba(107,155,94,0.05); color: var(--text2); }
   .schedule-table tr.partial td { background: rgba(232,184,75,0.08); }
-  .schedule-table tr.overdue td { background: rgba(255,92,125,0.10); font-weight: 600; }
-  .schedule-table tr.current td { background: rgba(108,99,255,0.08); font-weight: 600; }
+  .schedule-table tr.overdue td { background: rgba(192,57,43,0.10); font-weight: 600; }
+  .schedule-table tr.current td { background: rgba(162,59,78,0.08); font-weight: 600; }
   .schedule-table tr.future td { background: var(--surface); }
   .schedule-table tr.event-row td {
-    background: rgba(185,127,255,0.08); font-size: 11px; color: var(--purple);
+    background: rgba(162,84,46,0.08); font-size: 11px; color: var(--purple);
     font-style: italic; font-family: 'Outfit', sans-serif;
     border-left: 3px solid var(--purple);
   }
@@ -1280,7 +1315,7 @@
     --accent: #5B52E8;
     --accent2: #E8527A;
     --accent-light: rgba(91,82,232,0.1);
-    --accent-dark: #4B44CC;
+    --accent-dark: #7A2035;
     --green: #2D8A5E;
     --green-light: rgba(45,138,94,0.1);
     --amber: #9A6200;
@@ -1433,7 +1468,7 @@
     padding: 40px 36px 32px;
     width: 380px; max-width: 92vw;
     text-align: center;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,170,0.2);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(107,155,94,0.2);
     animation: pop 0.3s ease;
     position: relative; overflow: hidden;
   }
@@ -1442,17 +1477,18 @@
     position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, var(--green), var(--accent), var(--green));
   }
-  .celebration-emoji { font-size: 56px; margin-bottom: 12px; animation: bounce 0.6s ease infinite alternate; }
+  .celebration-seal { color: var(--gold); margin-bottom: 12px; animation: bounce 0.6s ease infinite alternate; display: flex; justify-content: center; }
+  .celebration-seal svg { width: 56px; height: 56px; }
   @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
   .celebration-title { font-size: 22px; font-weight: 700; color: var(--green); margin-bottom: 8px; letter-spacing: -0.02em; }
   .celebration-sub { font-size: 14px; color: var(--text2); margin-bottom: 6px; }
   .celebration-amount { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); margin: 12px 0; }
-  .celebration-btn { width: 100%; margin-top: 20px; padding: 13px; background: linear-gradient(135deg, var(--green), #00A87F); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 700; font-family: 'Outfit', sans-serif; cursor: pointer; transition: opacity 0.2s; }
+  .celebration-btn { width: 100%; margin-top: 20px; padding: 13px; background: linear-gradient(135deg, var(--green), #4A7A3E); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 700; font-family: 'Outfit', sans-serif; cursor: pointer; transition: opacity 0.2s; }
   .celebration-btn:hover { opacity: 0.9; }
 
   /* Sortable column headers */
   th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
-  th.sortable:hover { color: var(--accent); background: rgba(108,99,255,0.08); }
+  th.sortable:hover { color: var(--accent); background: rgba(162,59,78,0.08); }
   th.sortable.sort-asc::after  { content: ' ↑'; color: var(--accent); }
   th.sortable.sort-desc::after { content: ' ↓'; color: var(--accent); }
 
@@ -1526,7 +1562,9 @@
     min-height: 48px;
   }
   .menu-item:hover { background: var(--surface2); color: var(--text); }
-  .menu-item .menu-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .menu-item .menu-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .menu-item .menu-icon svg { width: 16px; height: 16px; }
+  .widget-title svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 2px; }
   .menu-separator { height: 1px; background: var(--border); margin: 4px 8px; }
   .menu-item select {
     background: none; border: none; color: var(--text2);
@@ -1624,8 +1662,8 @@
   /* ── Right panel: Activity + Stats + Upcoming ─────────────── */
   .content-with-sidebar {
     display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
+    grid-template-columns: 1fr 260px;
+    gap: 18px;
     align-items: start;
   }
   .main-col { min-width: 0; }
@@ -1664,11 +1702,12 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; flex-shrink: 0; margin-top: 1px;
   }
-  .activity-dot.add    { background: rgba(108,99,255,0.15); }
-  .activity-dot.pay    { background: rgba(0,212,170,0.15); }
-  .activity-dot.edit   { background: rgba(255,181,71,0.15); }
-  .activity-dot.close  { background: rgba(0,212,170,0.15); }
-  .activity-dot.overdue{ background: rgba(185,127,255,0.15); }
+  .activity-dot.add    { background: rgba(162,59,78,0.15); color: var(--accent); }
+  .activity-dot.pay    { background: rgba(107,155,94,0.15); color: var(--green); }
+  .activity-dot.edit   { background: rgba(201,154,62,0.15); color: var(--amber); }
+  .activity-dot.close  { background: rgba(107,155,94,0.15); color: var(--green); }
+  .activity-dot.overdue{ background: rgba(162,84,46,0.15); color: var(--purple); }
+  .activity-dot svg { width: 14px; height: 14px; }
   .activity-text { flex: 1; min-width: 0; }
   .activity-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .activity-sub  { font-size: 11px; color: var(--text3); margin-top: 1px; }
@@ -1701,9 +1740,9 @@
   .upcoming-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .upcoming-emi  { font-size: 11px; color: var(--text3); }
   .upcoming-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; flex-shrink: 0; }
-  .upcoming-badge.overdue { background: rgba(185,127,255,0.15); color: var(--purple); }
-  .upcoming-badge.soon    { background: rgba(255,181,71,0.15);   color: var(--amber); }
-  .upcoming-badge.ok      { background: rgba(0,212,170,0.12);    color: var(--green); }
+  .upcoming-badge.overdue { background: rgba(162,84,46,0.15); color: var(--purple); }
+  .upcoming-badge.soon    { background: rgba(201,154,62,0.15);   color: var(--amber); }
+  .upcoming-badge.ok      { background: rgba(107,155,94,0.12);    color: var(--green); }
   .no-upcoming { text-align: center; padding: 20px 0; font-size: 12px; color: var(--text3); }
 
   /* Tablet: keep sidebar but narrower */
@@ -1719,7 +1758,7 @@
   /* ── Material You overrides ──────────────────────────────── */
 
   /* Pill buttons */
-  .add-btn    { border-radius: 50px !important; box-shadow: 0 2px 8px rgba(123,114,245,0.35) !important; }
+  .add-btn    { border-radius: 50px !important; box-shadow: 0 2px 8px rgba(162,59,78,0.35) !important; }
   .filter-btn { border-radius: 50px !important; }
   .view-toggle-btn { border-radius: 50px !important; }
   .modal-save { border-radius: 50px !important; font-family: 'Outfit', sans-serif !important; }
@@ -1742,7 +1781,7 @@
   .toast { border-radius: 50px !important; font-family: 'Outfit', sans-serif !important; }
 
   /* Elevated add-btn */
-  .add-btn:hover { box-shadow: 0 4px 16px rgba(123,114,245,0.5) !important; transform: translateY(-1px); }
+  .add-btn:hover { box-shadow: 0 4px 16px rgba(162,59,78,0.5) !important; transform: translateY(-1px); }
   .add-btn:active { transform: scale(0.97) !important; }
 
   /* Smooth row hover */
@@ -1866,46 +1905,47 @@
      THEME: CLASSY — deep navy, gold accents, serif feel
   ════════════════════════════════════════════════════════════════ */
   body.theme-classy {
-    --bg: #0B0D17; --surface: #131520; --surface2: #1A1D2E; --surface3: #212438;
+    --bg: #0A0C16; --surface: #131520; --surface2: #1A1D2E; --surface3: #212438;
     --border: #2A2D45; --border2: #383C5A;
-    --text: #F0E6CC; --text2: #B8A882; --text3: #6B5E40;
-    --accent: #C8A84B; --accent2: #E8C870; --accent-light: rgba(200,168,75,0.15);
+    --text: #EFE3C4; --text2: #B0A078; --text3: #6B5E40;
+    --accent: #C9A455; --accent2: #E0C078; --accent-light: rgba(201,164,85,0.15);
     --accent-dark: #9A7A28;
     --green: #5FB88A; --green-light: rgba(95,184,138,0.12);
-    --amber: #E8B84B; --amber-light: rgba(232,184,75,0.12);
-    --red: #E87878; --red-light: rgba(232,120,120,0.12);
-    --purple: #A888E8; --radius: 4px; --radius-lg: 8px; --radius-xl: 10px;
+    --amber: #E0B54E; --amber-light: rgba(224,181,78,0.12);
+    --red: #C24D4D; --red-light: rgba(194,77,77,0.12);
+    --purple: #9B7FC7; --radius: 4px; --radius-lg: 8px; --radius-xl: 10px;
     --shadow: 0 2px 12px rgba(0,0,0,0.6); --shadow-lg: 0 8px 32px rgba(0,0,0,0.7);
-    --state-hover: rgba(200,168,75,0.08); --state-active: rgba(200,168,75,0.15);
+    --state-hover: rgba(201,164,85,0.08); --state-active: rgba(201,164,85,0.15);
   }
-  body.theme-classy header { background: #0B0D17; border-bottom: 1px solid #2A2D45; }
-  body.theme-classy .table-card::before { background: linear-gradient(90deg, #C8A84B, #E8C870, #C8A84B); }
-  body.theme-classy .add-btn { background: #C8A84B; box-shadow: 0 2px 8px rgba(200,168,75,0.3); }
-  body.theme-classy .stat { border-left: 3px solid #C8A84B !important; border-radius: 4px !important; }
-  body.theme-classy .filter-btn.active { background: #C8A84B; border-color: #C8A84B; }
+  body.theme-classy header { background: #0A0C16; border-bottom: 1px solid #2A2D45; }
+  body.theme-classy .logo-text { font-family: Georgia, 'Times New Roman', serif; }
+  body.theme-classy .table-card::before { background: linear-gradient(90deg, #C9A455, #E0C078, #C9A455); }
+  body.theme-classy .add-btn { background: #C9A455; box-shadow: 0 2px 8px rgba(201,164,85,0.3); }
+  body.theme-classy .stat { border-left: 3px solid #C9A455 !important; border-radius: 4px !important; }
+  body.theme-classy .filter-btn.active { background: #C9A455; border-color: #C9A455; }
 
   /* ══════════════════════════════════════════════════════════════
      THEME: GLASS — frosted glass, blurred surfaces, translucent
   ════════════════════════════════════════════════════════════════ */
   body.theme-glass {
-    --bg: #0A0A1A;
-    --surface: rgba(255,255,255,0.05); --surface2: rgba(255,255,255,0.08); --surface3: rgba(255,255,255,0.12);
-    --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.2);
-    --text: #F0F4FF; --text2: #A0AACC; --text3: #5A6480;
-    --accent: #818CF8; --accent2: #C084FC; --accent-light: rgba(129,140,248,0.2);
-    --green: #34D399; --green-light: rgba(52,211,153,0.15);
-    --amber: #FBBF24; --amber-light: rgba(251,191,36,0.15);
-    --red: #F87171; --red-light: rgba(248,113,113,0.15);
-    --purple: #C084FC; --radius: 16px; --radius-lg: 20px; --radius-xl: 28px;
+    --bg: #120E0A;
+    --surface: rgba(255,245,230,0.05); --surface2: rgba(255,245,230,0.08); --surface3: rgba(255,245,230,0.12);
+    --border: rgba(255,245,230,0.12); --border2: rgba(255,245,230,0.2);
+    --text: #F5EDE0; --text2: #C4B8A0; --text3: #6A5F50;
+    --accent: #C9915A; --accent2: #E0B87A; --accent-light: rgba(201,145,90,0.2);
+    --green: #7FBF8A; --green-light: rgba(127,191,138,0.15);
+    --amber: #E0B54E; --amber-light: rgba(224,181,78,0.15);
+    --red: #E08070; --red-light: rgba(224,128,112,0.15);
+    --purple: #A66B3D; --radius: 16px; --radius-lg: 20px; --radius-xl: 28px;
     --shadow: 0 8px 32px rgba(0,0,0,0.4); --shadow-lg: 0 16px 48px rgba(0,0,0,0.6);
-    --state-hover: rgba(129,140,248,0.1);
+    --state-hover: rgba(201,145,90,0.1);
   }
-  body.theme-glass { background: radial-gradient(ellipse at 20% 50%, #1a1060 0%, #0A0A1A 60%) !important; }
-  body.theme-glass header { background: rgba(15,15,35,0.7) !important; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  body.theme-glass { background: radial-gradient(ellipse at 20% 50%, #3A2410 0%, #120E0A 60%) !important; }
+  body.theme-glass header { background: rgba(20,15,10,0.7) !important; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,245,230,0.1); }
   body.theme-glass .stat, body.theme-glass .table-card, body.theme-glass .chart-card, body.theme-glass .widget-card {
-    background: rgba(255,255,255,0.05) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,245,230,0.05) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255,245,230,0.1) !important;
   }
-  body.theme-glass .modal { background: rgba(20,20,40,0.85) !important; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15) !important; }
+  body.theme-glass .modal { background: rgba(28,20,14,0.85) !important; backdrop-filter: blur(20px); border: 1px solid rgba(255,245,230,0.15) !important; }
 
   /* ══════════════════════════════════════════════════════════════
      THEME: RETRO — terminal green, monospace feel
@@ -1913,23 +1953,23 @@
   body.theme-retro {
     --bg: #0A0F0A; --surface: #0D150D; --surface2: #111C11; --surface3: #162216;
     --border: #1E3A1E; --border2: #2A5A2A;
-    --text: #33FF33; --text2: #22BB22; --text3: #156615;
-    --accent: #33FF33; --accent2: #66FF66; --accent-light: rgba(51,255,51,0.12);
+    --text: #3ADC6E; --text2: #22BB22; --text3: #156615;
+    --accent: #3ADC6E; --accent2: #6AFF9A; --accent-light: rgba(58,220,110,0.12);
     --accent-dark: #22BB22;
-    --green: #33FF33; --green-light: rgba(51,255,51,0.12);
-    --amber: #FFFF33; --amber-light: rgba(255,255,51,0.12);
-    --red: #FF3333; --red-light: rgba(255,51,51,0.12);
+    --green: #3ADC6E; --green-light: rgba(58,220,110,0.12);
+    --amber: #E8E830; --amber-light: rgba(232,232,48,0.12);
+    --red: #E84040; --red-light: rgba(232,64,64,0.12);
     --purple: #33FFFF; --radius: 2px; --radius-lg: 4px; --radius-xl: 4px;
-    --shadow: 0 0 20px rgba(51,255,51,0.15); --shadow-lg: 0 0 40px rgba(51,255,51,0.2);
-    --state-hover: rgba(51,255,51,0.08);
+    --shadow: 0 0 20px rgba(58,220,110,0.15); --shadow-lg: 0 0 40px rgba(58,220,110,0.2);
+    --state-hover: rgba(58,220,110,0.08);
   }
   body.theme-retro { font-family: 'JetBrains Mono', monospace !important; }
-  body.theme-retro header { background: #050A05 !important; border-bottom: 1px solid #1E3A1E; box-shadow: 0 0 20px rgba(51,255,51,0.1); }
-  body.theme-retro .table-card::before { background: #33FF33; }
-  body.theme-retro .add-btn { background: transparent !important; border: 1px solid #33FF33 !important; color: #33FF33 !important; box-shadow: 0 0 12px rgba(51,255,51,0.3) !important; border-radius: 2px !important; }
+  body.theme-retro header { background: #050A05 !important; border-bottom: 1px solid #1E3A1E; box-shadow: 0 0 20px rgba(58,220,110,0.1); }
+  body.theme-retro .table-card::before { background: #3ADC6E; }
+  body.theme-retro .add-btn { background: transparent !important; border: 1px solid #3ADC6E !important; color: #3ADC6E !important; box-shadow: 0 0 12px rgba(58,220,110,0.3) !important; border-radius: 2px !important; }
   body.theme-retro .badge { border-radius: 2px !important; border: 1px solid currentColor; background: transparent !important; }
   body.theme-retro .stat { border: 1px solid #1E3A1E !important; border-radius: 2px !important; }
-  body.theme-retro .stat::before { background: #33FF33 !important; }
+  body.theme-retro .stat::before { background: #3ADC6E !important; }
 
   /* ══════════════════════════════════════════════════════════════
      THEME: SHARP — high contrast, angular, bold
@@ -1938,24 +1978,24 @@
     --bg: #000000; --surface: #0A0A0A; --surface2: #141414; --surface3: #1E1E1E;
     --border: #2A2A2A; --border2: #3A3A3A;
     --text: #FFFFFF; --text2: #888888; --text3: #444444;
-    --accent: #FF2D55; --accent2: #FF6B35; --accent-light: rgba(255,45,85,0.15);
-    --accent-dark: #CC0033;
+    --accent: #E8102A; --accent2: #FF4530; --accent-light: rgba(232,16,42,0.15);
+    --accent-dark: #B8000F;
     --green: #30D158; --green-light: rgba(48,209,88,0.12);
     --amber: #FFD60A; --amber-light: rgba(255,214,10,0.12);
-    --red: #FF453A; --red-light: rgba(255,69,58,0.12);
+    --red: #E8453A; --red-light: rgba(232,69,58,0.12);
     --purple: #BF5AF2; --radius: 0px; --radius-lg: 0px; --radius-xl: 0px;
     --shadow: none; --shadow-lg: none;
     --state-hover: rgba(255,255,255,0.05);
   }
-  body.theme-sharp header { background: #000 !important; border-bottom: 2px solid #FF2D55 !important; box-shadow: none; }
-  body.theme-sharp .table-card::before { background: #FF2D55; height: 2px; }
-  body.theme-sharp .add-btn { background: #FF2D55 !important; border-radius: 0 !important; box-shadow: none !important; }
+  body.theme-sharp header { background: #000 !important; border-bottom: 2px solid #E8102A !important; box-shadow: none; }
+  body.theme-sharp .table-card::before { background: #E8102A; height: 2px; }
+  body.theme-sharp .add-btn { background: #E8102A !important; border-radius: 0 !important; box-shadow: none !important; }
   body.theme-sharp .stat { border: 1px solid #2A2A2A !important; border-radius: 0 !important; }
-  body.theme-sharp .stat::before { background: #FF2D55; }
+  body.theme-sharp .stat::before { background: #E8102A; }
   body.theme-sharp .badge { border-radius: 0 !important; }
   body.theme-sharp .filter-btn, body.theme-sharp .view-toggle-btn { border-radius: 0 !important; }
-  body.theme-sharp .modal { border-radius: 0 !important; border: 2px solid #FF2D55 !important; }
-  body.theme-sharp .filter-btn.active { background: #FF2D55 !important; border-color: #FF2D55 !important; }
+  body.theme-sharp .modal { border-radius: 0 !important; border: 2px solid #E8102A !important; }
+  body.theme-sharp .filter-btn.active { background: #E8102A !important; border-color: #E8102A !important; }
 
   /* ══════════════════════════════════════════════════════════════
      THEME: OCEAN — deep sea blues, teal accents
@@ -1964,20 +2004,20 @@
     --bg: #020B18; --surface: #051525; --surface2: #0A1F35; --surface3: #0F2A47;
     --border: #153560; --border2: #1E4880;
     --text: #B8D4F0; --text2: #6A9BC4; --text3: #2D5A8A;
-    --accent: #0EA5E9; --accent2: #38BDF8; --accent-light: rgba(14,165,233,0.15);
-    --accent-dark: #0284C7;
+    --accent: #1487A8; --accent2: #2DD4BF; --accent-light: rgba(20,135,168,0.15);
+    --accent-dark: #0C6580;
     --green: #2DD4BF; --green-light: rgba(45,212,191,0.12);
-    --amber: #F59E0B; --amber-light: rgba(245,158,11,0.12);
-    --red: #F87171; --red-light: rgba(248,113,113,0.12);
-    --purple: #818CF8; --radius: 10px; --radius-lg: 16px; --radius-xl: 20px;
+    --amber: #E0A020; --amber-light: rgba(224,160,32,0.12);
+    --red: #E85D50; --red-light: rgba(232,93,80,0.12);
+    --purple: #7C8CE0; --radius: 10px; --radius-lg: 16px; --radius-xl: 20px;
     --shadow: 0 2px 12px rgba(0,20,60,0.6); --shadow-lg: 0 8px 32px rgba(0,20,60,0.8);
-    --state-hover: rgba(14,165,233,0.08);
+    --state-hover: rgba(20,135,168,0.08);
   }
   body.theme-ocean { background: radial-gradient(ellipse at 50% 0%, #051525 0%, #020B18 70%) !important; }
   body.theme-ocean header { background: rgba(2,11,24,0.95) !important; border-bottom: 1px solid #153560; }
-  body.theme-ocean .table-card::before { background: linear-gradient(90deg, #0EA5E9, #2DD4BF, #0EA5E9); }
-  body.theme-ocean .add-btn { background: #0EA5E9 !important; box-shadow: 0 4px 16px rgba(14,165,233,0.4) !important; }
-  body.theme-ocean .filter-btn.active { background: #0EA5E9 !important; border-color: #0EA5E9 !important; }
+  body.theme-ocean .table-card::before { background: linear-gradient(90deg, #1487A8, #2DD4BF, #1487A8); }
+  body.theme-ocean .add-btn { background: #1487A8 !important; box-shadow: 0 4px 16px rgba(20,135,168,0.4) !important; }
+  body.theme-ocean .filter-btn.active { background: #1487A8 !important; border-color: #1487A8 !important; }
 
   /* ══════════════════════════════════════════════════════════════
      THEME: ROSE — soft pink/rose, elegant feminine
@@ -1985,45 +2025,45 @@
   body.theme-rose {
     --bg: #1A0A12; --surface: #251020; --surface2: #301528; --surface3: #3C1C32;
     --border: #4A2040; --border2: #602A55;
-    --text: #F8D8E8; --text2: #C090A8; --text3: #7A4560;
-    --accent: #F472B6; --accent2: #FB7185; --accent-light: rgba(244,114,182,0.15);
-    --accent-dark: #E11D87;
-    --green: #34D399; --green-light: rgba(52,211,153,0.12);
-    --amber: #FBBF24; --amber-light: rgba(251,191,36,0.12);
-    --red: #FB7185; --red-light: rgba(251,113,133,0.12);
-    --purple: #C084FC; --radius: 14px; --radius-lg: 20px; --radius-xl: 28px;
+    --text: #F2DCE4; --text2: #B888A0; --text3: #7A4560;
+    --accent: #C06B85; --accent2: #D98FA3; --accent-light: rgba(192,107,133,0.15);
+    --accent-dark: #9C4F68;
+    --green: #6FBF9A; --green-light: rgba(111,191,154,0.12);
+    --amber: #D4A855; --amber-light: rgba(212,168,85,0.12);
+    --red: #C4645A; --red-light: rgba(196,100,90,0.12);
+    --purple: #A480C0; --radius: 14px; --radius-lg: 20px; --radius-xl: 28px;
     --shadow: 0 2px 12px rgba(100,0,50,0.4); --shadow-lg: 0 8px 32px rgba(100,0,50,0.6);
-    --state-hover: rgba(244,114,182,0.08);
+    --state-hover: rgba(192,107,133,0.08);
   }
   body.theme-rose header { background: #1A0A12 !important; border-bottom: 1px solid #4A2040; }
-  body.theme-rose .table-card::before { background: linear-gradient(90deg, #F472B6, #FB7185, #C084FC); }
-  body.theme-rose .add-btn { background: #F472B6 !important; box-shadow: 0 4px 16px rgba(244,114,182,0.4) !important; }
-  body.theme-rose .filter-btn.active { background: #F472B6 !important; border-color: #F472B6 !important; }
+  body.theme-rose .table-card::before { background: linear-gradient(90deg, #C06B85, #D98FA3, #A480C0); }
+  body.theme-rose .add-btn { background: #C06B85 !important; box-shadow: 0 4px 16px rgba(192,107,133,0.4) !important; }
+  body.theme-rose .filter-btn.active { background: #C06B85 !important; border-color: #C06B85 !important; }
   body.theme-rose .stat { border-radius: 20px !important; }
 
   /* ── Widget tonal backgrounds — theme dependent ─────────────── */
 
-  /* Default dark theme */
+  /* Default (ledger) — ties back to the DUE (burgundy) / PAID (gold) stamp colors */
   .widget-upcoming {
-    background: color-mix(in srgb, var(--surface) 92%, #0EA5E9 8%) !important;
-    border-color: rgba(14,165,233,0.18) !important;
+    background: color-mix(in srgb, var(--surface) 92%, #A23B4E 8%) !important;
+    border-color: rgba(162,59,78,0.18) !important;
   }
-  .widget-upcoming .widget-hd { border-bottom-color: rgba(14,165,233,0.15) !important; }
-  .widget-upcoming .widget-title { color: #60C8F0 !important; }
+  .widget-upcoming .widget-hd { border-bottom-color: rgba(162,59,78,0.15) !important; }
+  .widget-upcoming .widget-title { color: #D98A9A !important; }
 
   .widget-stats {
-    background: color-mix(in srgb, var(--surface) 92%, #8B5CF6 8%) !important;
-    border-color: rgba(139,92,246,0.18) !important;
+    background: color-mix(in srgb, var(--surface) 92%, #C9A455 8%) !important;
+    border-color: rgba(201,164,85,0.18) !important;
   }
-  .widget-stats .widget-hd { border-bottom-color: rgba(139,92,246,0.15) !important; }
-  .widget-stats .widget-title { color: #A78BFA !important; }
+  .widget-stats .widget-hd { border-bottom-color: rgba(201,164,85,0.15) !important; }
+  .widget-stats .widget-title { color: #E4C87F !important; }
 
   .widget-activity {
-    background: color-mix(in srgb, var(--surface) 92%, #10B981 8%) !important;
-    border-color: rgba(16,185,129,0.18) !important;
+    background: color-mix(in srgb, var(--surface) 92%, #6B9B5E 8%) !important;
+    border-color: rgba(107,155,94,0.18) !important;
   }
-  .widget-activity .widget-hd { border-bottom-color: rgba(16,185,129,0.15) !important; }
-  .widget-activity .widget-title { color: #4ADE80 !important; }
+  .widget-activity .widget-hd { border-bottom-color: rgba(107,155,94,0.15) !important; }
+  .widget-activity .widget-title { color: #9BC088 !important; }
 
   /* Light theme — more pastel tints */
   body.light .widget-upcoming {
@@ -2044,31 +2084,31 @@
   }
   body.light .widget-activity .widget-title { color: #059669 !important; }
 
-  /* Dim theme — warm tints */
+  /* Dim theme — copper tints, drawn from its own accent/amber/red */
   body.dim .widget-upcoming {
-    background: color-mix(in srgb, var(--surface) 90%, #0EA5E9 10%) !important;
-    border-color: rgba(14,165,233,0.15) !important;
+    background: color-mix(in srgb, var(--surface) 90%, #C4956A 10%) !important;
+    border-color: rgba(196,149,106,0.15) !important;
   }
   body.dim .widget-stats {
-    background: color-mix(in srgb, var(--surface) 90%, #C8A84B 10%) !important;
-    border-color: rgba(200,168,75,0.15) !important;
+    background: color-mix(in srgb, var(--surface) 90%, #E8B84B 10%) !important;
+    border-color: rgba(232,184,75,0.15) !important;
   }
-  body.dim .widget-stats .widget-title { color: #E8C870 !important; }
+  body.dim .widget-stats .widget-title { color: #F0C868 !important; }
   body.dim .widget-activity {
     background: color-mix(in srgb, var(--surface) 90%, #E87878 10%) !important;
     border-color: rgba(232,120,120,0.15) !important;
   }
   body.dim .widget-activity .widget-title { color: #F0A0A0 !important; }
 
-  /* Classy — navy gold tints */
+  /* Classy — navy gold tints, matched to its own refined gold/purple/green */
   body.theme-classy .widget-upcoming {
-    background: color-mix(in srgb, var(--surface) 90%, #C8A84B 10%) !important;
-    border-color: rgba(200,168,75,0.2) !important;
+    background: color-mix(in srgb, var(--surface) 90%, #C9A455 10%) !important;
+    border-color: rgba(201,164,85,0.2) !important;
   }
-  body.theme-classy .widget-upcoming .widget-title { color: #E8C870 !important; }
+  body.theme-classy .widget-upcoming .widget-title { color: #E0C078 !important; }
   body.theme-classy .widget-stats {
-    background: color-mix(in srgb, var(--surface) 92%, #A888E8 8%) !important;
-    border-color: rgba(168,136,232,0.15) !important;
+    background: color-mix(in srgb, var(--surface) 92%, #9B7FC7 8%) !important;
+    border-color: rgba(155,127,199,0.15) !important;
   }
   body.theme-classy .widget-stats .widget-title { color: #C4A0F0 !important; }
   body.theme-classy .widget-activity {
@@ -2077,28 +2117,28 @@
   }
   body.theme-classy .widget-activity .widget-title { color: #7ECFA0 !important; }
 
-  /* Glass — transparent tints */
+  /* Glass — transparent tints, matched to its warm bronze/rust/sage palette */
   body.theme-glass .widget-upcoming {
-    background: rgba(14,165,233,0.08) !important;
-    border-color: rgba(14,165,233,0.2) !important;
+    background: rgba(201,145,90,0.08) !important;
+    border-color: rgba(201,145,90,0.2) !important;
   }
   body.theme-glass .widget-stats {
-    background: rgba(139,92,246,0.08) !important;
-    border-color: rgba(139,92,246,0.2) !important;
+    background: rgba(166,107,61,0.08) !important;
+    border-color: rgba(166,107,61,0.2) !important;
   }
   body.theme-glass .widget-activity {
-    background: rgba(16,185,129,0.08) !important;
-    border-color: rgba(16,185,129,0.2) !important;
+    background: rgba(127,191,138,0.08) !important;
+    border-color: rgba(127,191,138,0.2) !important;
   }
 
-  /* Retro — green tints */
+  /* Retro — phosphor green/amber/cyan tints */
   body.theme-retro .widget-upcoming {
-    background: rgba(51,255,51,0.04) !important;
-    border-color: rgba(51,255,51,0.15) !important;
+    background: rgba(58,220,110,0.04) !important;
+    border-color: rgba(58,220,110,0.15) !important;
   }
   body.theme-retro .widget-stats {
-    background: rgba(255,255,51,0.04) !important;
-    border-color: rgba(255,255,51,0.12) !important;
+    background: rgba(232,232,48,0.04) !important;
+    border-color: rgba(232,232,48,0.12) !important;
   }
   body.theme-retro .widget-stats .widget-title { color: #FFFF66 !important; }
   body.theme-retro .widget-activity {
@@ -2107,10 +2147,10 @@
   }
   body.theme-retro .widget-activity .widget-title { color: #66FFFF !important; }
 
-  /* Sharp — bold tints */
+  /* Sharp — bold tints, matched to its scarlet "red ink" accent */
   body.theme-sharp .widget-upcoming {
-    background: rgba(255,45,85,0.06) !important;
-    border-left: 3px solid #FF2D55 !important;
+    background: rgba(232,16,42,0.06) !important;
+    border-left: 3px solid #E8102A !important;
     border-top: none !important; border-right: none !important; border-bottom: none !important;
   }
   body.theme-sharp .widget-stats {
@@ -2126,10 +2166,10 @@
   }
   body.theme-sharp .widget-activity .widget-title { color: #30D158 !important; }
 
-  /* Ocean — sea tints */
+  /* Ocean — sea tints, matched to its deep teal-sapphire accent */
   body.theme-ocean .widget-upcoming {
-    background: color-mix(in srgb, var(--surface) 88%, #0EA5E9 12%) !important;
-    border-color: rgba(14,165,233,0.25) !important;
+    background: color-mix(in srgb, var(--surface) 88%, #1487A8 12%) !important;
+    border-color: rgba(20,135,168,0.25) !important;
   }
   body.theme-ocean .widget-stats {
     background: color-mix(in srgb, var(--surface) 88%, #2DD4BF 12%) !important;
@@ -2137,31 +2177,31 @@
   }
   body.theme-ocean .widget-stats .widget-title { color: #5EEEDD !important; }
   body.theme-ocean .widget-activity {
-    background: color-mix(in srgb, var(--surface) 90%, #818CF8 10%) !important;
-    border-color: rgba(129,140,248,0.2) !important;
+    background: color-mix(in srgb, var(--surface) 90%, #7C8CE0 10%) !important;
+    border-color: rgba(124,140,224,0.2) !important;
   }
   body.theme-ocean .widget-activity .widget-title { color: #A5B4FC !important; }
 
-  /* Rose — pink tints */
+  /* Rose — dusty rose/mauve tints, matched to its refined palette */
   body.theme-rose .widget-upcoming {
-    background: color-mix(in srgb, var(--surface) 88%, #F472B6 12%) !important;
-    border-color: rgba(244,114,182,0.2) !important;
+    background: color-mix(in srgb, var(--surface) 88%, #C06B85 12%) !important;
+    border-color: rgba(192,107,133,0.2) !important;
   }
-  body.theme-rose .widget-upcoming .widget-title { color: #F9A8D4 !important; }
+  body.theme-rose .widget-upcoming .widget-title { color: #E0A0B5 !important; }
   body.theme-rose .widget-stats {
-    background: color-mix(in srgb, var(--surface) 88%, #C084FC 12%) !important;
-    border-color: rgba(192,132,252,0.2) !important;
+    background: color-mix(in srgb, var(--surface) 88%, #A480C0 12%) !important;
+    border-color: rgba(164,128,192,0.2) !important;
   }
-  body.theme-rose .widget-stats .widget-title { color: #D8B4FE !important; }
+  body.theme-rose .widget-stats .widget-title { color: #D0B0E0 !important; }
   body.theme-rose .widget-activity {
-    background: color-mix(in srgb, var(--surface) 90%, #FB7185 10%) !important;
-    border-color: rgba(251,113,133,0.2) !important;
+    background: color-mix(in srgb, var(--surface) 90%, #C4645A 10%) !important;
+    border-color: rgba(196,100,90,0.2) !important;
   }
-  body.theme-rose .widget-activity .widget-title { color: #FCA5A5 !important; }
+  body.theme-rose .widget-activity .widget-title { color: #E0A090 !important; }
 
   /* Glass theme — solid backgrounds for swipe cards (can't be transparent) */
-  body.theme-glass .swipe-front { background: #1A1A35 !important; }
-  body.theme-glass .swipe-card { background: #1A1A35 !important; }
+  body.theme-glass .swipe-front { background: #241A10 !important; }
+  body.theme-glass .swipe-card { background: #241A10 !important; }
   body.theme-glass .mobile-cards { background: transparent; }
 
   /* All specialty themes — ensure swipe card front is solid */
@@ -2177,7 +2217,7 @@
     background: var(--surface) !important;
   }
   body.theme-glass .header-menu {
-    background: #1A1A35 !important;
+    background: #241A10 !important;
     border: 1px solid rgba(255,255,255,0.15) !important;
     backdrop-filter: blur(20px);
   }
@@ -2187,7 +2227,7 @@
   }
   body.theme-classy .header-menu  { background: #131520 !important; }
   body.theme-retro  .header-menu  { background: #0D150D !important; }
-  body.theme-sharp  .header-menu  { background: #0A0A0A !important; border: 1px solid #FF2D55 !important; }
+  body.theme-sharp  .header-menu  { background: #0A0A0A !important; border: 1px solid #E8102A !important; }
   body.theme-ocean  .header-menu  { background: #051525 !important; }
   body.theme-rose   .header-menu  { background: #251020 !important; }
   body.dim          .header-menu  { background: #1C1814 !important; }
@@ -2210,12 +2250,12 @@
   }
   body.theme-classy .filter-btn:hover {
     color: #F0E6CC !important;
-    border-color: #C8A84B !important;
+    border-color: #C9A455 !important;
     background: rgba(200,168,75,0.12) !important;
   }
   body.theme-classy .filter-btn.active {
-    background: #C8A84B !important;
-    border-color: #C8A84B !important;
+    background: #C9A455 !important;
+    border-color: #C9A455 !important;
     color: #0B0D17 !important; /* dark text on gold */
     font-weight: 700 !important;
   }
@@ -2223,7 +2263,7 @@
     color: #B8A882 !important;
   }
   body.theme-classy .view-toggle-btn.active {
-    background: #C8A84B !important;
+    background: #C9A455 !important;
     color: #0B0D17 !important;
     font-weight: 700 !important;
   }
@@ -2236,31 +2276,31 @@
     font-weight: 700 !important;
   }
   body.theme-classy .modal-save {
-    background: #C8A84B !important;
+    background: #C9A455 !important;
     color: #0B0D17 !important;
     font-weight: 700 !important;
   }
-  body.theme-classy .badge-pending  { color: #0B0D17 !important; background: #C8A84B !important; }
-  body.theme-classy .badge-returned { color: #0B0D17 !important; background: #5FB88A !important; }
-  body.theme-classy .swipe-action-btn.edit  { background: #3A3A8A !important; }
+  body.theme-classy .badge-pending  { color: #0A0C16 !important; background: #C9A455 !important; }
+  body.theme-classy .badge-returned { color: #0A0C16 !important; background: #5FB88A !important; }
+  body.theme-classy .swipe-action-btn.edit  { background: #9A7A28 !important; }
   body.theme-classy .upcoming-badge.ok      { color: #0B0D17 !important; background: #5FB88A !important; }
-  body.theme-classy .upcoming-badge.soon    { color: #0B0D17 !important; background: #C8A84B !important; }
+  body.theme-classy .upcoming-badge.soon    { color: #0B0D17 !important; background: #C9A455 !important; }
 
   /* Retro theme — fix button text too */
   body.theme-retro .filter-btn.active {
-    background: #33FF33 !important;
+    background: #3ADC6E !important;
     color: #050A05 !important;
-    border-color: #33FF33 !important;
+    border-color: #3ADC6E !important;
   }
   body.theme-retro .view-toggle-btn.active {
-    background: #33FF33 !important;
+    background: #3ADC6E !important;
     color: #050A05 !important;
   }
-  body.theme-retro .add-btn { color: #33FF33 !important; }
+  body.theme-retro .add-btn { color: #3ADC6E !important; }
   body.theme-retro .modal-save {
     background: transparent !important;
-    border: 1px solid #33FF33 !important;
-    color: #33FF33 !important;
+    border: 1px solid #3ADC6E !important;
+    color: #3ADC6E !important;
     border-radius: 2px !important;
   }
 
@@ -2276,12 +2316,12 @@
   }
   body.theme-ocean .filter-btn:hover {
     color: #B8D4F0 !important;
-    border-color: #0EA5E9 !important;
-    background: rgba(14,165,233,0.1) !important;
+    border-color: #1487A8 !important;
+    background: rgba(20,135,168,0.1) !important;
   }
   body.theme-ocean .filter-btn.active {
-    background: #0EA5E9 !important;
-    border-color: #0EA5E9 !important;
+    background: #1487A8 !important;
+    border-color: #1487A8 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
@@ -2289,16 +2329,16 @@
     color: #6A9BC4 !important;
   }
   body.theme-ocean .view-toggle-btn.active {
-    background: #0EA5E9 !important;
+    background: #1487A8 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
   body.theme-ocean .view-toggle-btn:hover:not(.active) {
-    background: rgba(14,165,233,0.1) !important;
+    background: rgba(20,135,168,0.1) !important;
     color: #B8D4F0 !important;
   }
   body.theme-ocean .add-btn { color: #FFFFFF !important; font-weight: 700 !important; }
-  body.theme-ocean .modal-save { background: #0EA5E9 !important; color: #FFFFFF !important; font-weight: 700 !important; }
+  body.theme-ocean .modal-save { background: #1487A8 !important; color: #FFFFFF !important; font-weight: 700 !important; }
   body.theme-ocean .badge-pending  { color: #FFFFFF !important; }
   body.theme-ocean .badge-returned { color: #FFFFFF !important; }
 
@@ -2309,23 +2349,23 @@
   }
   body.theme-rose .filter-btn:hover {
     color: #F8D8E8 !important;
-    border-color: #F472B6 !important;
+    border-color: #C06B85 !important;
     background: rgba(244,114,182,0.1) !important;
   }
   body.theme-rose .filter-btn.active {
-    background: #F472B6 !important;
-    border-color: #F472B6 !important;
+    background: #C06B85 !important;
+    border-color: #C06B85 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
   body.theme-rose .view-toggle-btn { color: #C090A8 !important; }
   body.theme-rose .view-toggle-btn.active {
-    background: #F472B6 !important;
+    background: #C06B85 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
   body.theme-rose .add-btn { color: #FFFFFF !important; font-weight: 700 !important; }
-  body.theme-rose .modal-save { background: #F472B6 !important; color: #FFFFFF !important; font-weight: 700 !important; }
+  body.theme-rose .modal-save { background: #C06B85 !important; color: #FFFFFF !important; font-weight: 700 !important; }
 
   /* Glass theme — same fix */
   body.theme-glass .filter-btn {
@@ -2334,23 +2374,23 @@
   }
   body.theme-glass .filter-btn:hover {
     color: #F0F4FF !important;
-    border-color: #818CF8 !important;
+    border-color: #C9915A !important;
     background: rgba(129,140,248,0.12) !important;
   }
   body.theme-glass .filter-btn.active {
-    background: #818CF8 !important;
-    border-color: #818CF8 !important;
+    background: #C9915A !important;
+    border-color: #C9915A !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
   body.theme-glass .view-toggle-btn { color: #A0AACC !important; }
   body.theme-glass .view-toggle-btn.active {
-    background: #818CF8 !important;
+    background: #C9915A !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
   }
   body.theme-glass .add-btn { color: #FFFFFF !important; font-weight: 700 !important; }
-  body.theme-glass .modal-save { background: #818CF8 !important; color: #FFFFFF !important; font-weight: 700 !important; }
+  body.theme-glass .modal-save { background: #C9915A !important; color: #FFFFFF !important; font-weight: 700 !important; }
 
   /* Notes history log */
   .note-log-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
@@ -2379,7 +2419,7 @@
     <span class="header-date" id="headerTime" style="color:rgba(255,255,255,0.55);letter-spacing:0.04em"></span>
     <!-- Utility buttons inside header-utils (hidden, accessed via hamburger) -->
     <div class="header-utils">
-      <button class="sheets-sync-btn" id="sheetsSyncBtn" onclick="syncToSheets()" title="Sync to Google Sheets">📊 <span class="sync-label">Sync Sheet</span></button>
+      <button class="sheets-sync-btn" id="sheetsSyncBtn" onclick="syncToSheets()" title="Sync to Google Sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> <span class="sync-label">Sync Sheet</span></button>
       <select class="currency-select" id="currencySelect" onchange="changeCurrency(this.value)" title="Currency">
         <option value="INR">₹ INR</option>
         <option value="USD">$ USD</option>
@@ -2389,10 +2429,10 @@
         <option value="SGD">S$ SGD</option>
       </select>
       <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-      <button class="backup-btn" onclick="exportBackup()" title="Backup data">💾</button>
-      <button class="backup-btn" onclick="document.getElementById('restoreFile').click()" title="Restore backup">📂</button>
+      <button class="backup-btn" onclick="exportBackup()" title="Backup data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+      <button class="backup-btn" onclick="document.getElementById('restoreFile').click()" title="Restore backup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></button>
       <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="importBackup(event)">
-      <button class="chpw-btn" onclick="openChangePassword()" title="Change Password">🔑</button>
+      <button class="chpw-btn" onclick="openChangePassword()" title="Change Password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg></button>
     </div>
 
     <!-- Dropdown menu (mobile only) -->
@@ -2403,7 +2443,7 @@
       </button>
       <div class="menu-separator"></div>
       <div class="menu-item">
-        <span class="menu-icon">💱</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
         <select id="currencySelectMobile" onchange="changeCurrency(this.value);closeHamburger()">
           <option value="INR">₹ INR</option>
           <option value="USD">$ USD</option>
@@ -2415,29 +2455,29 @@
       </div>
       <div class="menu-separator"></div>
       <button class="menu-item" onclick="openBorrowersList();closeHamburger()">
-        <span class="menu-icon">👥</span> Borrowers List
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Borrowers List
       </button>
       <div class="menu-separator"></div>
       <button class="menu-item" onclick="syncToSheets();closeHamburger()">
-        <span class="menu-icon">📊</span> Sync to Google Sheet
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span> Sync to Google Sheet
       </button>
       <button class="menu-item" onclick="exportBackup();closeHamburger()">
-        <span class="menu-icon">💾</span> Backup data
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Backup data
       </button>
       <button class="menu-item" onclick="document.getElementById('restoreFile').click();closeHamburger()">
-        <span class="menu-icon">📂</span> Restore backup
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> Restore backup
       </button>
       <div class="menu-separator"></div>
       <button class="menu-item" onclick="openChangePassword();closeHamburger()">
-        <span class="menu-icon">🔑</span> Change password
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg></span> Change password
       </button>
       <div class="menu-separator"></div>
       <button class="menu-item" onclick="openLoanCalc();closeHamburger()">
-        <span class="menu-icon">🧮</span> Loan Calculator
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg></span> Loan Calculator
       </button>
       <div class="menu-separator"></div>
       <button class="menu-item" onclick="openAbout();closeHamburger()">
-        <span class="menu-icon">ℹ️</span> About
+        <span class="menu-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> About
       </button>
     </div>
 
@@ -2448,7 +2488,7 @@
     </button>
 
     <!-- Mobile: hamburger at far right -->
-    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleHamburger()" title="Menu">☰</button>
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleHamburger()" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   </div>
 </header>
 
@@ -2479,7 +2519,7 @@
 
   <div class="dashboard-panel" id="dashboardPanel" style="display:none">
     <div class="dashboard-panel-title">
-      <span>📊 Monthly Overview</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Monthly Overview</span>
       <button class="filter-btn" onclick="toggleDashboard()" id="dashToggleBtn" style="font-size:11px;padding:4px 10px">Hide</button>
     </div>
     <div id="dashboardContent"></div>
@@ -2488,10 +2528,10 @@
   <!-- Bulk action bar -->
   <div class="bulk-bar" id="bulkBar">
     <span class="bulk-count" id="bulkCount">0 selected</span>
-    <button class="bulk-btn green" onclick="bulkMarkReturned()">✓ Mark Returned</button>
-    <button class="bulk-btn" onclick="bulkArchive()">🗄 Archive</button>
-    <button class="bulk-btn danger" onclick="bulkDelete()">🗑 Delete</button>
-    <button class="bulk-btn" onclick="clearSelection()">✕ Clear</button>
+    <button class="bulk-btn green" onclick="bulkMarkReturned()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg> Mark Returned</button>
+    <button class="bulk-btn" onclick="bulkArchive()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive</button>
+    <button class="bulk-btn danger" onclick="bulkDelete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
+    <button class="bulk-btn" onclick="clearSelection()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear</button>
   </div>
 
   <div class="content-with-sidebar">
@@ -2500,9 +2540,9 @@
   <div class="section-header">
     <span class="section-title">All entries</span>
     <div style="display:flex;gap:8px;align-items:center">
-      <button class="filter-btn" onclick="exportExcel()" style="font-size:11px;padding:5px 12px">📥 Excel</button>
-      <button class="filter-btn" onclick="exportPDF()" style="font-size:11px;padding:5px 12px">📄 PDF</button>
-      <button class="filter-btn" onclick="toggleDashboard()" style="font-size:11px;padding:5px 12px">📊 Overview</button>
+      <button class="filter-btn" onclick="exportExcel()" style="font-size:11px;padding:5px 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel</button>
+      <button class="filter-btn" onclick="exportPDF()" style="font-size:11px;padding:5px 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF</button>
+      <button class="filter-btn" onclick="toggleDashboard()" style="font-size:11px;padding:5px 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Overview</button>
     </div>
   </div>
   <div class="search-filter-bar">
@@ -2510,7 +2550,7 @@
     <div class="view-toggle">
       <button class="view-toggle-btn active all" id="vtAll" onclick="setView('all')">All <span class="toggle-count" id="cntAll">0</span></button>
       <button class="view-toggle-btn active-tab" id="vtActive" onclick="setView('active')">Active <span class="toggle-count" id="cntActive">0</span></button>
-      <button class="view-toggle-btn archived" id="vtArchived" onclick="setView('archived')">🗄 Archived <span class="toggle-count" id="cntArchived">0</span></button>
+      <button class="view-toggle-btn archived" id="vtArchived" onclick="setView('archived')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archived <span class="toggle-count" id="cntArchived">0</span></button>
     </div>
     <!-- Status sub-filter (hidden in archived view) -->
     <div id="statusFilters" style="display:flex;gap:6px;flex-wrap:wrap">
@@ -2597,7 +2637,7 @@
     <!-- Widget 1: Upcoming Payments -->
     <div class="widget-card widget-upcoming">
       <div class="widget-hd">
-        <span class="widget-title">📅 Upcoming Payments</span>
+        <span class="widget-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Upcoming Payments</span>
         <span style="font-size:10px;color:var(--text3)" id="upcomingSubtitle">Next 30 days</span>
       </div>
       <div class="widget-body" id="upcomingWidget"></div>
@@ -2606,7 +2646,7 @@
     <!-- Widget: At Risk (overdue borrowers) -->
     <div class="widget-card widget-upcoming">
       <div class="widget-hd">
-        <span class="widget-title">⚠️ At Risk</span>
+        <span class="widget-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> At Risk</span>
         <span style="font-size:10px;color:var(--text3)">Overdue borrowers</span>
       </div>
       <div class="widget-body" id="atRiskWidget"></div>
@@ -2614,14 +2654,14 @@
 
     <!-- Widget 2: Quick Stats -->
     <div class="widget-card widget-stats">
-      <div class="widget-hd"><span class="widget-title">📊 Quick Stats</span></div>
+      <div class="widget-hd"><span class="widget-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Quick Stats</span></div>
       <div class="widget-body" id="quickStatsWidget"></div>
     </div>
 
     <!-- Widget 3: Activity Timeline -->
     <div class="widget-card widget-activity">
       <div class="widget-hd">
-        <span class="widget-title">⚡ Recent Activity</span>
+        <span class="widget-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Recent Activity</span>
         <span style="font-size:10px;color:var(--text3)">Latest 8</span>
       </div>
       <div class="widget-body" id="activityWidget" style="padding:4px 16px 12px"></div>
@@ -2638,7 +2678,7 @@
   <div class="modal">
     <div class="modal-hd">
       <span class="modal-title" id="modalTitle">New lending entry</span>
-      <button class="close-btn" onclick="closeModal()">✕</button>
+      <button class="close-btn" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <input type="hidden" id="fEditId" value="">
     <div class="field">
@@ -2721,14 +2761,14 @@
         <input id="fPhotoLink" type="url" placeholder="Paste a shareable Google Drive image link here" oninput="clearUploadedPhoto('f')">
         <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
           <label style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">
-            📷 Or upload directly
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Or upload directly
             <input type="file" accept="image/*" id="fPhotoUpload" style="display:none" onchange="handlePhotoUpload(event,'f')">
           </label>
           <img id="fPhotoPreview" style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border2)">
           <button type="button" id="fPhotoRemoveBtn" onclick="clearUploadedPhoto('f')" style="display:none;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline">Remove</button>
         </div>
       </div>
-      <div id="profileMatchBanner" style="display:none;margin-top:8px;padding:10px 12px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);border-radius:var(--radius);font-size:12px;color:var(--accent)"></div>
+      <div id="profileMatchBanner" style="display:none;margin-top:8px;padding:10px 12px;background:rgba(162,59,78,0.1);border:1px solid rgba(162,59,78,0.3);border-radius:var(--radius);font-size:12px;color:var(--accent)"></div>
     </div>
     <div class="field-row">
       <div class="field">
@@ -2895,7 +2935,7 @@
   <div class="modal">
     <div class="modal-hd">
       <span class="modal-title" id="quickTopupTitle">Log Top-up</span>
-      <button class="close-btn" onclick="closeQuickTopup()">✕</button>
+      <button class="close-btn" onclick="closeQuickTopup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div style="margin-bottom:14px;padding:10px 12px;background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);font-size:12px;color:var(--amber)">
       ＋ Top-up adds extra borrowing on top of the existing loan. New EMI is recalculated from the top-up date.
@@ -2954,7 +2994,7 @@
         <div class="schedule-name" id="schedName">Loan Schedule</div>
         <div class="schedule-meta" id="schedMeta"></div>
       </div>
-      <button class="close-btn" onclick="closeSchedule()" style="flex-shrink:0">✕</button>
+      <button class="close-btn" onclick="closeSchedule()" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="schedule-body">
       <div class="schedule-summary-grid" id="schedSummary"></div>
@@ -3118,7 +3158,7 @@
   <div class="modal docs-modal">
     <div class="modal-hd">
       <span class="modal-title" id="docsModalTitle">Documents</span>
-      <button class="close-btn" onclick="closeDocs()">✕</button>
+      <button class="close-btn" onclick="closeDocs()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
 
     <!-- Document list -->
@@ -3126,7 +3166,7 @@
 
     <!-- Add new document form -->
     <div class="doc-add-form">
-      <div class="doc-add-title">📎 Add Document</div>
+      <div class="doc-add-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Add Document</div>
       <div class="field">
         <label>Document Name</label>
         <input id="docName" type="text" placeholder="e.g. Loan Agreement, ID Proof, Cheque Photo">
@@ -3136,7 +3176,7 @@
         <input id="docLink" type="url" placeholder="Paste shareable Google Drive link here">
       </div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5">
-        💡 In Google Drive: right-click file → Share → Anyone with the link → Copy link
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> In Google Drive: right-click file → Share → Anyone with the link → Copy link
       </div>
       <button class="modal-save" style="margin-top:0" onclick="addDocument()">Add Document</button>
     </div>
@@ -3146,11 +3186,11 @@
 <!-- Share Card Modal -->
 <div class="overlay" id="shareCardOverlay" onclick="shareCardBgClick(event)">
   <div class="modal" style="max-width:420px;background:transparent;border:none;box-shadow:none;padding:0">
-    <div id="shareCardInner" style="background:linear-gradient(135deg,#13162B 0%,#1A1D27 60%,#1A0F2E 100%);border-radius:20px;padding:28px;border:1px solid rgba(108,99,255,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+    <div id="shareCardInner" style="background:linear-gradient(135deg,#1E1712 0%,#1C1815 60%,#201812 100%);border-radius:20px;padding:28px;border:1px solid rgba(162,59,78,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.5)">
       <!-- Card content rendered by JS -->
     </div>
     <div style="display:flex;gap:10px;margin-top:14px;justify-content:center">
-      <button class="modal-save" style="max-width:180px" onclick="downloadShareCard()">💾 Download PNG</button>
+      <button class="modal-save" style="max-width:180px" onclick="downloadShareCard()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PNG</button>
       <button class="filter-btn" style="background:var(--surface);color:var(--text2)" onclick="closeShareCard()">Close</button>
     </div>
   </div>
@@ -3160,17 +3200,17 @@
 <div class="overlay" id="paymentsOverlay" onclick="paymentsOverlayClick(event)">
   <div class="modal" style="max-width:480px">
     <div class="modal-hd">
-      <span class="modal-title" id="paymentsTitle">💳 Payment History</span>
+      <span class="modal-title" id="paymentsTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment History</span>
       <div style="display:flex;align-items:center;gap:6px">
-        <button id="resendPaymentBtn" onclick="resendLastPaymentEmail()" title="Resend last payment email" style="display:none;background:var(--green);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation">📧 Resend Payment</button>
-        <button id="resendLoanBtn" onclick="resendNewLoanEmail()" title="Resend new loan email" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation">📧 Resend Loan</button>
-        <button class="close-btn" onclick="closePayments()">✕</button>
+        <button id="resendPaymentBtn" onclick="resendLastPaymentEmail()" title="Resend last payment email" style="display:none;background:var(--green);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-1px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Resend Payment</button>
+        <button id="resendLoanBtn" onclick="resendNewLoanEmail()" title="Resend new loan email" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;touch-action:manipulation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-1px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Resend Loan</button>
+        <button class="close-btn" onclick="closePayments()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>
     <!-- Remarks Log -->
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em">📝 Remarks Log</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> Remarks Log</div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:10px">
         <input id="noteLogInput" type="text" placeholder="e.g. Called, said will pay by 15th..." style="flex:1;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:12px;font-family:'Outfit',sans-serif">
@@ -3196,12 +3236,12 @@
 <!-- Loan Closed Celebration -->
 <div class="celebration-overlay" id="celebrationOverlay">
   <div class="celebration-box">
-    <div class="celebration-emoji">🎉</div>
+    <div class="celebration-seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6.2" stroke-width="1"/><path d="M8.3 12.3l2.4 2.4 5-5.4" stroke-width="2"/></svg></div>
     <div class="celebration-title">Loan Fully Settled!</div>
     <div class="celebration-sub" id="celebrationName"></div>
     <div class="celebration-amount" id="celebrationAmount"></div>
     <div class="celebration-sub" style="color:var(--text3);font-size:12px">has been fully returned. The record will be moved to Archived.</div>
-    <button class="celebration-btn" onclick="closeCelebration()">✓ Great, archive it!</button>
+    <button class="celebration-btn" onclick="closeCelebration()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg> Great, archive it!</button>
   </div>
 </div>
 
@@ -3209,8 +3249,8 @@
 <div class="overlay" id="profileEditOverlay" onclick="if(event.target===this)closeProfileEdit()">
   <div class="modal" style="max-width:420px">
     <div class="modal-hd">
-      <span class="modal-title">✎ Edit Profile</span>
-      <button class="close-btn" onclick="closeProfileEdit()">✕</button>
+      <span class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> Edit Profile</span>
+      <button class="close-btn" onclick="closeProfileEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:14px">
       Changes will apply to <strong id="profileEditCount" style="color:var(--accent)"></strong> record(s) for this person.
@@ -3255,7 +3295,7 @@
       <input type="url" id="pePhotoLink" placeholder="Paste a shareable Google Drive image link here" oninput="clearUploadedPhoto('pe')">
       <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
         <label style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">
-          📷 Or upload directly
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Or upload directly
           <input type="file" accept="image/*" id="pePhotoUpload" style="display:none" onchange="handlePhotoUpload(event,'pe')">
         </label>
         <img id="pePhotoPreview" style="display:none;width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border2)">
@@ -3269,7 +3309,7 @@
 <!-- About Modal -->
 <div class="overlay" id="aboutOverlay" onclick="aboutBgClick(event)">
   <div class="modal" style="max-width:360px;text-align:center">
-    <div style="font-size:48px;margin-bottom:12px">💰</div>
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--gold);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 12px;font-family:Georgia,'Times New Roman',serif">₹</div>
     <div style="font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em">LendingState · Lending Tracker</div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:24px;font-family:'JetBrains Mono',monospace">Your loans. Your terms. Your control.</div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;text-align:left">
@@ -3376,8 +3416,8 @@
 <div class="overlay" id="loanCalcOverlay" onclick="loanCalcBgClick(event)">
   <div class="modal" style="max-width:480px">
     <div class="modal-hd">
-      <span class="modal-title">🧮 Loan Calculator</span>
-      <button class="close-btn" onclick="closeLoanCalc()">✕</button>
+      <span class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg> Loan Calculator</span>
+      <button class="close-btn" onclick="closeLoanCalc()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
 
     <div class="field-row">
@@ -3494,7 +3534,7 @@
 <!-- Confirm Delete Dialog -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
-    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
     <div class="confirm-title">Delete this entry?</div>
     <div class="confirm-msg" id="confirmMsg">This will permanently remove the lending record. This action cannot be undone.</div>
     <div class="confirm-btns">
@@ -3507,11 +3547,11 @@
 <!-- First-time Password Setup Modal -->
 <div class="setup-overlay" id="setupOverlay">
   <div class="setup-box">
-    <div class="setup-icon">🔐</div>
+    <div class="setup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
     <div class="setup-title">Welcome! Set your password</div>
     <div class="setup-sub">No password found. Create one to protect your lending data. You'll need this every time you make changes.</div>
     <div class="setup-fields">
-      <div id="setupError" style="display:none;margin-bottom:12px;padding:10px 12px;background:var(--red-light);border:1px solid rgba(255,92,125,0.3);border-radius:var(--radius);font-size:13px;color:var(--red)"></div>
+      <div id="setupError" style="display:none;margin-bottom:12px;padding:10px 12px;background:var(--red-light);border:1px solid rgba(192,57,43,0.3);border-radius:var(--radius);font-size:13px;color:var(--red)"></div>
       <label class="chpw-field-label">New Password</label>
       <input class="chpw-input" id="setupPw" type="password" placeholder="Choose a password" autocomplete="new-password" oninput="updateSetupStrength()">
       <div class="chpw-strength" id="setupStrength"></div>
@@ -3526,10 +3566,10 @@
 <div class="overlay" id="chpwOverlay" onclick="chpwBgClick(event)">
   <div class="modal" style="max-width:420px">
     <div class="modal-hd">
-      <span class="modal-title">🔑 Change Password</span>
-      <button class="close-btn" onclick="closeChangePassword()">✕</button>
+      <span class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg> Change Password</span>
+      <button class="close-btn" onclick="closeChangePassword()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div id="chpwError" style="display:none;margin-bottom:14px;padding:10px 12px;background:var(--red-light);border:1px solid rgba(255,92,125,0.3);border-radius:var(--radius);font-size:13px;color:var(--red)"></div>
+    <div id="chpwError" style="display:none;margin-bottom:14px;padding:10px 12px;background:var(--red-light);border:1px solid rgba(192,57,43,0.3);border-radius:var(--radius);font-size:13px;color:var(--red)"></div>
     <div>
       <label class="chpw-field-label">Current Password</label>
       <input class="chpw-input" id="chpwCurrent" type="password" placeholder="Enter current password" autocomplete="current-password">
@@ -3550,7 +3590,7 @@
 <!-- Password Modal -->
 <div class="pw-overlay" id="pwOverlay">
   <div class="pw-box">
-    <div class="pw-icon">🔐</div>
+    <div class="pw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
     <div class="pw-title">Authentication required</div>
     <div class="pw-sub">Enter your password to make changes</div>
     <input class="pw-input" id="pwInput" type="password" placeholder="••••••••" autocomplete="off">
@@ -3572,8 +3612,8 @@
 <div class="overlay" id="borrowersListOverlay" onclick="borrowersListBgClick(event)">
   <div class="modal" style="max-width:640px;max-height:85vh;display:flex;flex-direction:column">
     <div class="modal-hd">
-      <span class="modal-title">👥 Borrowers List</span>
-      <button class="close-btn" onclick="closeBorrowersList()">✕</button>
+      <span class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Borrowers List</span>
+      <button class="close-btn" onclick="closeBorrowersList()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <input id="borrowersListSearch" type="text" placeholder="Search by name, phone, email…" oninput="renderBorrowersList()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;font-family:'Outfit',sans-serif;margin-bottom:14px">
     <div id="borrowersListBody" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px"></div>
@@ -3826,10 +3866,10 @@ function renderScheduleModal(r) {
   `;
 
   document.getElementById('scheduleTableBody').innerHTML = schedule.map(row => {
-    if (row.event) return `<tr class="event-row"><td colspan="8">📌 ${fmtDate(row.date)} — ${row.label}</td></tr>`;
-    const statusLabel = row.status === 'paid' ? '✓ Paid'
+    if (row.event) return `<tr class="event-row"><td colspan="8">${fmtDate(row.date)} — ${row.label}</td></tr>`;
+    const statusLabel = row.status === 'paid' ? "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" width=\"11\" height=\"11\" style=\"vertical-align:-1px\"><polyline points=\"20 6 9 17 4 12\"/></svg> Paid"
       : row.status === 'partial' ? `◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`
-      : row.status === 'overdue' ? '⚠ Overdue'
+      : row.status === 'overdue' ? "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" width=\"11\" height=\"11\" style=\"vertical-align:-1px\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"/><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"/></svg> Overdue"
       : row.status === 'current' ? '● Due Now' : '○ Upcoming';
     const statusColor = row.status === 'paid' ? 'var(--green)'
       : row.status === 'partial' ? 'var(--amber)'
@@ -4023,7 +4063,7 @@ function openDocs(id) {
     docsRecordId = id;
     const r = localData.find(x => x.id === id);
     if (!r) return;
-    document.getElementById('docsModalTitle').textContent = `📎 Documents — ${r.name}`;
+    document.getElementById('docsModalTitle').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Documents — ${r.name}`;
     document.getElementById('docName').value = '';
     document.getElementById('docLink').value = '';
     renderDocList(r);
@@ -4056,7 +4096,7 @@ function renderDocList(r) {
       </div>
       <div class="doc-item-actions">
         <button class="doc-open-btn" onclick="window.open('${doc.link}','_blank')">Open ↗</button>
-        <button class="doc-remove-btn" onclick="removeDocument(${i})">✕</button>
+        <button class="doc-remove-btn" onclick="removeDocument(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>
   `).join('');
@@ -4064,12 +4104,13 @@ function renderDocList(r) {
 
 function getDocIcon(name) {
   const n = (name || '').toLowerCase();
-  if (n.includes('agreement') || n.includes('contract')) return '📋';
-  if (n.includes('id') || n.includes('proof') || n.includes('aadhar') || n.includes('pan')) return '🪪';
-  if (n.includes('cheque') || n.includes('check')) return '🏦';
-  if (n.includes('receipt') || n.includes('payment')) return '🧾';
-  if (n.includes('photo') || n.includes('image') || n.includes('pic')) return '🖼️';
-  return '📄';
+  const svg = (p) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  if (n.includes('agreement') || n.includes('contract')) return svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>');
+  if (n.includes('id') || n.includes('proof') || n.includes('aadhar') || n.includes('pan')) return svg('<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><line x1="13" y1="10" x2="19" y2="10"/><line x1="13" y1="14" x2="19" y2="14"/>');
+  if (n.includes('cheque') || n.includes('check')) return svg('<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>');
+  if (n.includes('receipt') || n.includes('payment')) return svg('<path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/>');
+  if (n.includes('photo') || n.includes('image') || n.includes('pic')) return svg('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>');
+  return svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>');
 }
 
 function addDocument() {
@@ -4327,7 +4368,7 @@ function updateSetupStrength() {
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const colors = ["", "#FF5C7D", "#FFB547", "#FFB547", "#00D4AA", "#00D4AA"];
+  const colors = ["", "#C0392B", "#C99A3E", "#C99A3E", "#6B9B5E", "#6B9B5E"];
   const widths  = ["0%", "20%", "40%", "60%", "80%", "100%"];
   bar.style.width = widths[score];
   bar.style.background = colors[score];
@@ -4350,7 +4391,7 @@ async function applySetupPassword() {
   try {
     await savePassword(pw);
     document.getElementById("setupOverlay").classList.remove("open");
-    showToast("✅ Password set! You're all set.");
+    showToast("Password set! You're all set.");
     render(); // now load data
   } catch(e) {
     showErr("Failed to save password. Check your connection.");
@@ -4386,7 +4427,7 @@ function updateStrength() {
   if (/[A-Z]/.test(pw)) score++;
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const colors = ["", "#FF5C7D", "#FFB547", "#FFB547", "#00D4AA", "#00D4AA"];
+  const colors = ["", "#C0392B", "#C99A3E", "#C99A3E", "#6B9B5E", "#6B9B5E"];
   const widths  = ["0%", "20%", "40%", "60%", "80%", "100%"];
   bar.style.width = widths[score];
   bar.style.background = colors[score];
@@ -4414,7 +4455,7 @@ async function applyChangePassword() {
   try {
     await savePassword(newPw);
     closeChangePassword();
-    showToast("✅ Password updated successfully!");
+    showToast("Password updated successfully!");
   } catch(e) {
     showErr("Failed to save password. Check your connection and try again.");
     btn.textContent = "Update Password"; btn.disabled = false;
@@ -4455,8 +4496,8 @@ function setLoading(on) {
 function setSyncStatus(state) {
   const el = document.getElementById("syncStatus");
   if (state === "syncing") { el.textContent = "⟳ Syncing…"; el.style.color = "rgba(255,255,255,0.5)"; }
-  else if (state === "ok")  { el.textContent = "✓ Synced";   el.style.color = "#7FC765"; setTimeout(()=>{ if(el.textContent==="✓ Synced") el.textContent=""; }, 2500); }
-  else if (state === "err") { el.textContent = "⚠ Offline";  el.style.color = "#E8965A"; }
+  else if (state === "ok")  { el.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' width='11' height='11' style='vertical-align:-1px'><polyline points='20 6 9 17 4 12'/></svg> Synced";   el.style.color = "#7FC765"; setTimeout(()=>{ if(el.innerHTML.includes("Synced")) el.innerHTML=""; }, 2500); }
+  else if (state === "err") { el.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='11' height='11' style='vertical-align:-1px'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg> Offline";  el.style.color = "#E8965A"; }
 }
 
 // ── Multi-device write safety ────────────────────────────────────────────
@@ -4489,7 +4530,7 @@ function showConflictWarning() {
     popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px";
     popup.innerHTML = `
       <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
-        <div style="font-size:34px;text-align:center;margin-bottom:8px">⚠️</div>
+        <div style="text-align:center;margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:8px">Data changed elsewhere</div>
         <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px;line-height:1.6">
           This data was changed from another device or tab since you loaded it here. Saving now could overwrite those changes.
@@ -4516,7 +4557,7 @@ async function loadFromCloud() {
     return localData;
   } catch(e) {
     setLoading(false);
-    showToast("⚠ Couldn't reach cloud — showing cached data");
+    showToast("Couldn't reach cloud — showing cached data");
     return localData;
   }
 }
@@ -4563,7 +4604,7 @@ async function saveToCloud(data) {
     setSyncStatus("ok");
   } catch(e) {
     setSyncStatus("err");
-    showToast("⚠ Save failed — will retry on next action");
+    showToast("Save failed — will retry on next action");
   }
   isSyncing = false;
 }
@@ -4855,17 +4896,17 @@ function renderTable(data) {
           <div class="actions-panel-connector"></div>
           <div class="actions-panel-label">Actions for <strong>${r.name}</strong></div>
           <div class="row-actions">
-            <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
-            ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px">⏰</button>` : ""}
-            <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
-            <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
-            <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
-            <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History">💳${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
-            <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up">＋</button>
-            ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" title="Log Prepayment">↩</button>` : ""}
-            ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" title="Renegotiate Terms">⇄</button>` : ""}
-            <button class="doc-btn" onclick="openDocs(${r.id})" title="Documents">📎${r.docs&&r.docs.length?`<span class='doc-badge'>${r.docs.length}</span>`:""}</button>
-            ${r.archived ? `<button class="filter-btn" onclick="restoreEntry(${r.id})" style="font-size:11px;padding:3px 8px;color:var(--green);border-color:var(--green)">Restore</button><button class="del-btn" onclick="permanentDelete(${r.id})" title="Permanently delete" style="color:var(--red)">🗑</button>` : `<button class="del-btn" onclick="askDelete(${r.id})" title="Archive">✕</button>`}
+            <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+            ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>` : ""}
+            <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button>
+            <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></button>
+            <button class="edit-btn" onclick="editRow(${r.id})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+            <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
+            <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" title="Log Prepayment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>` : ""}
+            ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" title="Renegotiate Terms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>` : ""}
+            <button class="doc-btn" onclick="openDocs(${r.id})" title="Documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>${r.docs&&r.docs.length?`<span class='doc-badge'>${r.docs.length}</span>`:""}</button>
+            ${r.archived ? `<button class="filter-btn" onclick="restoreEntry(${r.id})" style="font-size:11px;padding:3px 8px;color:var(--green);border-color:var(--green)">Restore</button><button class="del-btn" onclick="permanentDelete(${r.id})" title="Permanently delete" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>` : `<button class="del-btn" onclick="askDelete(${r.id})" title="Archive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`}
           </div>
         </div>
       </td>
@@ -4932,17 +4973,17 @@ function renderTable(data) {
         <div class="actions-panel-connector"></div>
         <div class="actions-panel-label">Actions for <strong>${r.name}</strong></div>
         <div class="row-actions">
-          <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px">💬</button>
-          ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px">⏰</button>` : ""}
-          <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary">📤</button>
-          <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF">📋</button>
-          <button class="edit-btn" onclick="editRow(${r.id})" title="Edit">✎</button>
-          <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History">💳${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
-          <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up">＋</button>
-          ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" title="Log Prepayment">↩</button>` : ""}
-          ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" title="Renegotiate Terms">⇄</button>` : ""}
-          <button class="doc-btn" onclick="openDocs(${r.id})" title="Documents">📎${r.docs&&r.docs.length?`<span class='doc-badge'>${r.docs.length}</span>`:""}</button>
-          ${r.archived ? `<button class="filter-btn" onclick="restoreEntry(${r.id})" style="font-size:11px;padding:3px 8px;color:var(--green);border-color:var(--green)">Restore</button><button class="del-btn" onclick="permanentDelete(${r.id})" title="Permanently delete" style="color:var(--red)">🗑</button>` : `<button class="del-btn" onclick="askDelete(${r.id})" title="Archive">✕</button>`}
+          <button class="share-btn" onclick="openWhatsAppReminder(${r.id})" title="WhatsApp Reminder" style="font-size:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+          ${r.profile?.email ? `<button class="share-btn" onclick="triggerReminderEmail(${r.id})" title="Email Reminder" style="font-size:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>` : ""}
+          <button class="share-btn" onclick="openShareCard(${r.id})" title="Share Summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button>
+          <button class="stmt-btn" onclick="openStatement(${r.id})" title="Loan Statement PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg></button>
+          <button class="edit-btn" onclick="editRow(${r.id})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+          <button class="payment-btn" onclick="openPayments(${r.id})" title="Payment History"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${r.payments&&r.payments.length?`<span class='doc-badge'>${r.payments.length}</span>`:""}</button>
+          <button class="topup-btn" onclick="quickTopup(${r.id})" title="Log Top-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          ${r.loanSetup ? `<button class="prepay-btn" onclick="quickPrepay(${r.id})" title="Log Prepayment"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>` : ""}
+          ${r.loanSetup ? `<button class="renego-btn" onclick="quickRenego(${r.id})" title="Renegotiate Terms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>` : ""}
+          <button class="doc-btn" onclick="openDocs(${r.id})" title="Documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>${r.docs&&r.docs.length?`<span class='doc-badge'>${r.docs.length}</span>`:""}</button>
+          ${r.archived ? `<button class="filter-btn" onclick="restoreEntry(${r.id})" style="font-size:11px;padding:3px 8px;color:var(--green);border-color:var(--green)">Restore</button><button class="del-btn" onclick="permanentDelete(${r.id})" title="Permanently delete" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>` : `<button class="del-btn" onclick="askDelete(${r.id})" title="Archive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`}
         </div>
       </div>
     </div>`;
@@ -4968,7 +5009,7 @@ function renderCharts(data) {
     type: "doughnut",
     data: {
       labels: ["Returned", "Outstanding"],
-      datasets: [{ data: [totalReturned, totalPending], backgroundColor: ["#00D4AA","#FF5C7D"], borderWidth: 0, hoverOffset: 6 }]
+      datasets: [{ data: [totalReturned, totalPending], backgroundColor: ["#6B9B5E","#C0392B"], borderWidth: 0, hoverOffset: 6 }]
     },
     options: {
       responsive: true,
@@ -4995,7 +5036,7 @@ function renderCharts(data) {
     type: "bar",
     data: {
       labels: names.length ? names : ["No pending"],
-      datasets: [{ label:"Pending", data: names.length ? Object.values(pendingMap) : [0], backgroundColor:"#6C63FF", borderRadius:6, borderSkipped:false }]
+      datasets: [{ label:"Pending", data: names.length ? Object.values(pendingMap) : [0], backgroundColor:"#A23B4E", borderRadius:6, borderSkipped:false }]
     },
     options: {
       responsive: true,
@@ -5499,7 +5540,7 @@ function exportPDF() {
     .pending { color: #e53e3e; } .returned { color: #38a169; } .overdue { color: #805ad5; }
     @media print { body { padding: 0; } }
   </style></head><body>
-  <h1>💰 LendingState — Lending Report</h1>
+  <h1>LendingState — Lending Report</h1>
   <div class="sub">Generated on ${new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
   <div class="summary">
     <div class="sum-box"><div class="sum-label">Total Lent</div><div class="sum-val">${fmt(totalLent)}</div></div>
@@ -5549,7 +5590,7 @@ function toggleHamburger() {
   const overlay = document.getElementById("headerMenuOverlay");
   const open = menu.classList.toggle("open");
   if (overlay) overlay.classList.toggle("open", open);
-  btn.textContent = open ? "✕" : "☰";
+  btn.innerHTML = open ? "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width='18' height='18'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>" : "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width='18' height='18'><line x1='3' y1='6' x2='21' y2='6'/><line x1='3' y1='12' x2='21' y2='12'/><line x1='3' y1='18' x2='21' y2='18'/></svg>";
   const mc = document.getElementById("currencySelectMobile");
   if (mc) mc.value = activeCurrency;
   updateMenuThemeLabel();
@@ -5561,7 +5602,7 @@ function closeHamburger() {
   const overlay = document.getElementById("headerMenuOverlay");
   if (menu)    menu.classList.remove("open");
   if (overlay) overlay.classList.remove("open");
-  if (btn)     btn.textContent = "☰";
+  if (btn)     btn.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width='18' height='18'><line x1='3' y1='6' x2='21' y2='6'/><line x1='3' y1='12' x2='21' y2='12'/><line x1='3' y1='18' x2='21' y2='18'/></svg>";
 }
 
 function updateMenuThemeLabel() {
@@ -5683,7 +5724,7 @@ const LAST_SYNC_KEY = "lendlog_last_sheets_sync";
 
 async function syncToSheets(manual = true) {
   const btn = document.getElementById("sheetsSyncBtn");
-  if (btn) { btn.textContent = "⟳ Syncing…"; btn.classList.add("syncing"); btn.disabled = true; }
+  if (btn) { btn.innerHTML = "⟳ Syncing…"; btn.classList.add("syncing"); btn.disabled = true; }
 
   try {
     // Apps Script can't run the app's amortization logic (calcEMI/buildSchedule), so
@@ -5777,14 +5818,14 @@ async function syncToSheets(manual = true) {
 
     // no-cors means we can't read the response — assume success if no error thrown
     localStorage.setItem(LAST_SYNC_KEY, new Date().toISOString());
-    if (btn) { btn.textContent = "✅ Synced!"; btn.classList.remove("syncing"); btn.disabled = false; }
-    setTimeout(() => { if (btn) btn.textContent = "📊 Sync Sheet"; }, 3000);
-    if (manual) showToast("✅ Data synced to Google Sheets!");
+    if (btn) { btn.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width='14' height='14' style='vertical-align:-2px'><polyline points='20 6 9 17 4 12'/></svg> Synced!"; btn.classList.remove("syncing"); btn.disabled = false; }
+    setTimeout(() => { if (btn) btn.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='14' height='14' style='vertical-align:-2px'><line x1='12' y1='20' x2='12' y2='10'/><line x1='18' y1='20' x2='18' y2='4'/><line x1='6' y1='20' x2='6' y2='16'/></svg> Sync Sheet"; }, 3000);
+    if (manual) showToast("Data synced to Google Sheets!");
 
   } catch(err) {
-    if (btn) { btn.textContent = "⚠ Failed"; btn.classList.remove("syncing"); btn.disabled = false; }
-    setTimeout(() => { if (btn) btn.textContent = "📊 Sync Sheet"; }, 3000);
-    if (manual) showToast("⚠ Sheets sync failed — check connection");
+    if (btn) { btn.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='14' height='14' style='vertical-align:-2px'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg> Failed"; btn.classList.remove("syncing"); btn.disabled = false; }
+    setTimeout(() => { if (btn) btn.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='14' height='14' style='vertical-align:-2px'><line x1='12' y1='20' x2='12' y2='10'/><line x1='18' y1='20' x2='18' y2='4'/><line x1='6' y1='20' x2='6' y2='16'/></svg> Sync Sheet"; }, 3000);
+    if (manual) showToast("Sheets sync failed — check connection");
   }
 }
 
@@ -5831,7 +5872,7 @@ function renderShareCard(r) {
   const interest  = calcInterest(r);
   const totalDue  = pending + interest;
   const ds        = getDueStatus(r);
-  const statusColor = r.status==="RETURNED" ? "#00D4AA" : r.status==="OVERDUE" ? "#B97FFF" : "#FFB547";
+  const statusColor = r.status==="RETURNED" ? "#6B9B5E" : r.status==="OVERDUE" ? "#A2542E" : "#C99A3E";
   const payments  = r.payments || [];
   const totalPaid = payments.reduce((s,p)=>s+p.amount,0);
 
@@ -5839,7 +5880,7 @@ function renderShareCard(r) {
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
       <div>
         <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">LendingState</div>
-        <div style="font-size:22px;font-weight:700;color:#F0F2FF;letter-spacing:-0.02em">${r.name}</div>
+        <div style="font-size:22px;font-weight:700;color:#EDE7DC;letter-spacing:-0.02em">${r.name}</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">Lent on ${fmtDate(r.date)}</div>
       </div>
       <div style="background:${statusColor}22;border:1px solid ${statusColor}55;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:${statusColor}">${r.status}</div>
@@ -5848,40 +5889,40 @@ function renderShareCard(r) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:14px">
         <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Amount Lent</div>
-        <div style="font-size:20px;font-weight:700;color:#F0F2FF;font-family:'DM Mono',monospace">${fmt(r.lent)}</div>
+        <div style="font-size:20px;font-weight:700;color:#EDE7DC;font-family:'DM Mono',monospace">${fmt(r.lent)}</div>
       </div>
-      <div style="background:rgba(0,212,170,0.08);border-radius:12px;padding:14px">
+      <div style="background:rgba(107,155,94,0.08);border-radius:12px;padding:14px">
         <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Returned</div>
-        <div style="font-size:20px;font-weight:700;color:#00D4AA;font-family:'DM Mono',monospace">${fmt(r.returned)}</div>
+        <div style="font-size:20px;font-weight:700;color:#6B9B5E;font-family:'DM Mono',monospace">${fmt(r.returned)}</div>
       </div>
-      <div style="background:rgba(255,92,125,0.08);border-radius:12px;padding:14px">
+      <div style="background:rgba(192,57,43,0.08);border-radius:12px;padding:14px">
         <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Pending</div>
-        <div style="font-size:20px;font-weight:700;color:#FF5C7D;font-family:'DM Mono',monospace">${fmt(pending)}</div>
+        <div style="font-size:20px;font-weight:700;color:#C0392B;font-family:'DM Mono',monospace">${fmt(pending)}</div>
       </div>
       ${interest > 0 ? `
       <div style="background:rgba(96,180,255,0.08);border-radius:12px;padding:14px">
         <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Interest</div>
         <div style="font-size:20px;font-weight:700;color:#60B4FF;font-family:'DM Mono',monospace">${fmt(interest)}</div>
       </div>` : `
-      <div style="background:rgba(255,181,71,0.08);border-radius:12px;padding:14px">
+      <div style="background:rgba(201,154,62,0.08);border-radius:12px;padding:14px">
         <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Payments</div>
-        <div style="font-size:20px;font-weight:700;color:#FFB547;font-family:'DM Mono',monospace">${payments.length}</div>
+        <div style="font-size:20px;font-weight:700;color:#C99A3E;font-family:'DM Mono',monospace">${payments.length}</div>
       </div>`}
     </div>
 
     ${totalDue > 0 ? `
-    <div style="background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(255,107,157,0.15));border:1px solid rgba(108,99,255,0.3);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+    <div style="background:linear-gradient(135deg,rgba(162,59,78,0.15),rgba(201,164,85,0.15));border:1px solid rgba(162,59,78,0.3);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:12px;color:rgba(255,255,255,0.5)">Total Due (incl. interest)</div>
-      <div style="font-size:20px;font-weight:700;color:#F0F2FF;font-family:'DM Mono',monospace">${fmt(totalDue)}</div>
+      <div style="font-size:20px;font-weight:700;color:#EDE7DC;font-family:'DM Mono',monospace">${fmt(totalDue)}</div>
     </div>` : ""}
 
-    ${ds ? `<div style="background:rgba(255,181,71,0.1);border:1px solid rgba(255,181,71,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#FFB547;margin-bottom:14px">⏰ ${ds.label}</div>` : ""}
+    ${ds ? `<div style="background:rgba(201,154,62,0.1);border:1px solid rgba(201,154,62,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#C99A3E;margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${ds.label}</div>` : ""}
 
-    ${r.notes ? `<div style="font-size:12px;color:rgba(255,255,255,0.4);padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)">📝 ${r.notes}</div>` : ""}
+    ${r.notes ? `<div style="font-size:12px;color:rgba(255,255,255,0.4);padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px;margin-right:3px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>${r.notes}</div>` : ""}
 
     <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:10px;color:rgba(255,255,255,0.25)">Generated ${new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</div>
-      <div style="font-size:10px;color:rgba(108,99,255,0.6);font-weight:600">LendingState · ESTD 2025</div>
+      <div style="font-size:10px;color:rgba(162,59,78,0.6);font-weight:600">LendingState · ESTD 2025</div>
     </div>
   `;
 }
@@ -5944,13 +5985,13 @@ function openStatement(id) {
   tr.event-row td { background: #f0eaff; color: #7B4FCC; font-style: italic; }
   .total-row td { font-weight: bold; background: #f0f0f0; }
   .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
-  .due-alert { background: #FFF8E1; border: 1px solid #FFB547; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #9A6200; margin-bottom: 16px; }
+  .due-alert { background: #FFF8E1; border: 1px solid #C99A3E; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #9A6200; margin-bottom: 16px; }
   @media print { body { padding: 16px; } }
 </style></head><body>
 
 <div class="header-bar">
   <div>
-    <h1>💰 LendingState</h1>
+    <h1>LendingState</h1>
     <div class="sub">Loan Statement · Generated on ${new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
   </div>
   <div style="text-align:right">
@@ -6001,7 +6042,7 @@ ${r.interestOn && r.loanSetup ? `
 ${schedRows.length > 0 ? `
 <div class="section-title">Repayment Schedule</div>
 ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:8px 12px;font-size:11px;color:#7B4FCC;margin-bottom:10px">
-  📌 Events: ${events.map(e=>e.label).join(" | ")}</div>` : ""}
+  Events: ${events.map(e=>e.label).join(" | ")}</div>` : ""}
 <table>
   <thead><tr><th>#</th><th>Due Date</th><th>Opening Bal</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Closing Bal</th><th>Status</th></tr></thead>
   <tbody>
@@ -6009,7 +6050,7 @@ ${events.length > 0 ? `<div style="background:#f0eaff;border-radius:6px;padding:
       <td>${row.num}</td><td>${fmtDate(row.date)}</td><td>${fmt(row.openBal)}</td>
       <td style="font-weight:bold">${fmt(row.emi)}</td><td style="color:#2D8A5E">${fmt(row.principal)}</td>
       <td style="color:#0369a1">${fmt(row.interest)}</td><td style="color:#9A6200">${fmt(row.closeBal)}</td>
-      <td style="font-size:10px">${row.status==="paid"?"✓ Paid":row.status==="partial"?`◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`:row.status==="overdue"?"⚠ Overdue":row.status==="current"?"● Due":"○ Upcoming"}</td>
+      <td style="font-size:10px">${row.status==="paid"?"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' width='10' height='10' style='vertical-align:-1px'><polyline points='20 6 9 17 4 12'/></svg> Paid":row.status==="partial"?`◐ ${fmt(row.paidAmount)} of ${fmt(row.emi)}`:row.status==="overdue"?"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='10' height='10' style='vertical-align:-1px'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg> Overdue":row.status==="current"?"● Due":"○ Upcoming"}</td>
     </tr>`).join("")}
   </tbody>
 </table>` : ""}
@@ -6166,7 +6207,7 @@ function onNameInput() {
       <div class="suggest-avatar">${(p.firstName || p.officialName)[0].toUpperCase()}</div>
       <div class="suggest-info">
         <div class="suggest-name">${p.officialName}</div>
-        <div class="suggest-sub">📞 ${maskField(p.phone,"phone")}${p.email ? " · " + maskField(p.email,"email") : ""}</div>
+        <div class="suggest-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-1px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${maskField(p.phone,"phone")}${p.email ? " · " + maskField(p.email,"email") : ""}</div>
       </div>
       <div style="font-size:10px;color:var(--accent);font-weight:600">Auto-fill ↗</div>
     </div>
@@ -6208,7 +6249,7 @@ async function checkProfileMatch() {
   const existing = profileId ? getProfileRecords(profileId).filter(r => r.id !== editId) : [];
 
   if (existing.length > 0) {
-    banner.innerHTML = `⚠️ <strong>${existing[0].name}</strong> already has ${existing.length} loan record(s) with this profile. Adding a new loan for the same person.`;
+    banner.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <strong>${existing[0].name}</strong> already has ${existing.length} loan record(s) with this profile. Adding a new loan for the same person.`;
     banner.style.display = "block";
   } else {
     banner.style.display = "none";
@@ -6319,10 +6360,10 @@ function handlePhotoUpload(event, prefix) {
       document.getElementById(prefix + "PhotoRemoveBtn").style.display = "inline-block";
       showToast("Photo attached — will be saved with this profile");
     };
-    img.onerror = () => showToast("⚠ Could not read that image file");
+    img.onerror = () => showToast("Could not read that image file");
     img.src = e.target.result;
   };
-  reader.onerror = () => showToast("⚠ Failed to read file");
+  reader.onerror = () => showToast("Failed to read file");
   reader.readAsDataURL(file);
   event.target.value = ""; // allow re-selecting the same file later
 }
@@ -6437,7 +6478,7 @@ function renderBorrowersList() {
           <span>Pending: <strong style="color:${r.totalPending > 0 ? 'var(--red)' : 'var(--text3)'}">${fmt(r.totalPending)}</strong></span>
         </div>
       </div>
-      <button class="edit-btn" onclick="openProfilePopup('${r.profileId}', this)" title="Edit borrower profile">✎</button>
+      <button class="edit-btn" onclick="openProfilePopup('${r.profileId}', this)" title="Edit borrower profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
     </div>
   `).join("");
 }
@@ -6463,7 +6504,7 @@ function openProfilePopup(key, anchorEl) {
           <div class="profile-popup-key">${p.firstName || ""}${p.middleName ? " "+p.middleName : ""} ${p.lastName || ""}</div>
         </div>
       </div>
-      <button onclick="closeProfilePopup()" style="background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:26px;height:26px;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+      <button onclick="closeProfilePopup()" style="background:var(--surface3);border:1px solid var(--border);border-radius:50%;width:26px;height:26px;cursor:pointer;color:var(--text2);font-size:13px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="profile-field-row"><span class="profile-field-lbl">Phone</span><span class="profile-field-val" style="font-family:'JetBrains Mono',monospace;letter-spacing:0.05em" title="Encrypted — last 4 digits shown">${maskField(p.phone,"phone")}</span></div>
     <div class="profile-field-row"><span class="profile-field-lbl">Email</span><span class="profile-field-val" title="Encrypted">${maskField(p.email,"email")}</span></div>
@@ -6488,7 +6529,7 @@ function openProfilePopup(key, anchorEl) {
         <span></span>
       </div>
     </div>
-    <button class="modal-save" style="margin-top:14px;font-size:12px;padding:9px" onclick="closeProfilePopup();editProfileKey('${key}')">✎ Edit Profile</button>
+    <button class="modal-save" style="margin-top:14px;font-size:12px;padding:9px" onclick="closeProfilePopup();editProfileKey('${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> Edit Profile</button>
   `;
 
   // Position popup near anchor
@@ -6757,7 +6798,7 @@ function renderUpcomingWidget(data) {
   const show = upcoming.slice(0, 6);
 
   if (!show.length) {
-    el.innerHTML = `<div class="no-upcoming">🎉 No payments due<br>in next 30 days</div>`;
+    el.innerHTML = `<div class="no-upcoming"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg> No payments due<br>in next 30 days</div>`;
     return;
   }
 
@@ -6828,7 +6869,7 @@ function renderAtRiskWidget(data) {
   const show = atRisk.slice(0, 6);
 
   if (!show.length) {
-    el.innerHTML = `<div class="no-upcoming">✅ No overdue borrowers</div>`;
+    el.innerHTML = `<div class="no-upcoming"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg> No overdue borrowers</div>`;
     return;
   }
 
@@ -6961,7 +7002,7 @@ function renderActivityWidget(data) {
   events.sort((a,b) => b.ts - a.ts);
   const show = events.slice(0, 8);
 
-  const icons = { add:"➕", pay:"💳", edit:"✏️", close:"✅", overdue:"⚠️" };
+  const icons = { add:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"19\"/><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/></svg>", pay:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\"/><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"/></svg>", edit:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z\"/></svg>", close:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg>", overdue:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"/><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"/><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"/></svg>" };
 
   if (!show.length) {
     el.innerHTML = `<div class="no-upcoming">No activity yet</div>`;
@@ -7139,7 +7180,7 @@ function renderNoteLog(id) {
     const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}`;
     const realIdx = logs.length - 1 - ri;
     return `<div class="note-log-item">
-      <div class="note-log-date">${dateStr}<button class="note-log-del" onclick="removeNoteLog(${id}, ${realIdx})" title="Delete">✕</button></div>
+      <div class="note-log-date">${dateStr}<button class="note-log-del" onclick="removeNoteLog(${id}, ${realIdx})" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
       <div class="note-log-text">${n.text}</div>
     </div>`;
   }).join("");
@@ -7201,8 +7242,8 @@ function openWhatsAppReminder(id) {
   popup.innerHTML = `
     <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:460px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div style="font-size:16px;font-weight:700">💬 WhatsApp Reminder</div>
-        <button onclick="document.getElementById('waReminderPopup').remove()" style="background:var(--surface2);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--text2);font-size:14px">✕</button>
+        <div style="font-size:16px;font-weight:700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" style="vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp Reminder</div>
+        <button onclick="document.getElementById('waReminderPopup').remove()" style="background:var(--surface2);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--text2);font-size:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Choose a message style, edit if needed, then send:</div>
       ${messages.map((msg, i) => `
@@ -7211,7 +7252,7 @@ function openWhatsAppReminder(id) {
           <textarea id="waMsg${i}" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:12px;font-family:'Outfit',sans-serif;resize:vertical;min-height:80px;line-height:1.5">${msg}</textarea>
           <div style="display:flex;gap:8px;margin-top:6px">
             <button onclick="copyWAMessage(${i})" style="flex:1;padding:7px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;font-size:12px;color:var(--text2);font-family:'Outfit',sans-serif">📋 Copy</button>
-            ${phone ? `<a href="https://wa.me/91${phone}?text=${encodeURIComponent(messages[i])}" target="_blank" style="flex:1;padding:7px;background:#25D366;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;color:#fff;font-family:'Outfit',sans-serif;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px" id="waLink${i}">🟢 Open WhatsApp</a>` : ""}
+            ${phone ? `<a href="https://wa.me/91${phone}?text=${encodeURIComponent(messages[i])}" target="_blank" style="flex:1;padding:7px;background:#25D366;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;color:#fff;font-family:'Outfit',sans-serif;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px" id="waLink${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Open WhatsApp</a>` : ""}
           </div>
         </div>`).join("")}
     </div>`;
@@ -7394,10 +7435,10 @@ function confirmSendEmail(opts) {
   }
 
   const typeLabels = {
-    newloan:  { icon: "🎉", title: "Send New Loan Email?",     color: "var(--accent)" },
-    topup:    { icon: "💰", title: "Send Top-up Email?",       color: "var(--accent)" },
-    payment:  { icon: "✅", title: "Send Payment Receipt?",    color: "var(--green)" },
-    reminder: { icon: "⏰", title: "Send Payment Reminder?",   color: "var(--amber)" }
+    newloan:  { icon: "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' width='34' height='34'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='6.2' stroke-width='1'/><path d='M8.3 12.3l2.4 2.4 5-5.4' stroke-width='2'/></svg>", title: "Send New Loan Email?",     color: "var(--accent)" },
+    topup:    { icon: "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' width='34' height='34'><line x1='12' y1='1' x2='12' y2='23'/><path d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/></svg>", title: "Send Top-up Email?",       color: "var(--accent)" },
+    payment:  { icon: "<svg viewBox='0 0 24 24' fill='none' stroke='var(--green)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' width='34' height='34'><path d='M4 2v20l3-2 3 2 3-2 3 2 3-2V2l-3 2-3-2-3 2-3-2z'/><line x1='8' y1='8' x2='16' y2='8'/><line x1='8' y1='12' x2='16' y2='12'/></svg>", title: "Send Payment Receipt?",    color: "var(--green)" },
+    reminder: { icon: "<svg viewBox='0 0 24 24' fill='none' stroke='var(--amber)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' width='34' height='34'><path d='M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9'/><path d='M13.73 21a2 2 0 0 1-3.46 0'/></svg>", title: "Send Payment Reminder?",   color: "var(--amber)" }
   };
   const meta = typeLabels[opts.type] || typeLabels.newloan;
 
@@ -7406,8 +7447,8 @@ function confirmSendEmail(opts) {
   popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;display:flex;align-items:center;justify-content:center;padding:16px";
   popup.innerHTML = `
     <div style="background:var(--surface);border-radius:var(--radius-xl);padding:24px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
-      ${opts.warning ? `<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:10px 12px;margin-bottom:16px;font-size:12px;color:var(--amber);line-height:1.5">⚠️ ${opts.warning}</div>` : ""}
-      <div style="font-size:34px;text-align:center;margin-bottom:8px">${meta.icon}</div>
+      ${opts.warning ? `<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius);padding:10px 12px;margin-bottom:16px;font-size:12px;color:var(--amber);line-height:1.5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" style="vertical-align:-2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${opts.warning}</div>` : ""}
+      <div style="display:flex;justify-content:center;margin-bottom:8px">${meta.icon}</div>
       <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:6px">${meta.title}</div>
       <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px">
         Email will be sent to <strong style="color:var(--text)">${r.name}</strong><br>
@@ -7464,10 +7505,10 @@ function executeSendEmail() {
 
   function doSend() {
     emailjs.send(EMAILJS_SERVICE_ID, opts.templateId, opts.templateParams, { publicKey: EMAILJS_PUBLIC_KEY })
-      .then(() => showToast("📧 Email sent to " + opts.record.name + "!"))
+      .then(() => showToast("Email sent to " + opts.record.name + "!"))
       .catch((err) => {
         console.error("EmailJS error:", err);
-        showToast("⚠ Failed to send: " + (err.text || err.message || JSON.stringify(err)));
+        showToast("Failed to send: " + (err.text || err.message || JSON.stringify(err)));
       });
     window._pendingEmailSend = null;
   }
@@ -7484,7 +7525,7 @@ function executeSendEmail() {
         doSend();
       } else if (attempts > 25) { // 5 seconds
         clearInterval(interval);
-        showToast("⚠ Email service unavailable — check internet connection");
+        showToast("Email service unavailable — check internet connection");
         window._pendingEmailSend = null;
       }
     }, 200);
@@ -7580,7 +7621,7 @@ function createEmailVerifier(ids, opts) {
     if (state.verified) {
       btn.style.display = "none";
       statusEl.style.display = "block";
-      statusEl.innerHTML = `<span style="color:var(--green);font-weight:600">✓ Verified</span>`;
+      statusEl.innerHTML = `<span style="color:var(--green);font-weight:600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg> Verified</span>`;
     } else {
       btn.style.display = "inline-block";
       statusEl.style.display = "none";
@@ -7648,7 +7689,7 @@ function createEmailVerifier(ids, opts) {
       startCooldown();
     } catch (err) {
       console.error("Verification email error:", err);
-      showToast("⚠ Failed to send verification email");
+      showToast("Failed to send verification email");
       btn.disabled = false;
       btn.textContent = "Validate";
     }
@@ -7663,19 +7704,19 @@ function createEmailVerifier(ids, opts) {
 
     resultEl.style.display = "block";
     if (Date.now() - state.sentAt > EMAIL_CODE_TTL_MS) {
-      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700">✗ Code expired — tap Resend for a new one</span>`;
+      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Code expired — tap Resend for a new one</span>`;
       return;
     }
     if (val === state.pendingCode.toUpperCase()) {
       state.verifiedEmail = state.pendingEmail;
       state.verified = true;
-      resultEl.innerHTML = `<span style="color:var(--green);font-weight:700">✓ Verified successfully</span>`;
+      resultEl.innerHTML = `<span style="color:var(--green);font-weight:700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg> Verified successfully</span>`;
       document.getElementById(ids.codeWrap).style.display = "none";
       clearCooldown();
       render();
       sendEmailVerifiedConfirmation(state.verifiedEmail, getName);
     } else {
-      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700">✗ Incorrect code — please check and try again</span>`;
+      resultEl.innerHTML = `<span style="color:var(--red);font-weight:700"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorrect code — please check and try again</span>`;
     }
   }
 
@@ -8321,7 +8362,7 @@ function openPayments(id) {
     paymentsRecordId = id;
     const r = localData.find(x => x.id === id);
     if (!r) return;
-    document.getElementById("paymentsTitle").textContent = "💳 Payments — " + r.name;
+    document.getElementById("paymentsTitle").innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' width='15' height='15'><rect x='1' y='4' width='22' height='16' rx='2'/><line x1='1' y1='10' x2='23' y2='10'/></svg> Payments — " + r.name;
     document.getElementById("payDate").value = new Date().toISOString();
     document.getElementById("payAmt").value = "";
     const emi = r.interestOn && r.loanSetup ? getScheduledEMI(r) : null;
@@ -8376,7 +8417,7 @@ function renderPaymentsList(r) {
       <span class="payment-item-date">${fmtDate(p.date)}</span>
       <span class="payment-item-amt">${fmt(p.amount)}</span>
       <span class="payment-item-note">${p.note || "—"}</span>
-      <button class="payment-remove" onclick="removePayment(${i})" title="Remove">✕</button>
+      <button class="payment-remove" onclick="removePayment(${i})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
   `).join("");
 }
@@ -8606,8 +8647,8 @@ function showInstallButton() {
   if (document.getElementById('pwaInstallBtn')) return;
   const btn = document.createElement('button');
   btn.id = 'pwaInstallBtn';
-  btn.innerHTML = '📲 Install App';
-  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:500;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:600;font-family:"Outfit",sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(108,99,255,0.4);touch-action:manipulation';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Install App';
+  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:500;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:600;font-family:"Outfit",sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(162,59,78,0.4);touch-action:manipulation';
   btn.onclick = async () => {
     if (!deferredInstallPrompt) return;
     deferredInstallPrompt.prompt();
@@ -8632,8 +8673,8 @@ function hideInstallButton() {
     const banner = document.createElement('div');
     banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--surface);border-top:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2);box-shadow:0 -4px 20px rgba(0,0,0,0.3)';
     banner.innerHTML = `
-      <span style="flex:1">📲 Install LendingState: tap <strong style="color:var(--text)">Share</strong> then <strong style="color:var(--text)">"Add to Home Screen"</strong></span>
-      <button onclick="localStorage.setItem('lendlog_ios_install_hint_dismissed','1');this.parentElement.remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 8px">✕</button>
+      <span style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="vertical-align:-2px"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Install LendingState: tap <strong style="color:var(--text)">Share</strong> then <strong style="color:var(--text)">"Add to Home Screen"</strong></span>
+      <button onclick="localStorage.setItem('lendlog_ios_install_hint_dismissed','1');this.parentElement.remove()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     `;
     document.body.appendChild(banner);
   }, 2000);
