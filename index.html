@@ -5619,7 +5619,7 @@ document.addEventListener("click", e => {
   const menu = document.getElementById("headerMenu");
   const btn  = document.getElementById("hamburgerBtn");
   if (menu && menu.classList.contains("open")) {
-    if (!menu.contains(e.target) && e.target !== btn) {
+    if (!menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
       closeHamburger();
     }
   }
