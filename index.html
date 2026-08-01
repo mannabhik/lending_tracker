@@ -5261,7 +5261,7 @@ async function _editRow(id) {
   document.getElementById("fGraceDays").value = (r.graceDays ?? 1);
   document.getElementById("interestRateField").classList.toggle("visible", !!r.interestOn);
   setInterestType(ls.interestType || r.interestType || 'compound');
-  resetEmailVerification(r.emailVerified ? rp.email : "");
+  resetEmailVerification(rp.email || "");
   document.getElementById("modalTitle").textContent = "Edit entry";
   document.getElementById("saveBtn").textContent = "Update entry";
   document.getElementById("overlay").classList.add("open");
@@ -6582,7 +6582,7 @@ async function editProfileKey(key) {
   document.getElementById("profileEditCount").textContent = records.length;
   updatePeOfficialName();
   updatePeRequiredIndicators();
-  resetPeEmailVerification(records[0].emailVerified ? (profile.email || "") : "");
+  resetPeEmailVerification(profile.email || "");
   document.getElementById("profileEditOverlay").classList.add("open");
 }
 
@@ -7575,8 +7575,12 @@ function createEmailVerifier(ids, opts) {
     if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
   }
 
-  // Called on modal open — seeds with whatever the record/profile already has
-  // (only treated as verified if it genuinely was verified before).
+  // Called on modal open — seeds with whatever email is already on the record.
+  // This is treated as the accepted baseline regardless of whether it was ever
+  // formally OTP-verified through this feature (e.g. records that predate email
+  // verification, or were set via a different flow) — re-verification is only
+  // demanded when the user actively changes it to something new, not retroactively
+  // for data that was already trusted before this feature existed.
   function reset(alreadyVerifiedEmail) {
     const norm = (alreadyVerifiedEmail || "").trim().toLowerCase();
     state.verifiedEmail = norm; state.verified = !!norm;
