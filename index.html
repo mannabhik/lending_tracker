@@ -5254,6 +5254,7 @@ async function _editRow(id) {
   document.getElementById("profileMatchBanner").style.display = "none";
   document.getElementById("fPhoneError").style.display = "none";
   document.getElementById("fInterestOn").checked = !!r.interestOn;
+  toggleInterestField(); // .checked alone doesn't fire onchange — labels need this explicit call
   const ls = r.loanSetup || {};
   document.getElementById("fInterestRate").value = ls.rate || r.interestRate || "";
   document.getElementById("fInterestFixed").value = ls.fixedAmount || r.interestFixed || "";
