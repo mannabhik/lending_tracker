@@ -3226,6 +3226,18 @@
         <div class="field"><label>Amount</label><input type="number" id="payAmt" placeholder="Amount received" min="0"></div>
       </div>
       <div class="field"><label>Note (optional)</label><input type="text" id="payNote" placeholder="e.g. Cash, UPI, bank transfer"></div>
+      <div class="field">
+        <label>Payment Proof <span style="color:var(--text3);font-weight:400">(optional — screenshot of the transaction)</span></label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <label style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Attach screenshot
+            <input type="file" accept="image/*" id="payScreenshotUpload" style="display:none" onchange="handlePaymentScreenshotUpload(event)">
+          </label>
+          <img id="payScreenshotPreview" style="display:none;width:36px;height:36px;border-radius:6px;object-fit:cover;border:1px solid var(--border2);cursor:pointer" onclick="viewImageLightbox(this.src)">
+          <button type="button" id="payScreenshotRemoveBtn" onclick="clearPaymentScreenshot()" style="display:none;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline">Remove</button>
+        </div>
+      </div>
       <button class="modal-save" onclick="addPayment()">Log Payment</button>
     </div>
   </div>
@@ -3540,6 +3552,19 @@
     <div class="confirm-btns">
       <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
       <button class="confirm-delete" onclick="confirmDelete()">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Remove Payment Confirmation -->
+<div class="confirm-overlay" id="confirmPaymentOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
+    <div class="confirm-title">Remove this payment?</div>
+    <div class="confirm-msg" id="confirmPaymentMsg">This will remove the payment and recalculate the loan's remaining balance. This cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirmPayment()">Cancel</button>
+      <button class="confirm-delete" onclick="confirmRemovePayment()">Yes, remove</button>
     </div>
   </div>
 </div>
@@ -5720,7 +5745,7 @@ function updateThemePickerUI() {
 
 // ── Google Sheets Weekly Sync ────────────────────────────────────────────
 const SHEETS_WEBHOOK = "https://script.google.com/macros/s/AKfycbx9HCZwFX1peLkhFHFLA2Jrw4PBpYER8FBY4htujgjKeSXkfkvUeAVF1tX-dTBJ75mX/exec";
-const SYNC_INTERVAL_DAYS = 7;
+const SYNC_INTERVAL_DAYS = 1;
 const LAST_SYNC_KEY = "lendlog_last_sheets_sync";
 
 async function syncToSheets(manual = true) {
@@ -6375,6 +6400,72 @@ function clearUploadedPhoto(prefix) {
   if (preview) { preview.style.display = "none"; preview.src = ""; }
   const removeBtn = document.getElementById(prefix + "PhotoRemoveBtn");
   if (removeBtn) removeBtn.style.display = "none";
+}
+
+// ── Payment screenshot attachment ────────────────────────────────────────
+// Unlike the profile avatar (cropped to a small square, since it's just an
+// identifier), a payment screenshot needs to stay legible — amounts,
+// reference numbers, timestamps. So this preserves aspect ratio and only caps
+// the longest side, at a higher JPEG quality than the avatar uses.
+// Worth knowing: like the profile photo, this stores directly in the JSONBin
+// record as base64 — one per payment, potentially many payments per loan, so
+// this adds up in storage faster than the (one-per-person) profile photo did.
+// Fine for occasional use; another reason JSONBin's limits are worth watching.
+const PAYMENT_SCREENSHOT_MAX_DIM = 720;
+const PAYMENT_SCREENSHOT_QUALITY = 0.78;
+
+function handlePaymentScreenshotUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) { showToast("Please select an image file"); event.target.value = ""; return; }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxDim = PAYMENT_SCREENSHOT_MAX_DIM;
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg", PAYMENT_SCREENSHOT_QUALITY);
+
+      window._payScreenshotData = dataUrl;
+      const preview = document.getElementById("payScreenshotPreview");
+      preview.src = dataUrl;
+      preview.style.display = "inline-block";
+      document.getElementById("payScreenshotRemoveBtn").style.display = "inline-block";
+    };
+    img.onerror = () => showToast("⚠ Could not read that image file");
+    img.src = e.target.result;
+  };
+  reader.onerror = () => showToast("⚠ Failed to read file");
+  reader.readAsDataURL(file);
+  event.target.value = "";
+}
+
+function clearPaymentScreenshot() {
+  window._payScreenshotData = null;
+  const preview = document.getElementById("payScreenshotPreview");
+  if (preview) { preview.style.display = "none"; preview.src = ""; }
+  const removeBtn = document.getElementById("payScreenshotRemoveBtn");
+  if (removeBtn) removeBtn.style.display = "none";
+  const input = document.getElementById("payScreenshotUpload");
+  if (input) input.value = "";
+}
+
+// Reusable full-size image viewer — click any thumbnail to open, click
+// anywhere (or the close button) to dismiss.
+function viewImageLightbox(src) {
+  if (!src) return;
+  const popup = document.createElement("div");
+  popup.id = "imageLightbox";
+  popup.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:900;display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out";
+  popup.onclick = () => popup.remove();
+  popup.innerHTML = `<img src="${src}" style="max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.6)">`;
+  document.body.appendChild(popup);
 }
 
 // ── Borrowers List ───────────────────────────────────────────────────────
@@ -8382,6 +8473,7 @@ function openPayments(id) {
     const emi = r.interestOn && r.loanSetup ? getScheduledEMI(r) : null;
     document.getElementById("payAmt").placeholder = emi ? `Amount received (EMI: ${fmt(emi)})` : "Amount received";
     document.getElementById("payNote").value = "";
+    clearPaymentScreenshot();
     renderPaymentsList(r);
     // Show resend buttons only for interest-enabled records with email
     const resendPayBtn  = document.getElementById("resendPaymentBtn");
@@ -8431,22 +8523,30 @@ function renderPaymentsList(r) {
       <span class="payment-item-date">${fmtDate(p.date)}</span>
       <span class="payment-item-amt">${fmt(p.amount)}</span>
       <span class="payment-item-note">${p.note || "—"}</span>
-      <button class="payment-remove" onclick="removePayment(${i})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      ${p.screenshot ? `<button class="payment-remove" onclick="viewPaymentScreenshotAt(${i})" title="View payment proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>` : ""}
+      <button class="payment-remove" onclick="askRemovePayment(${i})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
   `).join("");
+}
+
+function viewPaymentScreenshotAt(payIndex) {
+  const r = localData.find(x => x.id === paymentsRecordId);
+  const p = r?.payments?.[payIndex];
+  if (p?.screenshot) viewImageLightbox(p.screenshot);
 }
 
 function addPayment() {
   const date = document.getElementById("payDate").value;
   const amount = parseFloat(document.getElementById("payAmt").value);
   const note = document.getElementById("payNote").value.trim();
+  const screenshot = window._payScreenshotData || null;
   if (!date || !amount || amount <= 0) { showToast("Please enter date and amount"); return; }
 
   const data = [...localData];
   const idx = data.findIndex(r => r.id === paymentsRecordId);
   if (idx === -1) return;
   if (!data[idx].payments) data[idx].payments = [];
-  data[idx].payments.push({ date, amount, note, createdAt: new Date().toISOString() });
+  data[idx].payments.push({ date, amount, note, screenshot, createdAt: new Date().toISOString() });
 
   // Update returned amount and auto-status
   data[idx].returned = (data[idx].returned || 0) + amount;
@@ -8460,6 +8560,7 @@ function addPayment() {
   renderSummary(data); renderTable(data); renderCharts(data);
   document.getElementById("payAmt").value = "";
   document.getElementById("payNote").value = "";
+  clearPaymentScreenshot();
   showToast(fmt(amount) + " payment logged!");
   if (data[idx].interestOn) {
     triggerPaymentEmail(data[idx], amount);
@@ -8470,11 +8571,31 @@ function addPayment() {
   }
 }
 
-function removePayment(payIndex) {
+let pendingRemovePaymentIndex = null;
+
+function askRemovePayment(payIndex) {
+  const r = localData.find(x => x.id === paymentsRecordId);
+  const p = r?.payments?.[payIndex];
+  pendingRemovePaymentIndex = payIndex;
+  document.getElementById("confirmPaymentMsg").textContent = p
+    ? `Remove the ${fmt(p.amount)} payment from ${fmtDate(p.date)}? This will recalculate the loan's remaining balance and cannot be undone.`
+    : "This will remove the payment and recalculate the loan's remaining balance. This cannot be undone.";
+  document.getElementById("confirmPaymentOverlay").classList.add("open");
+}
+
+function closeConfirmPayment() {
+  pendingRemovePaymentIndex = null;
+  document.getElementById("confirmPaymentOverlay").classList.remove("open");
+}
+
+function confirmRemovePayment() {
+  if (pendingRemovePaymentIndex === null) return;
+  const payIndex = pendingRemovePaymentIndex;
+  closeConfirmPayment();
+
   const data = [...localData];
   const idx = data.findIndex(r => r.id === paymentsRecordId);
   if (idx === -1) return;
-  const removed = data[idx].payments[payIndex];
   data[idx].payments.splice(payIndex, 1);
   // Recalculate returned from payments
   data[idx].returned = data[idx].payments.reduce((s, p) => s + p.amount, 0);
