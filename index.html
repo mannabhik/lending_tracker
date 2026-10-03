@@ -5885,6 +5885,13 @@ async function syncToSheets(manual = true) {
       reminderQueue,
       currency: activeCurrency,
       syncedAt: new Date().toISOString(),
+      // Complete, lossless snapshot — identical in shape to what "Backup data"
+      // downloads manually (every field: encrypted profiles, payments with
+      // screenshots, photos, loan setup, everything). Piggybacked on every sync
+      // so a full, migration-ready backup exists automatically, not only when
+      // you remember to click Backup. Saved server-side as a Drive file —
+      // see syncReminderQueue/doPost in the Apps Script.
+      fullBackup: { version: "1.0", exportedAt: new Date().toISOString(), currency: activeCurrency, records: localData },
     };
 
     const res = await fetch(SHEETS_WEBHOOK, {
