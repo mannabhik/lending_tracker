@@ -2969,6 +2969,15 @@
             Days after an installment's due date before the auto-reminder email is sent
           </div>
         </div>
+        <div class="field-2col" style="margin-top:12px">
+          <div class="field" style="margin-bottom:0">
+            <label>Reminder Repeat Gap</label>
+            <input id="fReminderGapDays" type="number" placeholder="0" min="0" max="30" value="0">
+          </div>
+          <div class="field" style="margin-bottom:0;display:flex;align-items:center;font-size:11px;color:var(--text3);padding-top:18px">
+            Days between repeat reminders while still overdue — 0 means remind every day
+          </div>
+        </div>
       </div>
     </div>
     <button class="modal-save" id="saveBtn" onclick="saveEntry()">Save entry</button>
@@ -5274,6 +5283,7 @@ function _openModal() {
   document.getElementById("fTenureUnit").value = "months";
   document.getElementById("fPayoutFreq").value = "monthly";
   document.getElementById("fGraceDays").value = "1";
+  document.getElementById("fReminderGapDays").value = "0";
   document.getElementById("emiPreview").style.display = "none";
   document.getElementById("interestRateField").classList.remove("visible");
   setInterestType('compound');
@@ -5337,6 +5347,7 @@ async function _editRow(id) {
   document.getElementById("fTenureUnit").value = ls.tenureUnit || "months";
   document.getElementById("fPayoutFreq").value = ls.payoutFreq || "monthly";
   document.getElementById("fGraceDays").value = (r.graceDays ?? 1);
+  document.getElementById("fReminderGapDays").value = (r.reminderGapDays ?? 0);
   document.getElementById("interestRateField").classList.toggle("visible", !!r.interestOn);
   setInterestType(ls.interestType || r.interestType || 'compound');
   resetEmailVerification(rp.email || "");
@@ -5376,6 +5387,8 @@ async function saveEntry() {
   const interestFixed = interestOn && interestType === 'fixed' ? (parseFloat(document.getElementById("fInterestFixed").value) || 0) : null;
   const graceDaysRaw = parseInt(document.getElementById("fGraceDays").value);
   const graceDays = Math.max(0, isNaN(graceDaysRaw) ? 1 : graceDaysRaw);
+  const reminderGapRaw = parseInt(document.getElementById("fReminderGapDays").value);
+  const reminderGapDays = Math.max(0, isNaN(reminderGapRaw) ? 0 : reminderGapRaw);
   const isFixed = interestType === 'fixed';
   const loanSetup = interestOn ? {
     interestType,
@@ -5430,7 +5443,7 @@ async function saveEntry() {
       // otherwise keep this record's own id; only generate new if it never had one.
       const matchedId = await resolveProfileId(officialName, phone, prev.id);
       const profileId = matchedId || prev.profileId || genProfileId();
-    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, emailVerified,
+    data[idx] = { ...prev, date, name, lent, returned, status, notes, dueDate, profile: encProfile, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, reminderGapDays, emailVerified,
         interestStartDate, interestBase,
         updatedAt: amountsChanged ? todayStr : (prev.updatedAt || todayStr)
       };
@@ -5448,7 +5461,7 @@ async function saveEntry() {
     const encProfileData = await encryptProfile(profileData);
     // Same person as an existing record? Reuse their profileId so all their loans group together.
     const profileId = (await resolveProfileId(officialName, phone, null)) || genProfileId();
-    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, emailVerified, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
+    const newRecord = { id:nextId(data), date, name, lent, returned, status, notes, dueDate, profile: encProfileData, profileId, interestOn, interestType, interestRate, interestFixed, loanSetup, graceDays, reminderGapDays, emailVerified, interestStartDate: interestOn ? date : null, interestBase: interestOn ? Math.max(0, lent - returned) : null, updatedAt: todayStr, createdAt: new Date().toISOString() };
     data.push(newRecord);
     localData = data;
     saveToCloud(data);
@@ -5877,6 +5890,7 @@ async function syncToSheets(manual = true) {
         lent: r.lent,
         returnedAmt: r.returned,
         graceDays: r.graceDays ?? 1,
+        reminderGapDays: r.reminderGapDays ?? 0,
       });
     }
 
