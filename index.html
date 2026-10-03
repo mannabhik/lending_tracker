@@ -5429,9 +5429,11 @@ async function saveEntry() {
   if (editId) {
     const idx = data.findIndex(r => r.id === parseInt(editId));
     let graceDaysChanged = false;
+    let reminderGapChanged = false;
     if (idx !== -1) {
       const prev = data[idx];
       graceDaysChanged = (prev.graceDays ?? 1) !== graceDays;
+      reminderGapChanged = (prev.reminderGapDays ?? 0) !== reminderGapDays;
       const amountsChanged = prev.lent !== lent || prev.returned !== returned;
       // If interest is being switched ON for the first time, record start date and base amount
       const interestJustEnabled = interestOn && !prev.interestOn;
@@ -5453,9 +5455,10 @@ async function saveEntry() {
     renderSummary(data); renderTable(data); renderCharts(data);
     closeModal();
     showToast("Entry updated!");
-    // Keep the reminder queue's grace period current immediately — don't make it
-    // wait on the next scheduled sync, since checkAndSendReminders() depends on it.
-    if (graceDaysChanged) syncToSheets(false);
+    // Keep the reminder queue's grace period and repeat cadence current
+    // immediately — don't make either wait on the next scheduled sync, since
+    // checkAndSendReminders() depends on both.
+    if (graceDaysChanged || reminderGapChanged) syncToSheets(false);
   } else {
     const profileData = { firstName, middleName, lastName, officialName, phone: normalizePhone(phone), email, pan, aadhaar, guarantor, guarantorRelation, fatherName, address, photoLink, photoData, nickname: name };
     const encProfileData = await encryptProfile(profileData);
